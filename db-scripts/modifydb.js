@@ -1,7 +1,8 @@
 // custom script to interact with database
 const User = require('./../src/models/user');
-const Post = require('./../src/models/post');
-const Comment = require('./../src/models/comment');
+const Message = require('./../src/models/message');
+const Group = require('./../src/models/group');
+const GroupMember = require('./../src/models/groupMember');
 
 // working with password
 const bcrypt = require('bcrypt');
@@ -13,7 +14,7 @@ const debug = (...str) => {
   }
 };
 
-const mongoDB = process.argv.slice(2)[0] || 'mongodb+srv://minhhoccode111:xImH0F6m9Rg4EIQX@cluster0.qqat537.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const mongoDB = process.argv.slice(2)[0] || process.env.DEVELOPMENT_MONGO;
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
@@ -23,27 +24,31 @@ main().catch((err) => debug('some errors occur', err));
 async function main() {
   debug('about to connect to database');
   await mongoose.connect(mongoDB);
-  const userNum = await User.countDocuments({}).exec();
-  const postNum = await Post.countDocuments({}).exec();
-  const commentNum = await Comment.countDocuments({}).exec();
+  // const userNum = await User.countDocuments({}).exec();
+  // const messageNum = await Message.countDocuments({}).exec();
+  // const groupNum = await Group.countDocuments({}).exec();
+  // const groupMemberNum = await GroupMember.find({}).exec();
   // const users = await User.find({}).exec();
-  // const posts = await Post.find({}).exec();
-  // const comments = await Comment.find({}).exec();
+  // const messages = await Message.find({}).exec();
+  // const groups = await Group.find({}).exec();
+  // const groupMembers = await GroupMember.find({}).exec();
 
   // do some custom things
-
-  const password = await bcrypt.hash('asd', Number(process.env.SALT));
-  const user = new User({ fullname: 'Default User', username: 'asd', password });
-  await user.save();
 
   // do some custom things
 
   // debug(`users belike: `, users);
   // debug(`posts belike: `, posts);
   // debug(`comments belike: `, comments);
-  debug(`number of user currently in database: ${userNum}`);
-  debug(`number of post currently in database: ${postNum}`);
-  debug(`number of comment currently in database: ${commentNum}`);
+
+  // debug(`users belike: `, users);
+  // debug(`messages belike: `, messages);
+  // debug(`groups belike: `, groups);
+  // debug(`groupMembers belike: `, groupMembers);
+  // debug(`number of user currently in database: ${userNum}`);
+  // debug(`number of message currently in database: ${messageNum}`);
+  // debug(`number of group currently in database: ${groupNum}`);
+  // debug(`number of groupMember currently in database: ${groupMemberNum}`);
   debug('connected');
   debug('about to disconnect to database');
   await mongoose.connection.close();

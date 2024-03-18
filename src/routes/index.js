@@ -1,6 +1,7 @@
 // modular
 
-const authenticated = require('./authenticated');
-const unauthenticated = require('./unauthenticated');
+const auth = require('./auth');
+const user = require('./user');
+const chat = require('./chat');
 
-module.exports = { authenticated, unauthenticated };
+module.exports = { auth, user, chat };

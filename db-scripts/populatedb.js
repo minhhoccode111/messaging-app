@@ -3,8 +3,9 @@ const bcrypt = require('bcrypt');
 require('dotenv').config(); // this line cause me 30 mins to deBUG
 
 const User = require('./../src/models/user');
-const Post = require('./../src/models/post');
-const Comment = require('./../src/models/comment');
+const Message = require('./../src/models/message');
+const Group = require('./../src/models/group');
+const GroupMember = require('./../src/models/groupMember');
 
 // const custom = require('debug')('debug-custom');
 const custom = (...str) => {
@@ -13,17 +14,19 @@ const custom = (...str) => {
   }
 };
 
-const mongoDB = process.argv.slice(2)[0] || 'mongodb+srv://minhhoccode111:xImH0F6m9Rg4EIQX@cluster0.qqat537.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const mongoDB = process.argv.slice(2)[0] || process.env.DEVELOPMENT_MONGO;
 
 custom(mongoDB);
 
 const users = [];
-const posts = [];
-const comments = [];
+const messages = [];
+const groups = [];
+const groupMembers = [];
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
+// TODO
 const userCreate = async (index, fullname, username, password, isCreator) => {
   const userDetail = { fullname, username, password, isCreator };
   const user = new User(userDetail);

@@ -117,11 +117,11 @@ const passportWrapper = (req, res, next) => {
 // handle api request
 const routes = require('./src/routes'); // modular
 // things about auth
-app.use('/api/v1/', routes.auth);
+app.use('/api/v1/auth', routes.auth);
 // things about user
-app.use('/api/v1/', passport.authenticate('jwt', { session: false }), routes.user);
+app.use('/api/v1/user', passport.authenticate('jwt', { session: false }), routes.user);
 // things about chat
-app.use('/api/v1/', passport.authenticate('jwt', { session: false }), routes.chat);
+app.use('/api/v1/chat', passport.authenticate('jwt', { session: false }), routes.chat);
 
 // if no route handle the request mean it a 404
 app.use(function (req, res, next) {

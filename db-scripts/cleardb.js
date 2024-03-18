@@ -1,7 +1,8 @@
 // clear database
 const User = require('./../src/models/user');
-const Post = require('./../src/models/post');
-const Comment = require('./../src/models/comment');
+const Message = require('./../src/models/message');
+const Group = require('./../src/models/group');
+const GroupMember = require('./../src/models/groupMember');
 
 // const debug = require('debug')('custom');
 const debug = (...str) => {
@@ -10,7 +11,7 @@ const debug = (...str) => {
   }
 };
 
-const mongoDB = process.argv.slice(2)[0] ?? 'mongodb+srv://minhhoccode111:xImH0F6m9Rg4EIQX@cluster0.qqat537.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const mongoDB = process.argv.slice(2)[0] || process.env.DEVELOPMENT_MONGO;
 
 debug(mongoDB);
 
@@ -23,9 +24,10 @@ async function main() {
   debug('about to connect to database');
   await mongoose.connect(mongoDB);
   debug('about to clear database');
-  await clearPost();
   await clearUser();
-  await clearComment();
+  await clearMessage();
+  await clearGroup();
+  await clearGroupMember();
   debug('database cleared');
   debug('about to close connection');
   await mongoose.connection.close();
@@ -33,22 +35,29 @@ async function main() {
 }
 
 async function clearUser() {
-  await User.deleteMany({}).exec();
   const count = await User.countDocuments({}).exec();
   debug(`User models is having: ${count} documents`);
+  await User.deleteMany({}).exec();
   debug('User cleared!');
 }
 
-async function clearPost() {
-  await Post.deleteMany({}).exec();
-  const count = await Post.countDocuments({}).exec();
-  debug(`Post models is having: ${count} documents`);
-  debug('Post cleared!');
+async function clearMessage() {
+  const count = await Message.countDocuments({}).exec();
+  debug(`Message models is having: ${count} documents`);
+  await Message.deleteMany({}).exec();
+  debug('Message cleared!');
 }
 
-async function clearComment() {
-  await Comment.deleteMany({}).exec();
-  const count = await Comment.countDocuments({}).exec();
-  debug(`Comment models is having: ${count} documents`);
-  debug('Comment cleared!');
+async function clearGroup() {
+  const count = await Group.countDocuments({}).exec();
+  debug(`Group models is having: ${count} documents`);
+  await Group.deleteMany({}).exec();
+  debug('Group cleared!');
+}
+
+async function clearGroupMember() {
+  const count = await GroupMember.countDocuments({}).exec();
+  debug(`GroupMember models is having: ${count} documents`);
+  await GroupMember.deleteMany({}).exec();
+  debug('GroupMember cleared!');
 }
