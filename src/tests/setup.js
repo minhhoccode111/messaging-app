@@ -46,9 +46,12 @@ passport.use(
   })
 );
 
-// fake database
+// test with fake database
 const mongo = require('./mongoConfigTesting');
 mongo();
+
+// test with real development database
+// require('./../../mongoConfig')
 
 // handle api request
 const routes = require('./../routes'); // modular

@@ -6,7 +6,6 @@ const logger = require('morgan');
 const helmet = require('helmet');
 const path = require('path');
 require('dotenv').config();
-require('./dummy');
 
 // connect mongo db
 require('./mongoConfig');
