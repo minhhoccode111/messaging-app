@@ -4,14 +4,16 @@
   "description": "A messaging app's backend",
   "private": true,
   "engines": {
-    "node": "16.x"
+    "node": "21.x"
   },
   "scripts": {
+    "test": "jest test",
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "server": "DEBUG=* npm run dev"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "bcrypt": "^5.1.1",
     "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
@@ -34,5 +36,9 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
   }
 }

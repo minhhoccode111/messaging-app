@@ -10,6 +10,6 @@ router.get('/', UserController.user_get);
 router.put('/', UserController.user_put);
 
 // not implemented
-router.delete('/', UserController.user_delete);
+// router.delete('/', UserController.user_delete);
 
 module.exports = router;

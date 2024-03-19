@@ -1,6 +1,6 @@
-# Blog API TOP
+# Messaging App Back
 
-The **Project Blog API** is created according to the assignment from **The Odin Project** [course](https://www.theodinproject.com/lessons/nodejs-blog-api).
+The **Messaging App Back** is created according to the assignment from **The Odin Project** [course](https://www.theodinproject.com/lessons/nodejs-messaging-app).
 <br>
 <br>
 
@@ -11,6 +11,8 @@ The **Project Blog API** is created according to the assignment from **The Odin 
 ![Members Only Bcrypt Screenshot](/public/images/members-only-screenshot-password.png) -->
 
 ## **Demo** [here](https://minhhoccode.vercel.app/)
+
+## **Document** [here](/docs.md)
 
 ## **Features**
 
@@ -35,26 +37,30 @@ The **Project Blog API** is created according to the assignment from **The Odin 
 ## **Idea to implement**
 
 - Request queries
-- Figure out how to handle text and response with their format (current the server will remove every `\n` new line character)
+- Delete users
+- Delete, edit chat (vs group, vs person)
+- Edit other users (like nickname)
+- Block other users
+- Friends
 
 ## **Getting Started**
 
 HTTPS
 
 ```bash
-git clone https://github.com/minhhoccode111/blog-back.git
+git clone https://github.com/minhhoccode111/messaging-app-back.git
 ```
 
 or SSH
 
 ```bash
-git clone git@github.com:minhhoccode111/blog-back.git
+git clone git@github.com:minhhoccode111/messaging-app-back.git
 ```
 
 then
 
 ```bash
-cd blog-back
+cd messaging-app-back
 npm install
 npm start
 ```
@@ -63,8 +69,8 @@ npm start
 
 - See [all my projects'](https://github.com/minhhoccode111/all-projects-live-demos) live demos
 
-- See my previous project [Members Only TOP](https://github.com/minhhoccode111/members-only-top)
+- See my previous project [Where's Waldo Back](https://github.com/minhhoccode111/wheres-waldo-back)
 
-- See this project's frontend [Personal Portfolio](https://github.com/minhhoccode111/personal-portfolio/)
+- See this project's frontend [Messaging App Front](https://github.com/minhhoccode111/messaging-app-front)
 
 <!-- * See my next project []() -->

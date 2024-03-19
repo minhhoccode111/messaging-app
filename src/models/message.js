@@ -12,7 +12,7 @@ const MessageSchema = new Schema(
       required: true,
     },
 
-		// 1 must be null between userReceive and groupReceive
+    // 1 must be null between userReceive and groupReceive
     userReceive: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -23,7 +23,7 @@ const MessageSchema = new Schema(
       ref: 'Group',
     },
 
-		// 1 must be null betweeen content and imageLink
+    // 1 must be null between content and imageLink
     content: {
       type: String,
       required: true,
@@ -38,44 +38,18 @@ const MessageSchema = new Schema(
       type: Date,
       default: () => new Date(Date.now()),
     },
-
   },
   { toJSON: { virtuals: true } }
 );
 
 MessageSchema.virtual('createdAtFormatted').get(function () {
-	return formatDate(this.createdAt);
+  return formatDate(this.createdAt);
 });
 
 MessageSchema.virtual('createdAtUnix').get(function () {
   return this.createdAt.getTime();
 });
 
-// TODO implement url virtual 
-
-// TODO check correctness of this google bard code to validate 2 fields userReceive and groupReceive
-MessageSchema.validate(async (message) => {
-	const hasUser = !!message.userReceive;
-	const hasGroup = !!message.groupReceive;
-	const hasContent = !!message.content;
-	const hasImageLink = !!message.imageLink;
-
-	if (!hasUser && !hasGroup ){
-		throw new Error('One of userReceive or groupReceive must be specified.');
-	}
-
-	if (hasUser && hasGroup ){
-		throw new Error('Cannot send message to both user and group.');
-	}
-
-	if (hasContent && hasImageLink ){
-		throw new Error('Cannot send message with both content and image link.');
-	}
-
-	if (!hasContent && !hasImageLink ){
-		throw new Error('One of content or imageLink must be specified.');
-	}
-});
+// TODO implement url virtual
 
 module.exports = mongoose.model('Message', MessageSchema);
-

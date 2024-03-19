@@ -5,8 +5,8 @@ const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
 
 // mongoose models
-const Post = require('./../models/post');
-const Comment = require('./../models/comment');
+// const Post = require('./../models/post');
+// const Comment = require('./../models/comment');
 
 // debug
 const debug = require('debug')('xxxxxxxxxxxxxxxxxxxx-debug-xxxxxxxxxxxxxxxxxxxx');
@@ -16,15 +16,15 @@ const mongoose = require('mongoose');
 
 // get info of current logged user
 module.exports.user_get = asyncHandler(async (req, res, next) => {
-	res.send('user get not implemented');
+  res.send('user get not implemented');
 });
 
 // update info of current logged user
 module.exports.user_put = asyncHandler(async (req, res, next) => {
-	res.send('user put not implemented');
+  res.send('user put not implemented');
 });
 
 // not implemented
 module.exports.user_delete = asyncHandler(async (req, res, next) => {
-	res.send('user delete not implemented');
+  res.send('user delete not implemented');
 });
