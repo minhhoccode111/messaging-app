@@ -5,8 +5,10 @@ const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
 
 // mongoose models
-// const Post = require('./../models/post');
-// const Comment = require('./../models/comment');
+const User = require('./../models/user');
+const Message = require('./../models/message');
+const Group = require('./../models/group');
+const GroupMember = require('./../models/groupMember');
 
 // debug
 const debug = require('debug')('xxxxxxxxxxxxxxxxxxxx-debug-xxxxxxxxxxxxxxxxxxxx');

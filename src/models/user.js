@@ -39,7 +39,7 @@ const UserSchema = new Schema(
 
     status: {
       type: String,
-			required: true, 
+			// required: true, 
 			enum: statusEnum,
     },
 

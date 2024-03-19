@@ -2,8 +2,6 @@ const createError = require('http-errors');
 const express = require('express');
 require('dotenv').config();
 
-const debug = require('debug')('xxxxxxxxxxxxxxxxxxxx-debug-xxxxxxxxxxxxxxxxxxxx');
-
 // db models, for authentication
 const User = require('./../models/user');
 
@@ -34,10 +32,10 @@ app.use(passport.initialize());
 passport.use(
   new JwtStrategy(options, async (payload, done) => {
     try {
-      debug(`the payload object in passport.use: `, payload);
+      console.log(`the payload object in passport.use: `, payload);
       const user = await User.findOne({ username: payload.username }, '-password -username -__v').exec();
 
-      debug(`the user object in passport.use: `, user);
+      console.log(`the user object in passport.use: `, user);
       if (!user) return done(null, false);
 
       // success and make req.user available after passport.authenticate() middlewares chain
@@ -47,6 +45,10 @@ passport.use(
     }
   })
 );
+
+// fake database
+const mongo = require('./mongoConfigTesting');
+mongo();
 
 // handle api request
 const routes = require('./../routes'); // modular
@@ -70,7 +72,7 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // log the error
-  debug(`the error object: `, err);
+  console.log(`the error object: `, err);
 
   // send the error json to client
   res.status(err.status || 500).json({ message: err.message });
