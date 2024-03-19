@@ -26,12 +26,10 @@ const MessageSchema = new Schema(
     // 1 must be null between content and imageLink
     content: {
       type: String,
-      required: true,
     },
 
     imageLink: {
       type: String,
-      required: true,
     },
 
     createdAt: {

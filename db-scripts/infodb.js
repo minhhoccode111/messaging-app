@@ -4,6 +4,9 @@ const Message = require('./../src/models/message');
 const Group = require('./../src/models/group');
 const GroupMember = require('./../src/models/groupMember');
 
+// to access environment variables
+require('dotenv').config(); // this line cause me 30 mins to deBUG
+
 // const debug = require('debug')('custom-debug');
 const debug = (...str) => {
   for (const s of str) {
@@ -24,7 +27,7 @@ async function main() {
   const userNum = await User.countDocuments({}).exec();
   const messageNum = await Message.countDocuments({}).exec();
   const groupNum = await Group.countDocuments({}).exec();
-  const groupMemberNum = await GroupMember.find({}).exec();
+  const groupMemberNum = await GroupMember.countDocuments({}).exec();
   const users = await User.find({}).exec();
   const messages = await Message.find({}).exec();
   const groups = await Group.find({}).exec();

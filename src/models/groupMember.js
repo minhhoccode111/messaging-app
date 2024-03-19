@@ -11,13 +11,11 @@ const GroupMemberSchema = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
     },
 
     group: {
       type: Schema.Types.ObjectId,
       ref: 'Group',
-      required: true,
     },
 
 		// current user is creator of current group

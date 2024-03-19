@@ -4,6 +4,9 @@ const Message = require('./../src/models/message');
 const Group = require('./../src/models/group');
 const GroupMember = require('./../src/models/groupMember');
 
+// to access environment variables
+require('dotenv').config(); // this line cause me 30 mins to deBUG
+
 // working with password
 const bcrypt = require('bcrypt');
 
