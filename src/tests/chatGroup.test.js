@@ -4,6 +4,27 @@ const request = require('supertest');
 // another app because don't want to touch the original
 const app = require('./setup');
 
+xdescribe(`GET PUT /user`, () => {
+  let token;
+
+  // before all authenticate
+  beforeAll(async () => {
+    // create an account
+    await request(app).post('/api/v1/auth/signup').type('form').send({
+      fullname: 'khong dieu kien',
+      username: 'khongdieukien@gmail.com',
+      password: 'Bruh0!0!',
+      'confirm-password': 'Bruh0!0!',
+    });
+
+    // then login to get token
+    const res = await request(app).post('/api/v1/auth/login').type('form').send({ username: 'khongdieukien@gmail.com', password: 'Bruh0!0!' });
+
+    // keep token
+    token = res.body.token;
+  });
+});
+
 xdescribe(`chat group`, () => {
   // get chat groups
   test(`get chat groups`, (done) => {

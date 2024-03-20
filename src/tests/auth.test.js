@@ -92,10 +92,20 @@ xdescribe(`POST /login`, () => {
     // then use the returned token to get authenticated route
     const token = res.body.token;
     // console.log(token);
+
     const resGet = await request(app).get('/api/v1/user').set('Authorization', `Bearer ${token}`);
     expect(resGet.status).toBe(200);
     expect(res.headers['content-type']).toMatch(/json/);
-    // many more but dynamic so we should mock it
+  });
+
+  test(`GET /user need authentication`, async () => {
+    const res = await request(app).get('/api/v1/user');
+    expect(res.status).toBe(401);
+  });
+
+  test(`GET /chat need authentication`, async () => {
+    const res = await request(app).get('/api/v1/chat');
+    expect(res.status).toBe(401);
   });
 
   test(`wrong username`, async () => {

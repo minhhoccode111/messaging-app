@@ -27,28 +27,28 @@ main().catch((err) => debug('some errors occur', err));
 async function main() {
   debug('about to connect to database');
   await mongoose.connect(mongoDB);
-  // const userNum = await User.countDocuments({}).exec();
+  const userNum = await User.countDocuments({}).exec();
   // const messageNum = await Message.countDocuments({}).exec();
   // const groupNum = await Group.countDocuments({}).exec();
   // const groupMemberNum = await GroupMember.find({}).exec();
-  // const users = await User.find({}).exec();
+  const users = await User.find({}).exec();
   // const messages = await Message.find({}).exec();
   // const groups = await Group.find({}).exec();
   // const groupMembers = await GroupMember.find({}).exec();
 
   // do some custom things
 
-  const creators = await GroupMember.find({ isCreator: true }).exec();
-  debug(`the creators be like: `, creators);
+  // const creators = await GroupMember.find({ isCreator: true }).exec();
+  // debug(`the creators be like: `, creators);
 
-  const count = await GroupMember.countDocuments({ isCreator: true }).exec();
-  debug(`count be like: `, count);
+  // const count = await GroupMember.countDocuments({ isCreator: true }).exec();
+  // debug(`count be like: `, count);
 
-  const groups = await Group.find().exec();
-  debug(`the group belike: `, groups);
+  // const groups = await Group.find().exec();
+  // debug(`the group belike: `, groups);
 
-  const countGroups = await Group.countDocuments().exec();
-  debug(`count groups belike: `, countGroups);
+  // const countGroups = await Group.countDocuments().exec();
+  // debug(`count groups belike: `, countGroups);
 
   // do some custom things
 
@@ -56,11 +56,11 @@ async function main() {
   // debug(`posts belike: `, posts);
   // debug(`comments belike: `, comments);
 
-  // debug(`users belike: `, users);
+  debug(`users belike: `, users);
   // debug(`messages belike: `, messages);
   // debug(`groups belike: `, groups);
   // debug(`groupMembers belike: `, groupMembers);
-  // debug(`number of user currently in database: ${userNum}`);
+  debug(`number of user currently in database: ${userNum}`);
   // debug(`number of message currently in database: ${messageNum}`);
   // debug(`number of group currently in database: ${groupNum}`);
   // debug(`number of groupMember currently in database: ${groupMemberNum}`);

@@ -6,27 +6,52 @@ const { body, validationResult } = require('express-validator');
 
 // mongoose models
 const User = require('./../models/user');
-const Message = require('./../models/message');
-const Group = require('./../models/group');
-const GroupMember = require('./../models/groupMember');
 
 // debug
 const debug = require('debug')('xxxxxxxxxxxxxxxxxxxx-debug-xxxxxxxxxxxxxxxxxxxx');
 
-// mongoose to check valid req.params.postid
-const mongoose = require('mongoose');
-
-// get info of current logged user
-module.exports.user_get = asyncHandler(async (req, res, next) => {
-  res.send('user get not implemented');
+// get info of current logged user (retrieve db to log in already)
+module.exports.user_get = asyncHandler(async (req, res) => {
+  res.json(req.user);
 });
 
 // update info of current logged user
-module.exports.user_put = asyncHandler(async (req, res, next) => {
-  res.send('user put not implemented');
-});
+module.exports.user_put = [
+  body('fullname', 'Invalid fullname').trim().notEmpty().escape(),
+  body('bio').trim().escape(),
+  // body('avatar').trim().escape(),
+  body('status', 'Invalid status').custom((value) => {
+    const array = ['online', 'offline', 'busy', 'afk'];
+    if (array.includes(value)) return true;
+    throw new Error('Invalid status');
+  }),
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req).array();
 
-// not implemented
-module.exports.user_delete = asyncHandler(async (req, res, next) => {
-  res.send('user delete not implemented');
-});
+    const oldUser = req.user;
+
+    const { fullname, bio, avatarLink, status, dateOfBirth } = req.body;
+
+    if (!errors.length) {
+      const newUser = new User({
+        ...oldUser.toJSON(),
+        fullname: fullname || oldUser.fullname,
+        bio: bio || oldUser.bio,
+        avatarLink: avatarLink || oldUser.avatarLink,
+        status: status || oldUser.status,
+        dateOfBirth: dateOfBirth || oldUser.dateOfBirth,
+        _id: oldUser._id,
+        updatedAt: new Date(),
+      });
+
+      debug(`the user after updating belike: `, newUser);
+
+      await User.findByIdAndUpdate(oldUser._id, newUser);
+
+      return res.send(newUser);
+    }
+
+    // invalid data
+    res.sendStatus(400);
+  }),
+];

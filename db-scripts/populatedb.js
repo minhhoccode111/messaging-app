@@ -64,7 +64,7 @@ async function userCreate(index, username, pw) {
     dateOfBirth: faker.date.past(),
     bio: faker.lorem.paragraph(),
     status: faker.helpers.arrayElement(['online', 'offline', 'busy', 'afk']),
-    avatar: faker.image.avatar(),
+    avatarLink: faker.image.avatar(),
     createdAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
   };
@@ -174,7 +174,7 @@ async function groupCreate(index) {
     name: faker.person.jobTitle(),
     public: faker.datatype.boolean(0.5),
     bio: faker.lorem.paragraph(),
-    avatar: faker.image.avatar(),
+    avatarLink: faker.image.avatar(),
     createdAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
   };
