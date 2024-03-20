@@ -38,6 +38,18 @@ async function main() {
 
   // do some custom things
 
+  const creators = await GroupMember.find({ isCreator: true }).exec();
+  debug(`the creators be like: `, creators);
+
+  const count = await GroupMember.countDocuments({ isCreator: true }).exec();
+  debug(`count be like: `, count);
+
+  const groups = await Group.find().exec();
+  debug(`the group belike: `, groups);
+
+  const countGroups = await Group.countDocuments().exec();
+  debug(`count groups belike: `, countGroups);
+
   // do some custom things
 
   // debug(`users belike: `, users);

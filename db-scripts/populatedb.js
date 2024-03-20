@@ -40,10 +40,14 @@ async function main() {
   custom('about to connect to database');
   await mongoose.connect(mongoDB);
   custom('about to insert some documents');
-  await createUsers(); // 20
-  await createGroups(); // 40
-  await createGroupMembers(); // 40
-  await createMessages(); // 140
+  // first create all users
+  await createUsers();
+  // then create all groups, a random user will be group's creator
+  await createGroups();
+  // then create all messages, a random user send to another user or group
+  await createMessages();
+  // then add every message's sender to a group
+  await createGroupMembers();
   custom('finishes insert documents');
   await mongoose.connection.close();
   custom('connection closed');
@@ -107,25 +111,49 @@ async function messageCreate(index, sender, userReceive, groupReceive, content, 
 
 async function createMessages() {
   try {
-    // create 200 messages
-    for (let i = 0; i < 200; i++) {
+    // create 200 random messages
+    for (var i = 0; i < 200; i++) {
       // get two different users in case sender is the same userReceive
       const twoUsers = faker.helpers.arrayElements(users, 2);
       const groupReceive = faker.helpers.arrayElement(groups);
-      const randomReceiver = faker.helpers.arrayElement([true, false]);
+      const randomReceiver = faker.datatype.boolean(0.5);
 
+      // random content or image
       const content = faker.lorem.paragraph();
       const image = faker.image.avatar();
-      const randomContent = faker.helpers.arrayElement([true, false]);
+      const randomContent = faker.datatype.boolean(0.5);
 
       // sender will always first user
       await messageCreate(
         i,
         twoUsers[0],
-        // choose one
+        // will send to another user or group
         randomReceiver ? twoUsers[1] : null,
         randomReceiver ? null : groupReceive,
-        // choose one
+        // will be text content or image link
+        randomContent ? content : null,
+        randomContent ? null : image
+      );
+    }
+
+    // loop through every group to make the creator of that group send a message to it
+    // to make sure when create groupMember
+    // continue from where i left
+    for (let j = i, jLen = groups.length + i; j < jLen; j++) {
+      // random content or image
+      const content = faker.lorem.paragraph();
+      const image = faker.image.avatar();
+      const randomContent = faker.datatype.boolean(0.5);
+
+      await messageCreate(
+        j,
+        // sender will be group's creator
+        groups[j - i].creator,
+        // null userReceive
+        null,
+        //  groupReceive is the current group
+        groups[j - i],
+        // will be text content or image link
         randomContent ? content : null,
         randomContent ? null : image
       );
@@ -141,9 +169,10 @@ async function createMessages() {
 
 async function groupCreate(index) {
   const groupDetail = {
-    creator: faker.helpers.arrayElement(users), // pick random a user
+    // pick random a user to be group's creator
+    creator: faker.helpers.arrayElement(users),
     name: faker.person.jobTitle(),
-    public: faker.helpers.arrayElement([true, false]),
+    public: faker.datatype.boolean(0.5),
     bio: faker.lorem.paragraph(),
     avatar: faker.image.avatar(),
     createdAt: faker.date.recent(),
@@ -191,21 +220,31 @@ async function createGroupMembers() {
   try {
     // loop through each group to add members to it
     for (let i = 0; i < groups.length; i++) {
-      // then pick random members from users to create an array
-      const randomUsers = faker.helpers.arrayElements(users, { min: 3, max: 5 });
+      // and creator store when group's created is also member
+      const creator = groups[i].creator;
 
-      // pick a random user to be the creator of the group
-      const creator = faker.helpers.arrayElement(randomUsers);
+      // a Set to store current group's member
+      const members = new Set();
 
-      // loop through each member to create reference
-      for (let j = 0; j < randomUsers.length; j++) {
-        await groupMemberCreate(
-          i,
-          randomUsers[j],
-          groups[i],
-          // if current user is the group's creator
-          randomUsers[j]._id === creator._id
-        );
+      // members that sent messages to this group will be a member
+      for (let j = 0, len = messages.length; j < len; j++) {
+        // current group is message's groupReceive, and not added yet
+        if (groups[i] === messages[j].groupReceive && !members.has(messages[j].sender)) {
+          // add sender to members Set, so we don't add anyone twice
+          members.add(messages[j].sender);
+
+          // create group member with the sender
+          await groupMemberCreate(
+            // index of this don't matter
+            i + j,
+            // user will be the one who sent message
+            messages[j].sender,
+            // group will be current group
+            groups[i],
+            // if current user is the group's creator
+            messages[j].sender._id === creator._id
+          );
+        }
       }
     }
 
