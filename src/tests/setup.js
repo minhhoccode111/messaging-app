@@ -32,10 +32,10 @@ app.use(passport.initialize());
 passport.use(
   new JwtStrategy(options, async (payload, done) => {
     try {
-      console.log(`the payload object in passport.use: `, payload);
+      // console.log(`the payload object in passport.use: `, payload);
       const user = await User.findOne({ username: payload.username }, '-password -username -__v').exec();
 
-      console.log(`the user object in passport.use: `, user);
+      // console.log(`the user object in passport.use: `, user);
       if (!user) return done(null, false);
 
       // success and make req.user available after passport.authenticate() middlewares chain
@@ -58,9 +58,11 @@ const routes = require('./../routes'); // modular
 // things about auth
 app.use('/api/v1/auth', routes.auth);
 // things about user, need authenticate
-app.use('/api/v1/user', routes.user);
+// app.use('/api/v1/user', routes.user);
+app.use('/api/v1/user', passport.authenticate('jwt', { session: false }), routes.user);
 // things about chat, need authenticate
-app.use('/api/v1/chat', routes.chat);
+// app.use('/api/v1/chat', routes.chat);
+app.use('/api/v1/chat', passport.authenticate('jwt', { session: false }), routes.user);
 
 // if no route handle the request mean it a 404
 app.use(function (req, res, next) {
