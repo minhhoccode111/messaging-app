@@ -45,4 +45,16 @@ router.put('/groups/:groupid', ChatGroupController.chat_group_put);
 // router.put('/groups/:groupid/:messageid', ChatGroupController.chat_group_message_put);
 // router.delete('/groups/:groupid/:messageid', ChatGroupController.chat_group_message_delete);
 
+// get all group's members
+router.get('/groups/:groupid/members', ChatGroupController.chat_group_all_members_get);
+
+// post a member to a group
+router.post('/groups/:groupid/members', ChatGroupController.chat_group_all_members_post);
+
+// delete a member from a group (leave or get kicked)
+router.delete('/groups/:groupid/members/:memberid', ChatGroupController.chat_group_member_delete);
+
+// not implement edit a member in a group (authorization in group)
+// router.put('/groups/:groupid/members/:memberid', ChatGroupController.chat_group_member_put);
+
 module.exports = router;

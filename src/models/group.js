@@ -32,6 +32,7 @@ const GroupSchema = new Schema(
     bio: {
       type: String,
       maxLength: 500,
+      required: true,
     },
 
     avatarLink: {

@@ -46,3 +46,20 @@ module.exports.chat_group_delete = asyncHandler(async (req, res, next) => {
 module.exports.chat_group_put = asyncHandler(async (req, res, next) => {
   res.send('chat group put: not implemented');
 });
+
+
+// get all group's members
+module.exports.chat_group_all_members_get = asyncHandler(async (req, res, next) => {
+  res.send('chat group all members get: not implemented');
+});
+
+// post a member to a group
+module.exports.chat_group_all_members_post = asyncHandler(async (req, res, next) => {
+  res.send('chat group all members post: not implemented');
+});
+
+// delete a member from a group (leave or get kicked)
+module.exports.chat_group_member_delete = asyncHandler(async (req, res, next) => {
+  res.send('chat group all members post: not implemented');
+});
+
