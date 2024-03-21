@@ -40,12 +40,12 @@ async function main() {
   custom('about to connect to database');
   await mongoose.connect(mongoDB);
   custom('about to insert some documents');
-  // first create all users
-  await createUsers();
-  // then create all groups, a random user will be group's creator
-  await createGroups();
-  // then create all messages, a random user send to another user or group
-  await createMessages();
+  // first create 20 users
+  await createUsers(20, 'asd');
+  // then create 40 groups, a random user will be group's creator
+  await createGroups(40);
+  // then create 200 messages, a random user send to another user or group
+  await createMessages(200);
   // then add every message's sender to a group
   await createGroupMembers();
   custom('finishes insert documents');
@@ -76,12 +76,12 @@ async function userCreate(index, username, pw) {
   custom(`adding user: ${user} with raw password: ${pw} at index: ${index}`);
 }
 
-async function createUsers() {
-  custom(PASSWORD);
+async function createUsers(number, username = 'asd') {
+  custom(PASSWORD); // asd
   try {
     // create 20 users
-    for (let i = 0; i < 20; i++) {
-      await userCreate(i, 'asd' + i, PASSWORD);
+    for (let i = 0; i < number; i++) {
+      await userCreate(i, username + i, PASSWORD);
     }
 
     const count = await User.countDocuments({}).exec();
@@ -92,7 +92,7 @@ async function createUsers() {
   }
 }
 
-async function messageCreate(index, sender, userReceive, groupReceive, content, imageLink) {
+module.exports = async function messageCreate(index, sender, userReceive, groupReceive, content, imageLink) {
   const messageDetail = {
     sender,
     userReceive,
@@ -107,12 +107,12 @@ async function messageCreate(index, sender, userReceive, groupReceive, content, 
 
   messages[index] = message;
   custom(`adding message: ${message}`);
-}
+};
 
-async function createMessages() {
+module.exports = async function createMessages(number) {
   try {
     // create 200 random messages
-    for (var i = 0; i < 200; i++) {
+    for (var i = 0; i < number; i++) {
       // get two different users in case sender is the same userReceive
       const twoUsers = faker.helpers.arrayElements(users, 2);
       const groupReceive = faker.helpers.arrayElement(groups);
@@ -165,9 +165,9 @@ async function createMessages() {
     custom(`the error is: `, error);
     throw error;
   }
-}
+};
 
-async function groupCreate(index) {
+module.exports = async function groupCreate(index) {
   const groupDetail = {
     // pick random a user to be group's creator
     creator: faker.helpers.arrayElement(users),
@@ -184,12 +184,12 @@ async function groupCreate(index) {
 
   groups[index] = group;
   custom(`adding group: ${group}`);
-}
+};
 
-async function createGroups() {
+module.exports = async function createGroups(number) {
   try {
     // create 40 groups
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < number; i++) {
       await groupCreate(i);
     }
 
@@ -199,9 +199,9 @@ async function createGroups() {
     custom(`the error is: `, error);
     throw error;
   }
-}
+};
 
-async function groupMemberCreate(index, user, group, isCreator) {
+module.exports = async function groupMemberCreate(index, user, group, isCreator) {
   const groupMemberDetail = {
     user,
     group,
@@ -214,9 +214,9 @@ async function groupMemberCreate(index, user, group, isCreator) {
 
   groupMembers[index] = groupMember;
   custom(`adding group member: ${groupMember}`);
-}
+};
 
-async function createGroupMembers() {
+module.exports = async function createGroupMembers() {
   try {
     // loop through each group to add members to it
     for (let i = 0; i < groups.length; i++) {
@@ -254,4 +254,4 @@ async function createGroupMembers() {
     custom(`the error is: `, error);
     throw error;
   }
-}
+};
