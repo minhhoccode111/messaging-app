@@ -7,7 +7,7 @@
     "node": "21.x"
   },
   "scripts": {
-    "test": "jest test --runInBand --detectOpenHandles --watch",
+    "test": "jest test",
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "server": "DEBUG=* npm run dev"
