@@ -1,38 +1,9 @@
-// add default data in database
-const bcrypt = require('bcrypt');
-
-// to access environment variables
-require('dotenv').config(); // this line cause me 30 mins to deBUG
-
-const User = require('./../src/models/user');
-const Message = require('./../src/models/message');
-const Group = require('./../src/models/group');
-const GroupMember = require('./../src/models/groupMember');
-
-// const custom = require('debug')('debug-custom');
-const custom = (...str) => {
-  for (const s of str) {
-    console.log(s);
-  }
-};
-
 const mongoDB = process.argv.slice(2)[0] || process.env.DEVELOPMENT_MONGO;
 
-custom(mongoDB);
-
-const users = [];
-const messages = [];
-const groups = [];
-const groupMembers = [];
+console.log(mongoDB);
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
-
-// fake database documents
-const { faker } = require('@faker-js/faker');
-
-const PASSWORD = process.env.USERS_PASSWORD; // asd
-const SALT = Number(process.env.SALT); // 10
 
 main().catch((err) => custom(err));
 
@@ -52,6 +23,35 @@ async function main() {
   await mongoose.connection.close();
   custom('connection closed');
 }
+
+// fake database documents
+const { faker } = require('@faker-js/faker');
+
+// add default data in database
+const bcrypt = require('bcrypt');
+
+// to access environment variables
+require('dotenv').config(); // this line cause me 30 mins to deBUG
+
+const User = require('./../src/models/user');
+const Message = require('./../src/models/message');
+const Group = require('./../src/models/group');
+const GroupMember = require('./../src/models/groupMember');
+
+// const custom = require('debug')('debug-custom');
+const custom = (...str) => {
+  for (const s of str) {
+    console.log(s);
+  }
+};
+
+const users = [];
+const messages = [];
+const groups = [];
+const groupMembers = [];
+
+const PASSWORD = process.env.USERS_PASSWORD; // asd
+const SALT = Number(process.env.SALT); // 10
 
 async function userCreate(index, username, pw) {
   // password still get hashed
@@ -109,7 +109,7 @@ async function messageCreate(index, sender, userReceive, groupReceive, content, 
   custom(`adding message: ${message}`);
 }
 
- async function createMessages(number) {
+async function createMessages(number) {
   try {
     // create 200 random messages
     for (var i = 0; i < number; i++) {
@@ -165,9 +165,9 @@ async function messageCreate(index, sender, userReceive, groupReceive, content, 
     custom(`the error is: `, error);
     throw error;
   }
-};
+}
 
-module.exports = async function groupCreate(index) {
+async function groupCreate(index) {
   const groupDetail = {
     // pick random a user to be group's creator
     creator: faker.helpers.arrayElement(users),
@@ -184,9 +184,9 @@ module.exports = async function groupCreate(index) {
 
   groups[index] = group;
   custom(`adding group: ${group}`);
-};
+}
 
-module.exports = async function createGroups(number) {
+async function createGroups(number) {
   try {
     // create 40 groups
     for (let i = 0; i < number; i++) {
@@ -199,9 +199,9 @@ module.exports = async function createGroups(number) {
     custom(`the error is: `, error);
     throw error;
   }
-};
+}
 
-module.exports = async function groupMemberCreate(index, user, group, isCreator) {
+async function groupMemberCreate(index, user, group, isCreator) {
   const groupMemberDetail = {
     user,
     group,
@@ -214,9 +214,9 @@ module.exports = async function groupMemberCreate(index, user, group, isCreator)
 
   groupMembers[index] = groupMember;
   custom(`adding group member: ${groupMember}`);
-};
+}
 
-module.exports = async function createGroupMembers() {
+async function createGroupMembers() {
   try {
     // loop through each group to add members to it
     for (let i = 0; i < groups.length; i++) {
@@ -254,4 +254,4 @@ module.exports = async function createGroupMembers() {
     custom(`the error is: `, error);
     throw error;
   }
-};
+}
