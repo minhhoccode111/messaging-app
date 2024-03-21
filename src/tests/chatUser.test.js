@@ -54,6 +54,8 @@ const app = require('./setup');
 
 describe(`/chat/users`, () => {
   let token;
+  let user;
+  let users;
 
   // before all authenticate
   beforeAll(async () => {
@@ -72,6 +74,9 @@ describe(`/chat/users`, () => {
       password: 'Bruh0!0!',
     });
 
+    // keep requested user's info
+    user = res.body.user;
+
     // keep token
     token = res.body.token;
 
@@ -86,26 +91,153 @@ describe(`/chat/users`, () => {
         // request with khongdieukien account
         .set('Authorization', `Bearer ${token}`);
 
+      // save users for test messages routes
+      users = res.body.users;
+
       expect(res.status).toBe(200);
       expect(res.headers['content-type']).toMatch(/json/);
       // console.log(res.body);
-      expect(res.body.users.length).toBe(3); // 3 accounts
+      expect(users.length).toBe(3); // 3 accounts
       // security
-      expect(res.body.users.every((acc) => acc.username)).toBe(false);
-      expect(res.body.users.every((acc) => acc.password)).toBe(false);
+      expect(users.every((acc) => acc.username)).toBe(false);
+      expect(users.every((acc) => acc.password)).toBe(false);
       // necessary info required
-      expect(res.body.users.every((acc) => acc.fullname)).toBe(true);
-      expect(res.body.users.every((acc) => acc._id)).toBe(true);
-      expect(res.body.users.every((acc) => acc.id)).toBe(true);
-      expect(res.body.users.every((acc) => acc.createdAt)).toBe(true);
+      expect(users.every((acc) => acc.fullname)).toBe(true);
+      expect(users.every((acc) => acc._id)).toBe(true);
+      expect(users.every((acc) => acc.id)).toBe(true);
+      expect(users.every((acc) => acc.createdAt)).toBe(true);
     });
   });
 
-  describe(`GET /chat/users/:userid - current user get all messages with another user`, () => {
-    //
-  });
+  describe(`/chat/users/:userid`, () => {
+    test(`GET /chat/users/:userid - wrong id return 404`, async () => {
+      const res = await request(app)
+        .get(`/api/v1/chat/users/someRandomString`)
+        // request with khongdieukien account
+        .set('Authorization', `Bearer ${token}`);
 
-  describe(`POST /chat/users/:userid - current user post a message with another user`, () => {
-    //
+      expect(res.status).toBe(404);
+    });
+
+    test(`GET /chat/users/:userid - current user get all messages with another user`, async () => {
+      const res = await request(app)
+        .get(`/api/v1/chat/users/${users[0].id}`)
+        // request with khongdieukien account
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toMatch(/json/);
+
+      // match sender and receiver
+      expect(res.body.messages.length).toBe(0);
+      expect(res.body.requestedUser).toEqual(user);
+      expect(res.body.receivedUser).toEqual(users[0]);
+    });
+
+    const content = faker.lorem.paragraph();
+    const imageLink = faker.image.avatar();
+
+    // console.log(`imageLink belike: `, imageLink);
+    // console.log(`content belike: `, content);
+
+    test(`POST /chat/users/:userid - 400 Bad request content and imageLink both empty`, async () => {
+      const res = await request(app)
+        .post(`/api/v1/chat/users/${users[0].id}`)
+        // request with khongdieukien account
+        .set('Authorization', `Bearer ${token}`)
+        .type('form')
+        .send({});
+
+      expect(res.status).toBe(400);
+    });
+
+    test(`POST /chat/users/:userid - 400 Bad request content and imageLink both exist`, async () => {
+      const res = await request(app)
+        .post(`/api/v1/chat/users/${users[0].id}`)
+        // request with khongdieukien account
+        .set('Authorization', `Bearer ${token}`)
+        .type('form')
+        .send({ imageLink, content });
+
+      expect(res.status).toBe(400);
+    });
+
+    test(`POST /chat/users/:userid - 404 Not found user`, async () => {
+      const res = await request(app)
+        .post(`/api/v1/chat/users/someRandomString`)
+        // request with khongdieukien account
+        .set('Authorization', `Bearer ${token}`)
+        .type('form')
+        .send({ imageLink });
+
+      expect(res.status).toBe(404);
+    });
+
+    test(`POST /chat/users/:userid - send two message`, async () => {
+      const resImage = await request(app)
+        .post(`/api/v1/chat/users/${users[0].id}`)
+        // request with khongdieukien account
+        .set('Authorization', `Bearer ${token}`)
+        .type('form')
+        .send({ imageLink });
+
+      const resContent = await request(app)
+        .post(`/api/v1/chat/users/${users[0].id}`)
+        // request with khongdieukien account
+        .set('Authorization', `Bearer ${token}`)
+        .type('form')
+        .send({ content });
+
+      // console.log(resImage);
+
+      // TODO fix this why it's a 400?
+      expect(resImage.status).toBe(200);
+      expect(resImage.headers['content-type']).toMatch(/json/);
+      expect(resContent.status).toBe(200);
+      expect(resContent.headers['content-type']).toMatch(/json/);
+
+      // match sender and receiver
+      expect(resImage.body.requestedUser).toEqual(user);
+      expect(resContent.body.requestedUser).toEqual(user);
+      expect(resImage.body.receivedUser).toEqual(users[0]);
+      expect(resContent.body.receivedUser).toEqual(users[0]);
+
+      // messages being sent back to client to display, sort by time
+      expect(resImage.body.messages.length).toBe(1);
+      expect(resContent.body.messages.length).toBe(2);
+
+      expect(resContent.messages[0].imageLink).toBeTruthy();
+      expect(resContent.messages[0].content).toBeFalsy();
+      expect(resContent.messages[1].imageLink).toBeFalsy();
+      expect(resContent.messages[1].content).toBeTruthy();
+    });
+
+    test(`GET /chat/users/:userid - get all messages with users[0] now return 2 messages`, async () => {
+      const res = await request(app)
+        .get(`/api/v1/chat/users/${users[0].id}`)
+        // request with khongdieukien account
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toMatch(/json/);
+
+      // match sender and receiver
+      expect(res.body.messages.length).toBe(2);
+      expect(res.body.requestedUser).toEqual(user);
+      expect(res.body.receivedUser).toEqual(users[0]);
+
+      expect(messages[0].userReceive === users[0].id).toBeTruthy();
+      expect(messages[1].userReceive === users[0].id).toBeTruthy();
+
+      expect(messages[0].sender === user.id).toBeTruthy();
+      expect(messages[1].sender === user.id).toBeTruthy();
+
+      // 1 content message and 1 image message, sort by time
+      const messages = res.body.messages;
+      expect(messages[0].imageLink).toBeTruthy();
+      expect(messages[0].content).toBeFalsy();
+      expect(messages[1].imageLink).toBeFalsy();
+      expect(messages[1].content).toBeTruthy();
+    });
   });
 });

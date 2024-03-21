@@ -92,7 +92,7 @@ async function createUsers(number, username = 'asd') {
   }
 }
 
-module.exports = async function messageCreate(index, sender, userReceive, groupReceive, content, imageLink) {
+async function messageCreate(index, sender, userReceive, groupReceive, content, imageLink) {
   const messageDetail = {
     sender,
     userReceive,
@@ -107,9 +107,9 @@ module.exports = async function messageCreate(index, sender, userReceive, groupR
 
   messages[index] = message;
   custom(`adding message: ${message}`);
-};
+}
 
-module.exports = async function createMessages(number) {
+ async function createMessages(number) {
   try {
     // create 200 random messages
     for (var i = 0; i < number; i++) {

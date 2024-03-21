@@ -7,8 +7,6 @@ const { body, validationResult } = require('express-validator');
 // mongoose models
 const User = require('./../models/user');
 const Message = require('./../models/message');
-const Group = require('./../models/group');
-const GroupMember = require('./../models/groupMember');
 
 // debug
 const debug = require('debug')('xxxxxxxxxxxxxxxxxxxx-debug-xxxxxxxxxxxxxxxxxxxx');
@@ -26,10 +24,46 @@ module.exports.chat_all_user_get = asyncHandler(async (req, res, next) => {
 
 // get conversation with a specific user
 module.exports.chat_user_get = asyncHandler(async (req, res, next) => {
-  res.send('chat user get not implemented');
+  // check valid mongoose objectid before retrieve db
+  const isValidId = mongoose.isValidObjectId(req.params.userid);
+  if (!isValidId) return res.sendStatus(404);
+
+  // check if user we want really exists
+  const user = await User.findById(req.params.userid, '-password -username -__v').exec();
+  if (user === null) return res.sendStatus(404);
+
+  // get all messages between requested user vs that user
+  const messages = await Message.find({ sender: req.user, userReceive: user }).sort({ createdAt: 1 }).exec();
+
+  res.json({ requestedUser: req.user, receivedUser: user, messages });
 });
 
 // post a message with a specific user
-module.exports.chat_user_post = asyncHandler(async (req, res, next) => {
-  res.send('chat user post not implemented');
-});
+module.exports.chat_user_post = [
+  body('content').trim().escape(),
+  body('imageLink').trim().escape(),
+  asyncHandler(async (req, res, next) => {
+    // check valid mongoose objectid before retrieve db
+    const isValidId = mongoose.isValidObjectId(req.params.userid);
+    if (!isValidId) return res.sendStatus(404);
+
+    // check if user we want really exists
+    const user = await User.findById(req.params.userid, '-password -username -__v').exec();
+    if (user === null) return res.sendStatus(404);
+
+    const errors = validationResult(req).array();
+
+    if (req.content && req.imageLink) errors.push({ msg: `Content and imageLink cannot be both existed` });
+    if (!req.content && !req.imageLink) errors.push({ msg: `Content and imageLink cannot be both undefined` });
+
+    console.log(errors);
+    console.log(req.body);
+
+    if (!errors.length) {
+      return res.json('success');
+    }
+
+    // invalid data
+    return res.sendStatus(400);
+  }),
+];
