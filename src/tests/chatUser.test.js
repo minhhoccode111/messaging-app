@@ -206,10 +206,10 @@ describe(`/chat/users`, () => {
       expect(resImage.body.messages.length).toBe(1);
       expect(resContent.body.messages.length).toBe(2);
 
-      expect(resContent.messages[0].imageLink).toBeTruthy();
-      expect(resContent.messages[0].content).toBeFalsy();
-      expect(resContent.messages[1].imageLink).toBeFalsy();
-      expect(resContent.messages[1].content).toBeTruthy();
+      expect(resContent.body.messages[0].imageLink).toBeTruthy();
+      expect(resContent.body.messages[0].content).toBeFalsy();
+      expect(resContent.body.messages[1].imageLink).toBeFalsy();
+      expect(resContent.body.messages[1].content).toBeTruthy();
     });
 
     test(`GET /chat/users/:userid - get all messages with users[0] now return 2 messages`, async () => {
@@ -226,6 +226,7 @@ describe(`/chat/users`, () => {
       expect(res.body.requestedUser).toEqual(user);
       expect(res.body.receivedUser).toEqual(users[0]);
 
+      const messages = res.body.messages;
       expect(messages[0].userReceive === users[0].id).toBeTruthy();
       expect(messages[1].userReceive === users[0].id).toBeTruthy();
 
@@ -233,7 +234,6 @@ describe(`/chat/users`, () => {
       expect(messages[1].sender === user.id).toBeTruthy();
 
       // 1 content message and 1 image message, sort by time
-      const messages = res.body.messages;
       expect(messages[0].imageLink).toBeTruthy();
       expect(messages[0].content).toBeFalsy();
       expect(messages[1].imageLink).toBeFalsy();

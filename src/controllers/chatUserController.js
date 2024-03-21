@@ -63,7 +63,25 @@ module.exports.chat_user_post = [
     // console.log(errors);
 
     if (!errors.length) {
-      return res.json('success');
+      const { imageLink, content } = req.body;
+
+      const message = new Message({
+        sender: req.user,
+        userReceive: user,
+        group: null,
+        content,
+        imageLink,
+      });
+
+      await message.save();
+
+      const messages = await Message.find().sort({ createdAt: 1 }).exec();
+
+      return res.json({
+        requestedUser: req.user,
+        receivedUser: user,
+        messages,
+      });
     }
 
     // invalid data
