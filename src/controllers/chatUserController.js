@@ -41,7 +41,14 @@ module.exports.chat_user_get = asyncHandler(async (req, res, next) => {
 // post a message with a specific user
 module.exports.chat_user_post = [
   body('content').trim().escape(),
-  body('imageLink').trim().escape(),
+  body('imageLink')
+    .trim()
+    .escape()
+    .custom((value, { req }) => {
+      if (req.body.content && value) throw new Error(`Content and imageLink cannot be both existed`);
+      if (!req.body.content && !value) throw new Error(`Content and imageLink cannot be both undefined`);
+      return true;
+    }),
   asyncHandler(async (req, res, next) => {
     // check valid mongoose objectid before retrieve db
     const isValidId = mongoose.isValidObjectId(req.params.userid);
@@ -53,11 +60,7 @@ module.exports.chat_user_post = [
 
     const errors = validationResult(req).array();
 
-    if (req.content && req.imageLink) errors.push({ msg: `Content and imageLink cannot be both existed` });
-    if (!req.content && !req.imageLink) errors.push({ msg: `Content and imageLink cannot be both undefined` });
-
-    console.log(errors);
-    console.log(req.body);
+    // console.log(errors);
 
     if (!errors.length) {
       return res.json('success');
