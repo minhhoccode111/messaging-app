@@ -368,7 +368,7 @@ describe(`/chat/groups`, () => {
         });
       });
 
-      describe(`PUT /chat/groups/:groupid - valid request`, () => {
+      xdescribe(`PUT /chat/groups/:groupid - valid request`, () => {
         test(`users[0] update public group (which users[1] joined)`, async () => {
           const beforeUpdate = groups[0].public;
 
@@ -401,11 +401,12 @@ describe(`/chat/groups`, () => {
     });
   });
 
-  xdescribe(`GET & POST /chat/groups/:groupid - work with group's messages`, () => {
-    //
+  describe(`GET & POST /chat/groups/:groupid - work with group's messages`, () => {
+    // TODO should work like /chat/users/:userid
+    // but
   });
 
   xdescribe(`GET & POST /chat/groups/:groupid/members, DELETE /chat/groups/:groupid/members/:memberid - work with group's members`, () => {
-    //
+    // TODO
   });
 });

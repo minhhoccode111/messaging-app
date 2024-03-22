@@ -67,8 +67,16 @@ module.exports.chat_all_group_post = [
     if (!errors.length) {
       const group = new Group({ name, bio, avatarLink, public: req.body.public === 'true', creator: req.user });
 
-      group.save(); // can throw if group name exists
-      //
+      group.save();
+
+      // BUG
+      // create a reference between create and the group (first member)
+      const creatorReference = new GroupMember({
+        user: req.user,
+        group,
+        isCreator: true,
+      });
+      await creatorReference.save();
 
       return res.json({ requestedUser: req.user, createdGroup: group });
     }
@@ -81,7 +89,39 @@ module.exports.chat_all_group_post = [
 
 // get conversation with a specific group
 module.exports.chat_group_get = asyncHandler(async (req, res, next) => {
-  res.send('chat group get: not implemented');
+  // check valid mongoose objectid before retrieve db
+  const isValidId = mongoose.isValidObjectId(req.params.groupid);
+  if (!isValidId) return res.sendStatus(404);
+
+  // check if group we want really exists, populate all fields of group's creator
+  const group = await Group.findById(req.params.groupid).populate('creator').exec();
+  if (group === null) return res.sendStatus(404);
+
+  // get all references of members in this group
+  const groupMembers = await GroupMember.find({ group }).exec();
+
+  // GroupMember to find reference between this current logged in user vs the group (check member and also creator at the same time)
+  const userInGroupMembers = await GroupMember.findOne({ user: req.user, group }).exec();
+
+  // current logged in user joined group or not
+  const canReadMessages = userInGroupMembers !== null;
+
+  let messages;
+
+  if (canReadMessages) {
+    messages = await Message.find().exec();
+  }
+  //
+  else {
+    messages = [];
+  }
+
+  return (
+    res
+      // base on user joined group or not
+      .status(canReadMessages ? 200 : 403)
+      .json({ requestedUser: req.user, receivedGroup: group, messages, groupMembers })
+  );
 });
 
 // post a message with a specific group
