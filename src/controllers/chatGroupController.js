@@ -95,7 +95,7 @@ module.exports.chat_group_delete = asyncHandler(async (req, res, next) => {
   const isValidId = mongoose.isValidObjectId(req.params.groupid);
   if (!isValidId) return res.sendStatus(404);
 
-  // check if user we want really exists
+  // check if group we want really exists
   const group = await Group.findById(req.params.groupid, '_id').populate('creator', '_id').exec();
   if (group === null) return res.sendStatus(404);
 
@@ -117,9 +117,53 @@ module.exports.chat_group_delete = asyncHandler(async (req, res, next) => {
 });
 
 // update a specific group (current logged in user is group's creator)
-module.exports.chat_group_put = asyncHandler(async (req, res, next) => {
-  res.send('chat group put: not implemented');
-});
+module.exports.chat_group_put = [
+  body(`name`, `Group name should be between 8 and 60 characters.`).isLength({ min: 8, max: 60 }).trim().escape(),
+  body(`bio`, `Group bio should be between 1 and 260 characters.`).isLength({ min: 1, max: 260 }).trim().escape(),
+  asyncHandler(async (req, res, next) => {
+    // check valid mongoose objectid before retrieve db
+    const isValidId = mongoose.isValidObjectId(req.params.groupid);
+    if (!isValidId) return res.sendStatus(404);
+
+    // check if group we want really exists
+    const oldGroup = await Group.findById(req.params.groupid, '_id name createdAt').populate('creator', '_id').exec();
+    if (oldGroup === null) return res.sendStatus(404);
+
+    let errors = validationResult(req).array();
+
+    const { name, bio, avatarLink } = req.body;
+
+    // in case group name exists and not belong to oldGroup
+    const countGroupName = await Group.countDocuments({ name }).exec();
+    if (countGroupName > 0 && oldGroup.name !== name) errors.push({ msg: `Group name exists.` });
+
+    // forbidden current logged in user try to update group not own
+    if (oldGroup.creator.id !== req.user.id) return res.sendStatus(403);
+
+    if (!errors.length) {
+      const newGroup = new Group({
+        name,
+        bio,
+        avatarLink,
+        public: req.body.public === 'true',
+        creator: req.user,
+        updatedAt: new Date(),
+        createdAt: oldGroup.createdAt, // keep
+        _id: oldGroup._id, // keep
+      });
+
+      // update the group
+      await Group.findByIdAndUpdate(req.params.groupid, newGroup);
+
+      return res.json({ requestedUser: req.user, updatedGroup: newGroup });
+    }
+
+    // turn to array of string
+    errors = errors.reduce((total, current) => [...total, current.msg], []);
+
+    return res.status(400).json({ errors });
+  }),
+];
 
 // get all group's members
 module.exports.chat_group_all_members_get = asyncHandler(async (req, res, next) => {

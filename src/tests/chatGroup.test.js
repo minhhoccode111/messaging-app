@@ -294,9 +294,110 @@ describe(`/chat/groups`, () => {
         });
       });
 
-      describe(`PUT /chat/groups/:groupid - invalid request`, () => {});
+      xdescribe(`PUT /chat/groups/:groupid - invalid request`, () => {
+        test(`not group's creator`, async () => {
+          const res = await request(app)
+            .put(`/api/v1/chat/groups/${groups[1].public._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
 
-      xdescribe(`PUT /chat/groups/:groupid - valid request`, () => {});
+          // forbidden
+          expect(res.status).toBe(403);
+        });
+
+        test(`group not exists`, async () => {
+          const res = await request(app)
+            .put(`/api/v1/chat/groups/someRandomString`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          // forbidden
+          expect(res.status).toBe(404);
+        });
+
+        test(`invalid group name`, async () => {
+          const res = await request(app)
+            .put(`/api/v1/chat/groups/${groups[1].public._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`)
+            .type('form')
+            .send({ name: 'length7', public: 'true', bio: 'khong dieu kien' });
+          expect(res.status).toBe(400);
+
+          const res1 = await request(app)
+            .put(`/api/v1/chat/groups/${groups[1].public._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`)
+            .type('form')
+            .send({ name: 'someStringLongerThan60'.padStart(61, 'x'), public: 'true', bio: 'khong dieu kien' });
+
+          expect(res1.status).toBe(400);
+        });
+
+        test(`group name already existed`, async () => {
+          const res2 = await request(app)
+            .put(`/api/v1/chat/groups/${groups[1].public._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`)
+            .type('form')
+            // group name exists
+            .send({ name: 'group1 private', public: 'true', bio: 'this is a valid bio' });
+
+          expect(res2.status).toBe(400);
+          expect(res2.body.errors).toContain('Group name exists.');
+        });
+
+        test(`invalid group bio`, async () => {
+          const res = await request(app)
+            .put(`/api/v1/chat/groups/${groups[1].public._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`)
+            .type('form')
+            .send({ name: 'length08', public: 'false', bio: '' });
+
+          expect(res.status).toBe(400);
+
+          const res1 = await request(app)
+            .put(`/api/v1/chat/groups/${groups[1].public._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`)
+            .type('form')
+            .send({ name: 'length08', public: 'false', bio: 'someStringLongerThan260'.padStart(261, 'x') });
+
+          expect(res1.status).toBe(400);
+        });
+      });
+
+      describe(`PUT /chat/groups/:groupid - valid request`, () => {
+        test(`users[0] update public group (which users[1] joined)`, async () => {
+          const beforeUpdate = groups[0].public;
+
+          const updateData = { name: 'new name of users[0] public group', public: 'false', bio: 'change to private and also this bio', avatarLink: faker.image.avatar() };
+
+          const res = await request(app)
+            .put(`/api/v1/chat/groups/${groups[0].public._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`)
+            .type('form')
+            .send(updateData);
+
+          expect(res.status).toBe(200);
+          expect(res.headers['content-type']).toMatch(/json/);
+
+          // match user sent request
+          expect(res.body?.requestedUser?.fullname).toMatch(users[0]?.fullname);
+
+          // match update data
+          expect(res.body?.updatedGroup?.name).toMatch(updateData.name);
+          expect(res.body?.updatedGroup?.bio).toMatch(updateData.bio);
+          expect(res.body?.updatedGroup?.avatarLink).toMatch(updateData.avatarLink);
+          expect(res.body?.updatedGroup?.public).toBe(false);
+        });
+
+        test(`check again with GET /chat/groups`, async () => {
+          //
+        });
+      });
     });
   });
 
