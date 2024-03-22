@@ -76,8 +76,8 @@ describe(`/chat/groups`, () => {
   });
 
   describe(`GET & POST /chat/groups, DELETE & PUT /chat/groups/:groupid - work with the group(s)`, () => {
-    describe(`GET & POST /chat/groups`, () => {
-      xtest(`GET /chat/groups - return 3 categories: joined (or created) groups, public groups (not joined), private groups (not joined)`, async () => {
+    xdescribe(`GET & POST /chat/groups`, () => {
+      test(`GET /chat/groups - return 3 categories: joined (or created) groups, public groups (not joined), private groups (not joined)`, async () => {
         const res = await request(app)
           .get('/api/v1/chat/groups')
           // request with user[0] account
@@ -190,7 +190,7 @@ describe(`/chat/groups`, () => {
           expect(createdGroup.name).toMatch(/new group of user 0 private/gi);
         });
 
-        test(`GET /chat/groups - users[1] now get 2 private groups not joined`, async () => {
+        test(`GET /chat/groups - users[1] now have 2 private groups not joined`, async () => {
           const res = await request(app)
             .get('/api/v1/chat/groups')
             // request with user[1] account
@@ -228,13 +228,83 @@ describe(`/chat/groups`, () => {
         });
       });
     });
+
+    describe(`DELETE & PUT /chat/groups/:groupid`, () => {
+      xdescribe(`DELETE /chat/groups/:groupid - invalid request (not group's creator) or group not exists`, () => {
+        test(`users[0] try to delete groups[1] public (users[1] created)`, async () => {
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/${groups[1].public._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          // forbidden
+          expect(res.status).toBe(403);
+        });
+
+        test(`group not exist`, async () => {
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/someRandomString`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          // forbidden
+          expect(res.status).toBe(404);
+        });
+      });
+
+      xdescribe(`DELETE /chat/groups/:groupid - valid request`, () => {
+        test(`users[0] delete his groups[0].private group`, async () => {
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/${groups[0].private._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          // success
+          expect(res.status).toBe(200);
+        });
+
+        test(`GET /chat/groups - users[1] now have 0 private groups not joined`, async () => {
+          const res = await request(app)
+            .get('/api/v1/chat/groups')
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`);
+
+          expect(res.body.privateGroups).toBeDefined();
+          expect(res.body.privateGroups.length).toBe(0);
+        });
+
+        test(`users[0] delete his groups[0].public group`, async () => {
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/${groups[0].public._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          // success
+          expect(res.status).toBe(200);
+        });
+
+        test(`GET /chat/groups - users[1] now have 2 joined groups left (both own)`, async () => {
+          const res = await request(app)
+            .get('/api/v1/chat/groups')
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`);
+
+          expect(res.body.privateGroups).toBeDefined();
+          expect(res.body.joinedGroups.length).toBe(2);
+        });
+      });
+
+      describe(`PUT /chat/groups/:groupid - invalid request`, () => {});
+
+      xdescribe(`PUT /chat/groups/:groupid - valid request`, () => {});
+    });
   });
 
-  xdescribe(`GET, POST - work with the group's messages`, () => {
+  xdescribe(`GET & POST /chat/groups/:groupid - work with group's messages`, () => {
     //
   });
 
-  describe(`GET & POST /chat/groups/:groupid/members, DELETE /chat/groups/:groupid/members/:memberid - work with group's members`, () => {
+  xdescribe(`GET & POST /chat/groups/:groupid/members, DELETE /chat/groups/:groupid/members/:memberid - work with group's members`, () => {
     //
   });
 });

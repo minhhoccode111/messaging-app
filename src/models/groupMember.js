@@ -34,11 +34,11 @@ const GroupMemberSchema = new Schema(
 );
 
 GroupMemberSchema.virtual('createdAtFormatted').get(function () {
-	return formatDate(this.createdAt);
+	if (this.createdAt) return formatDate(this.createdAt);
 });
 
 GroupMemberSchema.virtual('createdAtUnix').get(function () {
-  return this.createdAt.getTime();
+  if (this.createdAt) return this.createdAt.getTime();
 });
 
 // TODO implement url virtual 

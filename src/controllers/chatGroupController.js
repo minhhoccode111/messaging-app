@@ -19,7 +19,7 @@ const mongoose = require('mongoose');
 // get all group that visible to current logged in user (joined, public)
 module.exports.chat_all_group_get = asyncHandler(async (req, res, next) => {
   // first get all current logged in user joined group references
-  let joinedGroups = await GroupMember.find({ user: req.user }).sort({ isCreator: 1 }).populate('group', 'name public avatarLink createdAt').exec();
+  let joinedGroups = await GroupMember.find({ user: req.user }).sort({ isCreator: 1 }).populate('group', 'name public avatarLink').exec();
 
   joinedGroups = joinedGroups.map((ref) => ({
     // extract needed fields from populated group field
@@ -27,7 +27,7 @@ module.exports.chat_all_group_get = asyncHandler(async (req, res, next) => {
     name: ref?.group?.name,
     public: ref?.group?.public,
     avatarLink: ref?.group?.avatarLink,
-    createdAt: ref?.group?.createdAt,
+    // createdAt: ref?.group?.createdAt,
     isCreator: ref.isCreator,
     // joinedAt:
   }));
@@ -35,7 +35,7 @@ module.exports.chat_all_group_get = asyncHandler(async (req, res, next) => {
   // console.log(joinedGroups);
 
   // find in g
-  const notJoinedGroups = await Group.find({ _id: { $nin: joinedGroups } }, 'name public avatarLink createdAt').exec();
+  const notJoinedGroups = await Group.find({ _id: { $nin: joinedGroups } }, 'name public avatarLink').exec();
 
   // console.log(`notJoinedGroups belike: `, notJoinedGroups);
 
@@ -91,7 +91,29 @@ module.exports.chat_group_post = asyncHandler(async (req, res, next) => {
 
 // delete a specific group (current logged in user is group's creator)
 module.exports.chat_group_delete = asyncHandler(async (req, res, next) => {
-  res.send('chat group delete: not implemented');
+  // check valid mongoose objectid before retrieve db
+  const isValidId = mongoose.isValidObjectId(req.params.groupid);
+  if (!isValidId) return res.sendStatus(404);
+
+  // check if user we want really exists
+  const group = await Group.findById(req.params.groupid, '_id').populate('creator', '_id').exec();
+  if (group === null) return res.sendStatus(404);
+
+  // console.log(`the group's creator belike: `, group.creator.id);
+  // console.log(`the req.user.id belike: `, req.user.id);
+  // console.log(`compare both belike: `, req.user.id === group.creator.id);
+  // console.log(`the group belike: `, group);
+
+  // delete group that current logged in user not own
+  if (req.user.id !== group?.creator?.id) return res.sendStatus(403);
+
+  // first delete every references of the Group in GroupMember
+  await GroupMember.deleteMany({ group: req.params.groupid });
+
+  // then create the Group itself
+  await Group.findByIdAndDelete(req.params.groupid);
+
+  res.sendStatus(200);
 });
 
 // update a specific group (current logged in user is group's creator)

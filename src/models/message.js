@@ -41,11 +41,11 @@ const MessageSchema = new Schema(
 );
 
 MessageSchema.virtual('createdAtFormatted').get(function () {
-  return formatDate(this.createdAt);
+  if (this.createdAt) return formatDate(this.createdAt);
 });
 
 MessageSchema.virtual('createdAtUnix').get(function () {
-  return this.createdAt.getTime();
+  if (this.createdAt) return this.createdAt.getTime();
 });
 
 // TODO implement url virtual

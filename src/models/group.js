@@ -57,21 +57,19 @@ const GroupSchema = new Schema(
 );
 
 GroupSchema.virtual('createdAtFormatted').get(function () {
-	return formatDate(this.createdAt);
+	if (this.createdAt) return formatDate(this.createdAt);
 });
 
 GroupSchema.virtual('createdAtUnix').get(function () {
-  return this.createdAt.getTime();
+  if (this.createdAt) return this.createdAt.getTime();
 });
 
 GroupSchema.virtual('updatedAtFormatted').get(function () {
   if (this.updatedAt) return formatDate(this.updatedAt);
-  return null;
 });
 
 GroupSchema.virtual('updatedAtUnix').get(function () {
   if (this.updatedAt) return this.updatedAt.getTime();
-  return null;
 });
 
 // TODO implement url virtual 

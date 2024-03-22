@@ -71,21 +71,19 @@ const UserSchema = new Schema(
 );
 
 UserSchema.virtual('createdAtFormatted').get(function () {
-	return formatDate(this.createdAt);
+	if (this.createdAt) return formatDate(this.createdAt);
 });
 
 UserSchema.virtual('createdAtUnix').get(function () {
-  return this.createdAt.getTime();
+  if (this.createdAt) return this.createdAt.getTime();
 });
 
 UserSchema.virtual('updatedAtFormatted').get(function () {
   if (this.updatedAt) return formatDate(this.updatedAt);
-  return null;
 });
 
 UserSchema.virtual('updatedAtUnix').get(function () {
   if (this.updatedAt) return this.updatedAt.getTime();
-  return null;
 });
 
 // TODO implement url virtual 
