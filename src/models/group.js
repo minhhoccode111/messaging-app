@@ -19,8 +19,8 @@ const GroupSchema = new Schema(
       unique: true,
       trim: true,
       length: {
-        min: 1,
-        max: 150,
+        min: 8,
+        max: 60,
       },
     },
 
@@ -31,7 +31,10 @@ const GroupSchema = new Schema(
 
     bio: {
       type: String,
-      maxLength: 500,
+      length: {
+        min: 1,
+        max: 260,
+      },
       required: true,
     },
 

@@ -50,9 +50,32 @@ module.exports.chat_all_group_get = asyncHandler(async (req, res, next) => {
 
 // current logged in user create a new group (and be group's creator)
 module.exports.chat_all_group_post = [
-  body(`name`),
+  body(`name`, `Group name should be between 8 and 60 characters.`).isLength({ min: 8, max: 60 }).trim().escape(),
+  body(`bio`, `Group bio should be between 1 and 260 characters.`).isLength({ min: 1, max: 260 }).trim().escape(),
   asyncHandler(async (req, res, next) => {
-    res.send('chat all group post: not implemented');
+    let errors = validationResult(req).array();
+
+    const { name, bio, avatarLink } = req.body;
+
+    // in case group name exists
+    const countGroupName = await Group.countDocuments({ name }).exec();
+
+    if (countGroupName > 0) {
+      errors.push({ msg: `Group name exists.` });
+    }
+
+    if (!errors.length) {
+      const group = new Group({ name, bio, avatarLink, public: req.body.public === 'true', creator: req.user });
+
+      group.save(); // can throw if group name exists
+      //
+
+      return res.json({ requestedUser: req.user, createdGroup: group });
+    }
+
+    errors = errors.reduce((total, current) => [...total, current.msg], []);
+
+    return res.status(400).json({ errors });
   }),
 ];
 
