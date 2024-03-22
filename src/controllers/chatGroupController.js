@@ -98,18 +98,21 @@ module.exports.chat_group_get = asyncHandler(async (req, res, next) => {
   if (group === null) return res.sendStatus(404);
 
   // get all references of members in this group
-  const groupMembers = await GroupMember.find({ group }).exec();
+  const groupMembers = await GroupMember.find({ group }).populate('user', 'name _id').exec();
 
   // GroupMember to find reference between this current logged in user vs the group (check member and also creator at the same time)
-  const userInGroupMembers = await GroupMember.findOne({ user: req.user, group }).exec();
+  const userInGroupMembers = groupMembers[groupMembers.findIndex((memRef) => memRef.user.id === req.user.id)];
+
+  console.log(`the userInGroupMembers belike: `, userInGroupMembers);
 
   // current logged in user joined group or not
-  const canReadMessages = userInGroupMembers !== null;
+  const canReadMessages = !!userInGroupMembers;
 
   let messages;
 
   if (canReadMessages) {
-    messages = await Message.find().exec();
+    // find all messages is being sent to this group
+    messages = await Message.find({ groupReceive: group }).exec();
   }
   //
   else {

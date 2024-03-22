@@ -403,7 +403,40 @@ describe(`/chat/groups`, () => {
 
   describe(`GET & POST /chat/groups/:groupid - work with group's messages`, () => {
     // TODO should work like /chat/users/:userid
-    // but
+    // but extra info like
+
+    describe(`GET /chat/groups/:groupid`, () => {
+      test(`users[0] get group not exists`, async () => {
+        const res = await request(app)
+          .get(`/api/v1/chat/groups/someRandomString`)
+          // request with user[0] account
+          .set('Authorization', `Bearer ${token0}`);
+
+        expect(res.status).toBe(404);
+      });
+
+      test(`users[0] get groups[1].public (not joined)`, async () => {
+        const res = await request(app)
+          .get(`/api/v1/chat/groups/${groups[1].public._id}`)
+          // request with user[0] account
+          .set('Authorization', `Bearer ${token0}`);
+
+        expect(res.status).toBe(403);
+        // TODO BUG
+      });
+
+      test(`users[0] get groups[1].private (joined)`, async () => {
+        //
+      });
+
+      test(`users[0] get groups[0].public (created, users[1] also joined)`, async () => {
+        //
+      });
+    });
+
+    describe(`POST /chat/groups/:groupid`, () => {
+      //
+    });
   });
 
   xdescribe(`GET & POST /chat/groups/:groupid/members, DELETE /chat/groups/:groupid/members/:memberid - work with group's members`, () => {
