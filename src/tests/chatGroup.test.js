@@ -744,7 +744,49 @@ describe(`/chat/groups`, () => {
       });
 
       describe(`valid cases`, () => {
-        //
+        test(`users[0] delete users[2] from groups[0].public`, async () => {
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/${groups[0].public._id}/members/${users[2]._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(200);
+
+          const getRes = await request(app)
+            .get(`/api/v1/chat/groups/${groups[0].public._id}/members`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(getRes.status).toBe(200);
+          // group now only have 2 members
+          expect(getRes.body.groupMembers.length).toBe(2);
+
+          // 2 members left is users[0] and users[1]
+          expect([users[0].fullname, users[1].fullname]).toContain(getRes.body.groupMembers[0].fullname);
+          expect([users[0].fullname, users[1].fullname]).toContain(getRes.body.groupMembers[1].fullname);
+        });
+
+        test(`users[1] delete users[2] from groups[1].private`, async () => {
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/${groups[1].private._id}/members/${users[2]._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`);
+
+          expect(res.status).toBe(200);
+
+          const getRes = await request(app)
+            .get(`/api/v1/chat/groups/${groups[1].private._id}/members`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`);
+
+          expect(getRes.status).toBe(200);
+          // group now only have 2 members
+          expect(getRes.body.groupMembers.length).toBe(2);
+
+          // 2 members left is users[0] and users[1]
+          expect([users[0].fullname, users[1].fullname]).toContain(getRes.body.groupMembers[0].fullname);
+          expect([users[0].fullname, users[1].fullname]).toContain(getRes.body.groupMembers[1].fullname);
+        });
       });
     });
   });

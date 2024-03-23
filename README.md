@@ -19,7 +19,7 @@ The **Messaging App Back** is created according to the assignment from **The Odi
 - CRUD actions
 - JSON Web Token Authentication
 - CORS to only allow requests from my frontend
-- RESTful API
+- RESTful API using TDD
 
 ## **Outcome**
 

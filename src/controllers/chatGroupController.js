@@ -325,7 +325,7 @@ module.exports.chat_group_member_delete = asyncHandler(async (req, res, next) =>
   const group = await Group.findById(req.params.groupid, '_id').exec();
   if (group === null) return res.sendStatus(404);
 
-  //
+  // references of current logged in user and user to be deleted with the group
   const [userToDeleteRefInGroup, loggedInUserRefInGroup] = await Promise.all([
     GroupMember.findOne({ group, user: req.params.userid }, 'isCreator').populate('user', '_id').exec(),
     GroupMember.findOne({ group, user: req.user }, 'isCreator').exec(),
@@ -337,6 +337,8 @@ module.exports.chat_group_member_delete = asyncHandler(async (req, res, next) =>
   // the user make the request not the group's creator or trying to make the creator leave the group (delete the group instead)
   if (!loggedInUserRefInGroup.isCreator || userToDeleteRefInGroup.isCreator) return res.sendStatus(400);
 
-  // TODO group's creator can't leave the group, the group must be delete
-  res.json();
+  // delete reference between the target user vs the group
+  await GroupMember.deleteOne({ group, user: req.params.userid });
+
+  return res.sendStatus(200);
 });
