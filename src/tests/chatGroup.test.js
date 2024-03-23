@@ -637,7 +637,48 @@ describe(`/chat/groups`, () => {
       });
     });
 
-    xdescribe(`POST /chat/groups/:groupid/members - current logged in user join the group`, () => {});
+    describe(`POST /chat/groups/:groupid/members - current logged in user join the group`, () => {
+      describe(`invalid cases`, () => {
+        test(`group not exists`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/someRandomString/members`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(404);
+        });
+
+        // this a little over caution
+        test(`user already joined (users[0] request to join groups[1].private)`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/${groups[1].private._id}/members`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(400);
+        });
+
+        test(`group is not public to be joined (users[1] request to join groups[0].private)`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/${groups[0].private._id}/members`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token1}`);
+
+          expect(res.status).toBe(400);
+        });
+      });
+
+      describe(`valid cases`, () => {
+        test(`users[0] request to join groups[1].public`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/${groups[1].public._id}/members`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(200);
+        });
+      });
+    });
 
     xdescribe(`DELETE /chat/groups/:groupid/members/:userid - current logged in user leave the group or kick someone`, () => {});
   });

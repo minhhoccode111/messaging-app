@@ -287,7 +287,32 @@ module.exports.chat_group_all_members_get = asyncHandler(async (req, res, next) 
 
 // post a member to a group
 module.exports.chat_group_all_members_post = asyncHandler(async (req, res, next) => {
-  res.send('chat group all members post: not implemented');
+  // check valid mongoose objectid before retrieve db
+  const isValidId = mongoose.isValidObjectId(req.params.groupid);
+  if (!isValidId) return res.sendStatus(404);
+
+  // check if group we want really exists, minimal cause we don't return this
+  const group = await Group.findById(req.params.groupid, '_id public').exec();
+  if (group === null) return res.sendStatus(404);
+
+  // check if current logged in user is already existed in this group
+  const currentUserInGroup = await GroupMember.findOne({ group, user: req.user }, '_id').exec();
+
+  // console.log(currentUserInGroup);
+
+  // bad request if existed or group not public to be joined
+  if (currentUserInGroup !== null || !group.public) return res.sendStatus(400);
+
+  // add current logged in user to group
+  const member = new GroupMember({
+    group,
+    user: req.user,
+    isCreator: false,
+  });
+
+  await member.save();
+
+  res.sendStatus(200);
 });
 
 // delete a member from a group (leave or get kicked)
