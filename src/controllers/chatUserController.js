@@ -16,10 +16,11 @@ const mongoose = require('mongoose');
 
 // all users that current logged in user can chat with
 module.exports.chat_all_user_get = asyncHandler(async (req, res) => {
-  const users = await User.find({ _id: { $ne: req.user._id } }, '-password -username -__v').exec();
+  // include minimal info
+  const users = await User.find({ _id: { $ne: req.user._id } }, '_id fullname status').exec();
 
   // return extra info req.user because we retrieve it from db anyway
-  res.json({ users: users, requestedUser: req.user });
+  res.json({ users, requestedUser: req.user });
 });
 
 // get conversation with a specific user
@@ -28,7 +29,7 @@ module.exports.chat_user_get = asyncHandler(async (req, res) => {
   const isValidId = mongoose.isValidObjectId(req.params.userid);
   if (!isValidId) return res.sendStatus(404);
 
-  // check if user we want really exists
+  // check if user we want really exists, exclude critical info
   const user = await User.findById(req.params.userid, '-password -username -__v').exec();
   if (user === null) return res.sendStatus(404);
 

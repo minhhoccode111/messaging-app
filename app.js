@@ -7,6 +7,9 @@ const helmet = require('helmet');
 const path = require('path');
 require('dotenv').config();
 
+// debug
+const debug = require('debug')('xxxxxxxxxxxxxxxxxxxx-debug-xxxxxxxxxxxxxxxxxxxx');
+
 // connect mongo db
 require('./mongoConfig');
 

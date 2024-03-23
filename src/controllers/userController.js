@@ -26,7 +26,9 @@ module.exports.user_put = [
     throw new Error('Invalid status');
   }),
   asyncHandler(async (req, res) => {
-    const errors = validationResult(req).array();
+    const errors = validationResult(req)
+      .array()
+      .map((e) => e.msg);
 
     const oldUser = req.user;
 
@@ -48,10 +50,10 @@ module.exports.user_put = [
 
       await User.findByIdAndUpdate(oldUser._id, newUser);
 
-      return res.send(newUser);
+      return res.json({ newUser });
     }
 
     // invalid data
-    res.sendStatus(400);
+    return res.status(400).json({ errors });
   }),
 ];
