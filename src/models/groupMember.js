@@ -6,7 +6,6 @@ const Schema = mongoose.Schema;
 
 const GroupMemberSchema = new Schema(
   {
-
 		// need to specify between userReceive or groupReceive (1 must be null)
     user: {
       type: Schema.Types.ObjectId,
@@ -40,8 +39,6 @@ GroupMemberSchema.virtual('createdAtFormatted').get(function () {
 GroupMemberSchema.virtual('createdAtUnix').get(function () {
   if (this.createdAt) return this.createdAt.getTime();
 });
-
-// TODO implement url virtual 
 
 module.exports = mongoose.model('GroupMember', GroupMemberSchema);
 

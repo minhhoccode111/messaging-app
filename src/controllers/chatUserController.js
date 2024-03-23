@@ -15,7 +15,7 @@ const debug = require('debug')('xxxxxxxxxxxxxxxxxxxx-debug-xxxxxxxxxxxxxxxxxxxx'
 const mongoose = require('mongoose');
 
 // all users that current logged in user can chat with
-module.exports.chat_all_user_get = asyncHandler(async (req, res, next) => {
+module.exports.chat_all_user_get = asyncHandler(async (req, res) => {
   const users = await User.find({ _id: { $ne: req.user._id } }, '-password -username -__v').exec();
 
   // return extra info req.user because we retrieve it from db anyway
@@ -23,7 +23,7 @@ module.exports.chat_all_user_get = asyncHandler(async (req, res, next) => {
 });
 
 // get conversation with a specific user
-module.exports.chat_user_get = asyncHandler(async (req, res, next) => {
+module.exports.chat_user_get = asyncHandler(async (req, res) => {
   // check valid mongoose objectid before retrieve db
   const isValidId = mongoose.isValidObjectId(req.params.userid);
   if (!isValidId) return res.sendStatus(404);
@@ -49,7 +49,7 @@ module.exports.chat_user_post = [
       if (!req.body.content && !value) throw new Error(`Content and imageLink cannot be both undefined`);
       return true;
     }),
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     // check valid mongoose objectid before retrieve db
     const isValidId = mongoose.isValidObjectId(req.params.userid);
     if (!isValidId) return res.sendStatus(404);

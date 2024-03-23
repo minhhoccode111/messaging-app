@@ -48,6 +48,4 @@ MessageSchema.virtual('createdAtUnix').get(function () {
   if (this.createdAt) return this.createdAt.getTime();
 });
 
-// TODO implement url virtual
-
 module.exports = mongoose.model('Message', MessageSchema);

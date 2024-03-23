@@ -6,7 +6,6 @@ const Schema = mongoose.Schema;
 
 const GroupSchema = new Schema(
   {
-
     creator: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -71,8 +70,6 @@ GroupSchema.virtual('updatedAtFormatted').get(function () {
 GroupSchema.virtual('updatedAtUnix').get(function () {
   if (this.updatedAt) return this.updatedAt.getTime();
 });
-
-// TODO implement url virtual 
 
 module.exports = mongoose.model('Group', GroupSchema);
 

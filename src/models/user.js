@@ -39,7 +39,6 @@ const UserSchema = new Schema(
 
     status: {
       type: String,
-			// required: true, 
 			enum: statusEnum,
     },
 
@@ -85,7 +84,5 @@ UserSchema.virtual('updatedAtFormatted').get(function () {
 UserSchema.virtual('updatedAtUnix').get(function () {
   if (this.updatedAt) return this.updatedAt.getTime();
 });
-
-// TODO implement url virtual 
 
 module.exports = mongoose.model('User', UserSchema);

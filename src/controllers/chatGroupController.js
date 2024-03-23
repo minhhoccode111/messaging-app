@@ -17,7 +17,7 @@ const debug = require('debug')('xxxxxxxxxxxxxxxxxxxx-debug-xxxxxxxxxxxxxxxxxxxx'
 const mongoose = require('mongoose');
 
 // get all group that visible to current logged in user (joined, public)
-module.exports.chat_all_group_get = asyncHandler(async (req, res, next) => {
+module.exports.chat_all_group_get = asyncHandler(async (req, res) => {
   // first get all current logged in user joined group references
   let joinedGroups = await GroupMember.find({ user: req.user }).sort({ isCreator: 1 }).populate('group', 'name public avatarLink').exec();
 
@@ -52,7 +52,7 @@ module.exports.chat_all_group_get = asyncHandler(async (req, res, next) => {
 module.exports.chat_all_group_post = [
   body(`name`, `Group name should be between 8 and 60 characters.`).isLength({ min: 8, max: 60 }).trim().escape(),
   body(`bio`, `Group bio should be between 1 and 260 characters.`).isLength({ min: 1, max: 260 }).trim().escape(),
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     let errors = validationResult(req).array();
 
     const { name, bio, avatarLink } = req.body;
@@ -88,7 +88,7 @@ module.exports.chat_all_group_post = [
 ];
 
 // get conversation with a specific group
-module.exports.chat_group_get = asyncHandler(async (req, res, next) => {
+module.exports.chat_group_get = asyncHandler(async (req, res) => {
   // check valid mongoose objectid before retrieve db
   const isValidId = mongoose.isValidObjectId(req.params.groupid);
   if (!isValidId) return res.sendStatus(404);
@@ -143,7 +143,7 @@ module.exports.chat_group_post = [
       if (!req.body.content && !value) throw new Error(`Content and imageLink cannot be both undefined`);
       return true;
     }),
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     // check valid mongoose objectid before retrieve db
     const isValidId = mongoose.isValidObjectId(req.params.groupid);
     if (!isValidId) return res.sendStatus(404);
@@ -191,7 +191,7 @@ module.exports.chat_group_post = [
 ];
 
 // delete a specific group (current logged in user is group's creator)
-module.exports.chat_group_delete = asyncHandler(async (req, res, next) => {
+module.exports.chat_group_delete = asyncHandler(async (req, res) => {
   // check valid mongoose objectid before retrieve db
   const isValidId = mongoose.isValidObjectId(req.params.groupid);
   if (!isValidId) return res.sendStatus(404);
@@ -221,7 +221,7 @@ module.exports.chat_group_delete = asyncHandler(async (req, res, next) => {
 module.exports.chat_group_put = [
   body(`name`, `Group name should be between 8 and 60 characters.`).isLength({ min: 8, max: 60 }).trim().escape(),
   body(`bio`, `Group bio should be between 1 and 260 characters.`).isLength({ min: 1, max: 260 }).trim().escape(),
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     // check valid mongoose objectid before retrieve db
     const isValidId = mongoose.isValidObjectId(req.params.groupid);
     if (!isValidId) return res.sendStatus(404);
@@ -267,7 +267,7 @@ module.exports.chat_group_put = [
 ];
 
 // get all group's members
-module.exports.chat_group_all_members_get = asyncHandler(async (req, res, next) => {
+module.exports.chat_group_all_members_get = asyncHandler(async (req, res) => {
   // check valid mongoose objectid before retrieve db
   const isValidId = mongoose.isValidObjectId(req.params.groupid);
   if (!isValidId) return res.sendStatus(404);
@@ -286,7 +286,7 @@ module.exports.chat_group_all_members_get = asyncHandler(async (req, res, next) 
 });
 
 // post a member to a group
-module.exports.chat_group_all_members_post = asyncHandler(async (req, res, next) => {
+module.exports.chat_group_all_members_post = asyncHandler(async (req, res) => {
   // check valid mongoose objectid before retrieve db
   const isValidId = mongoose.isValidObjectId(req.params.groupid);
   if (!isValidId) return res.sendStatus(404);
@@ -316,7 +316,7 @@ module.exports.chat_group_all_members_post = asyncHandler(async (req, res, next)
 });
 
 // delete a member from a group (leave or get kicked)
-module.exports.chat_group_member_delete = asyncHandler(async (req, res, next) => {
+module.exports.chat_group_member_delete = asyncHandler(async (req, res) => {
   // check valid mongoose objectid before retrieve db of both group and user to delete
   const isValidId = mongoose.isValidObjectId(req.params.groupid) && mongoose.isValidObjectId(req.params.userid);
   if (!isValidId) return res.sendStatus(404);

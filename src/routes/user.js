@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const UserController = require('../controllers/userController');
+const UserController = require('./../controllers/userController');
 
 // get info of current logged usesr
 router.get('/', UserController.user_get);

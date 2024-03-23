@@ -10,16 +10,17 @@ The **Messaging App Back** is created according to the assignment from **The Odi
 
 ![Members Only Bcrypt Screenshot](/public/images/members-only-screenshot-password.png) -->
 
-## **Demo** [here](https://minhhoccode.vercel.app/)
+## **Demo** [here](https://messagingapptop.vercel.app/)
 
-## **Document** [here](/docs.md)
+## **Document** [here](/notes.md)
 
 ## **Features**
 
 - CRUD actions
 - JSON Web Token Authentication
 - CORS to only allow requests from my frontend
-- RESTful API using TDD
+- RESTful API
+- Using TDD, fully tested every cases
 
 ## **Outcome**
 
@@ -33,12 +34,14 @@ The **Messaging App Back** is created according to the assignment from **The Odi
 - Used **passport-jwt**
 - Used **jwt**
 - Used **cors**
+- Used **supertest**, **jest** and **mongodb-memory-server** to implement this API using TDD
+- and more
 
 ## **Idea to implement**
 
-- Request queries
-- Delete users
-- Delete, edit chat (vs group, vs person)
+- Request queries to get limited messages every time (not all)
+- Delete current logged in user
+- Delete, edit message (vs group, vs person)
 - Edit other users (like nickname)
 - Block other users
 - Friends
@@ -63,6 +66,7 @@ then
 cd messaging-app-back
 npm install
 npm start
+npm test
 ```
 
 ## **Navigation**

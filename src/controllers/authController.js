@@ -19,9 +19,6 @@ const jwt = require('jsonwebtoken');
 // work with date and time
 const { formatDate } = require('./../methods');
 
-// mongoose to check valid req.params.postid
-const mongoose = require('mongoose');
-
 module.exports.login_post = [
   body('username').trim().escape(),
   body('password').trim().escape(),
