@@ -317,5 +317,26 @@ module.exports.chat_group_all_members_post = asyncHandler(async (req, res, next)
 
 // delete a member from a group (leave or get kicked)
 module.exports.chat_group_member_delete = asyncHandler(async (req, res, next) => {
-  res.send('chat group all members post: not implemented');
+  // check valid mongoose objectid before retrieve db of both group and user to delete
+  const isValidId = mongoose.isValidObjectId(req.params.groupid) && mongoose.isValidObjectId(req.params.userid);
+  if (!isValidId) return res.sendStatus(404);
+
+  // check if group we want really exists, minimal cause we don't return this
+  const group = await Group.findById(req.params.groupid, '_id').exec();
+  if (group === null) return res.sendStatus(404);
+
+  //
+  const [userToDeleteRefInGroup, loggedInUserRefInGroup] = await Promise.all([
+    GroupMember.findOne({ group, user: req.params.userid }, 'isCreator').populate('user', '_id').exec(),
+    GroupMember.findOne({ group, user: req.user }, 'isCreator').exec(),
+  ]);
+
+  // user to delete not in group
+  if (userToDeleteRefInGroup === null) return res.sendStatus(404);
+
+  // the user make the request not the group's creator or trying to make the creator leave the group (delete the group instead)
+  if (!loggedInUserRefInGroup.isCreator || userToDeleteRefInGroup.isCreator) return res.sendStatus(400);
+
+  // TODO group's creator can't leave the group, the group must be delete
+  res.json();
 });

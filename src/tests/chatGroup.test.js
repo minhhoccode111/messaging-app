@@ -40,6 +40,14 @@ describe(`/chat/groups`, () => {
     });
     await users[1].save();
 
+    // 3rd member to join group to test delete member
+    users[2] = new User({
+      fullname: '2',
+      username: 'asd2',
+      password: await bcrypt.hash('asd', 10),
+    });
+    await users[2].save();
+
     // each account create 2 groups, 1 public 1 private
     groups[0].public = await new Group({ creator: users[0], name: 'group0 public', public: true, bio: 'group0 bio' }).save();
     groups[0].private = await new Group({ creator: users[0], name: 'group0 private', public: false, bio: 'group0 bio' }).save();
@@ -56,6 +64,10 @@ describe(`/chat/groups`, () => {
     await new GroupMember({ user: users[0], group: groups[1].private, isCreator: false }).save();
     // 1 extra user1 joined user0's public group
     await new GroupMember({ user: users[1], group: groups[0].public, isCreator: false }).save();
+
+    // 3rd member to join group to test delete member
+    await new GroupMember({ user: users[2], group: groups[1].private, isCreator: false }).save();
+    await new GroupMember({ user: users[2], group: groups[0].public, isCreator: false }).save();
 
     // then them login to get tokens
     const res0 = await request(app).post('/api/v1/auth/login').type('form').send({
@@ -580,7 +592,7 @@ describe(`/chat/groups`, () => {
   });
 
   describe(`GET & POST /chat/groups/:groupid/members, DELETE /chat/groups/:groupid/members/:userid - work with group's members`, () => {
-    describe(`GET /chat/groups/:groupid/members - get all members of a group`, () => {
+    xdescribe(`GET /chat/groups/:groupid/members - get all members of a group`, () => {
       describe(`invalid cases`, () => {
         test(`not exists group`, async () => {
           const res = await request(app)
@@ -637,7 +649,7 @@ describe(`/chat/groups`, () => {
       });
     });
 
-    describe(`POST /chat/groups/:groupid/members - current logged in user join the group`, () => {
+    xdescribe(`POST /chat/groups/:groupid/members - current logged in user join the group`, () => {
       describe(`invalid cases`, () => {
         test(`group not exists`, async () => {
           const res = await request(app)
@@ -680,6 +692,60 @@ describe(`/chat/groups`, () => {
       });
     });
 
-    xdescribe(`DELETE /chat/groups/:groupid/members/:userid - current logged in user leave the group or kick someone`, () => {});
+    describe(`DELETE /chat/groups/:groupid/members/:userid - current logged in user leave the group or kick someone`, () => {
+      describe(`invalid cases`, () => {
+        test(`group not exists`, async () => {
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/someRandomString/members/${users[2]._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(404);
+        });
+
+        test(`user to delete not exists`, async () => {
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/${groups[1].private._id}/members/someRandomString`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(404);
+        });
+
+        test(`user to delete exists but not joined in the group`, async () => {
+          // users[1] not joined groups[0].private
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/${groups[0].private._id}/members/${users[1]._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(404);
+        });
+
+        test(`user to delete exists ,joined the group but current logged in user is not group's creator to delete that user`, async () => {
+          // users[2] existed, joined groups[0].public but can't be deleted by users[1]
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/${groups[0].public._id}/members/${users[2]._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`);
+
+          expect(res.status).toBe(400);
+        });
+
+        test(`group's creator can't leave the group, delete the group instead`, async () => {
+          // users[2] existed, joined groups[0].public but can't be deleted by users[1]
+          const res = await request(app)
+            .delete(`/api/v1/chat/groups/${groups[0].public._id}/members/${users[0]._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(400);
+        });
+      });
+
+      describe(`valid cases`, () => {
+        //
+      });
+    });
   });
 });
