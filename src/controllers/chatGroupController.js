@@ -139,9 +139,62 @@ module.exports.chat_group_get = asyncHandler(async (req, res, next) => {
 });
 
 // post a message with a specific group
-module.exports.chat_group_post = asyncHandler(async (req, res, next) => {
-  res.send('chat group post: not implemented');
-});
+module.exports.chat_group_post = [
+  body('content').trim().escape(),
+  body('imageLink')
+    .trim()
+    .escape()
+    .custom((value, { req }) => {
+      if (req.body.content && value) throw new Error(`Content and imageLink cannot be both existed`);
+      if (!req.body.content && !value) throw new Error(`Content and imageLink cannot be both undefined`);
+      return true;
+    }),
+  asyncHandler(async (req, res, next) => {
+    // check valid mongoose objectid before retrieve db
+    const isValidId = mongoose.isValidObjectId(req.params.groupid);
+    if (!isValidId) return res.sendStatus(404);
+
+    // check if group we want really exists
+    const group = await Group.findById(req.params.groupid, '_id name').exec();
+    if (group === null) return res.sendStatus(404);
+
+    // check if current logged in user can send message to this group
+    const groupMember = await GroupMember.findOne({ group, user: req.user }).exec();
+    if (groupMember === null) return res.sendStatus(403);
+
+    const errors = validationResult(req).array();
+
+    // console.log(errors);
+    // console.log(`the imageLink belike: `, req.body.imageLink);
+    // console.log(`the content belike: `, req.body.content);
+
+    if (!errors.length) {
+      const { imageLink, content } = req.body;
+
+      const message = new Message({
+        sender: req.user,
+        userReceive: null,
+        groupReceive: group,
+        content,
+        imageLink,
+      });
+
+      await message.save();
+
+      // get all messages in this group to response
+      const groupMessages = await Message.find({ groupReceive: group }).sort({ createdAt: 1 }).exec();
+
+      return res.json({
+        requestedUser: req.user,
+        receivedGroup: group,
+        groupMessages,
+      });
+    }
+
+    // invalid data
+    return res.sendStatus(400);
+  }),
+];
 
 // delete a specific group (current logged in user is group's creator)
 module.exports.chat_group_delete = asyncHandler(async (req, res, next) => {

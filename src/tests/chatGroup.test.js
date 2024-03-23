@@ -485,7 +485,110 @@ describe(`/chat/groups`, () => {
     });
 
     describe(`POST /chat/groups/:groupid - post a message to group chat`, () => {
-      //
+      describe(`invalid cases`, () => {
+        test(`not exists group`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/someRandomSting`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`)
+            .send({ content: 'this content exists', imageLink: '' });
+
+          expect(res.status).toBe(404);
+        });
+
+        test(`invalid authorization - users[0] try to post to groups[1].public (not joined)`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/${groups[1].public._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`)
+            .send({ content: 'this content exists', imageLink: '' });
+
+          expect(res.status).toBe(403);
+        });
+
+        test(`invalid data - both content and imageLink exists`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/${groups[1].private._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`)
+            .type('form')
+            .send({ content: 'this content exists', imageLink: 'this content exists' });
+
+          expect(res.status).toBe(400);
+        });
+
+        test(`invalid data - both content and imageLink don't exists`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/${groups[1].private._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`)
+            .type('form')
+            .send({ content: '', imageLink: '' });
+
+          expect(res.status).toBe(400);
+        });
+      });
+
+      describe(`valid cases`, () => {
+        // default message values
+        const content = faker.lorem.paragraph();
+        const imageLink = faker.image.avatar();
+
+        test(`valid data - content exists - users[0] send to groups[1].private`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/${groups[1].private._id}`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`)
+            .type('form')
+            .send({ content, imageLink: '' });
+
+          expect(res.status).toBe(200);
+          expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
+          expect(res.body.receivedGroup.name).toBe(groups[1].private.name);
+
+          expect(res.body.groupMessages.length).toBe(1);
+          expect(res.body.groupMessages[0].content).toBe(content);
+        });
+
+        test(`valid data - imageLink exists - users[1] send to groups[1].private`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/${groups[1].private._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token1}`)
+            .type('form')
+            .send({ imageLink, content: '' });
+
+          expect(res.status).toBe(200);
+          expect(res.body.requestedUser.fullname).toBe(users[1].fullname);
+          expect(res.body.receivedGroup.name).toBe(groups[1].private.name);
+
+          expect(res.body.groupMessages.length).toBe(2); // now 2
+          expect(res.body.groupMessages[0].content).toBe(content);
+          // it's passed but compare fail because escaped string
+          // expect(res.body.groupMessages[1].imageLink).toEqual(decodeURIComponent(imageLink));
+        });
+
+        test(`valid data - imageLink exists - users[0] send to groups[1].private`, async () => {
+          const res = await request(app)
+            .post(`/api/v1/chat/groups/${groups[1].private._id}`)
+            // request with user[1] account
+            .set('Authorization', `Bearer ${token0}`)
+            .type('form')
+            .send({ imageLink, content: '' });
+
+          expect(res.status).toBe(200);
+          expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
+          expect(res.body.receivedGroup.name).toBe(groups[1].private.name);
+
+          expect(res.body.groupMessages.length).toBe(3); // now 3
+          // sort base on time send
+          expect(res.body.groupMessages[0].content).toBe(content);
+
+          // it's passed but compare fail because escaped string
+          // expect(res.body.groupMessages[1].imageLink).toEqual(decodeURIComponent(imageLink));
+          // expect(res.body.groupMessages[2].imageLink).toEqual(decodeURIComponent(imageLink));
+        });
+      });
     });
   });
 

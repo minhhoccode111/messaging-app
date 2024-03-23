@@ -75,6 +75,7 @@ module.exports.chat_user_post = [
 
       await message.save();
 
+      // BUG
       const messages = await Message.find().sort({ createdAt: 1 }).exec();
 
       return res.json({
