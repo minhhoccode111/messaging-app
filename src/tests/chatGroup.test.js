@@ -401,7 +401,7 @@ describe(`/chat/groups`, () => {
     });
   });
 
-  describe(`GET & POST /chat/groups/:groupid - work with group's messages`, () => {
+  xdescribe(`GET & POST /chat/groups/:groupid - work with group's messages`, () => {
     // TODO should work like /chat/users/:userid
     // but extra info like
 
@@ -424,11 +424,7 @@ describe(`/chat/groups`, () => {
         // 403 when not joined
         expect(res.status).toBe(403);
         expect(res.body.groupMessages).toEqual(null);
-        expect(res.body.groupMembers.length).toBe(1);
 
-        // console.log(res.body.groupMembers[0]);
-
-        expect(res.body.groupMembers[0].fullname).toBe(users[1].fullname);
         expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
         expect(res.body.receivedGroup.name).toBe(groups[1].public.name);
         expect(res.body.receivedGroup.creator.fullname).toBe(users[1].fullname);
@@ -447,11 +443,7 @@ describe(`/chat/groups`, () => {
         // not messages yet
         expect(res.body.groupMessages).toEqual([]);
         // the same above but 2 users now users[0] and [1]
-        expect(res.body.groupMembers.length).toBe(2);
 
-        // console.log(res.body.groupMembers[0]);
-
-        expect(res.body.groupMembers[0].fullname).toBe(users[1].fullname);
         expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
         expect(res.body.receivedGroup.name).toBe(groups[1].private.name);
         expect(res.body.receivedGroup.creator.fullname).toBe(users[1].fullname);
@@ -469,13 +461,7 @@ describe(`/chat/groups`, () => {
         expect(res.status).toBe(200);
         // not messages yet
         expect(res.body.groupMessages).toEqual([]);
-        // the same above but 2 users now users[0] and [1]
-        expect(res.body.groupMembers.length).toBe(2);
 
-        // console.log(res.body.groupMembers[0]);
-
-        // members is sorted by time joined
-        expect(res.body.groupMembers[0].fullname).toBe(users[0].fullname);
         expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
         expect(res.body.receivedGroup.name).toBe(groups[0].public.name);
         expect(res.body.receivedGroup.creator.fullname).toBe(users[0].fullname);

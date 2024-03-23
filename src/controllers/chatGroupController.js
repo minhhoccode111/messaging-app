@@ -97,19 +97,14 @@ module.exports.chat_group_get = asyncHandler(async (req, res, next) => {
   const group = await Group.findById(req.params.groupid).populate('creator').exec();
   if (group === null) return res.sendStatus(404);
 
-  // get all references of members in this group, sort by time join
-  const groupMembers = await GroupMember.find({ group }).populate('user', 'fullname _id').sort({ createdAt: 1 }).exec();
+  // current logged in user reference with group
+  const currentUserInGroup = await GroupMember.findOne({ group, user: req.user }).exec();
 
-  // console.log(`groupMembers of this group belike: `, groupMembers);
+  // console.log(`currentUserInGroup belike: `, currentUserInGroup);
 
-  // GroupMember to find reference between this current logged in user vs the group (check member and also creator at the same time)
-  const userInGroupMembers = groupMembers[groupMembers.findIndex((memRef) => memRef.user.id === req.user.id)];
-
-  // console.log(`the userInGroupMembers belike: `, userInGroupMembers);
-
-  // current logged in user joined group or not
-  const isMember = !!userInGroupMembers;
-  const isCreator = !!userInGroupMembers?.isCreator;
+  // authorization of current logged in user vs the group
+  const isMember = currentUserInGroup === null ? false : true;
+  const isCreator = currentUserInGroup?.isCreator ?? false;
 
   let groupMessages;
 
@@ -131,7 +126,6 @@ module.exports.chat_group_get = asyncHandler(async (req, res, next) => {
         requestedUser: req.user,
         receivedGroup: group,
         groupMessages,
-        groupMembers: groupMembers.map((ref) => ref.user),
         isCreator,
         isMember,
       })
