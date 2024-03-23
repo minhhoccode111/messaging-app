@@ -75,8 +75,8 @@ module.exports.chat_user_post = [
 
       await message.save();
 
-      // BUG
-      const messages = await Message.find().sort({ createdAt: 1 }).exec();
+      // all user's messages between current logged in user vs target user
+      const messages = await Message.find({ sender: req.user, userReceive: user }).sort({ createdAt: 1 }).exec();
 
       return res.json({
         requestedUser: req.user,
