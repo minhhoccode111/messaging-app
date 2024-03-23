@@ -52,9 +52,9 @@ router.get('/groups/:groupid/members', ChatGroupController.chat_group_all_member
 router.post('/groups/:groupid/members', ChatGroupController.chat_group_all_members_post);
 
 // delete a member from a group (leave or get kicked)
-router.delete('/groups/:groupid/members/:memberid', ChatGroupController.chat_group_member_delete);
+router.delete('/groups/:groupid/members/:userid', ChatGroupController.chat_group_member_delete);
 
 // not implement edit a member in a group (authorization in group)
-// router.put('/groups/:groupid/members/:memberid', ChatGroupController.chat_group_member_put);
+// router.put('/groups/:groupid/members/:userid', ChatGroupController.chat_group_member_put);
 
 module.exports = router;

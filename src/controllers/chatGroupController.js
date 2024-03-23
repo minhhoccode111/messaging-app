@@ -268,7 +268,21 @@ module.exports.chat_group_put = [
 
 // get all group's members
 module.exports.chat_group_all_members_get = asyncHandler(async (req, res, next) => {
-  res.send('chat group all members get: not implemented');
+  // check valid mongoose objectid before retrieve db
+  const isValidId = mongoose.isValidObjectId(req.params.groupid);
+  if (!isValidId) return res.sendStatus(404);
+
+  // check if group we want really exists, minimal cause we don't return this
+  const group = await Group.findById(req.params.groupid, '_id').exec();
+  if (group === null) return res.sendStatus(404);
+
+  // find all members' references in this group
+  const groupMembersRef = await GroupMember.find({ group }, 'user').populate('user', '_id fullname avatarLink status').exec();
+
+  // extract data
+  const groupMembers = groupMembersRef.map((ref) => ref.user);
+
+  res.json({ requestedUser: req.user, groupMembers });
 });
 
 // post a member to a group

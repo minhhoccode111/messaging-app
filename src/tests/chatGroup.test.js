@@ -487,6 +487,7 @@ describe(`/chat/groups`, () => {
             .post(`/api/v1/chat/groups/${groups[1].public._id}`)
             // request with user[0] account
             .set('Authorization', `Bearer ${token0}`)
+            .type('form')
             .send({ content: 'this content exists', imageLink: '' });
 
           expect(res.status).toBe(403);
@@ -578,7 +579,66 @@ describe(`/chat/groups`, () => {
     });
   });
 
-  xdescribe(`GET & POST /chat/groups/:groupid/members, DELETE /chat/groups/:groupid/members/:memberid - work with group's members`, () => {
-    // TODO
+  describe(`GET & POST /chat/groups/:groupid/members, DELETE /chat/groups/:groupid/members/:userid - work with group's members`, () => {
+    describe(`GET /chat/groups/:groupid/members - get all members of a group`, () => {
+      describe(`invalid cases`, () => {
+        test(`not exists group`, async () => {
+          const res = await request(app)
+            .get(`/api/v1/chat/groups/someRandomSting/members`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(404);
+        });
+      });
+
+      describe(`valid cases`, () => {
+        test(`users[0] get members of groups[1].public (not joined)`, async () => {
+          const res = await request(app)
+            .get(`/api/v1/chat/groups/${groups[1].public._id}/members`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(200);
+          expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
+          // expect(res.body..fullname).toBe(users[0].fullname);
+          expect(res.body.groupMembers.length).toBe(1);
+          // sorted by join time
+          expect(res.body.groupMembers[0].fullname).toBe(users[1].fullname);
+        });
+
+        test(`users[0] get members of groups[1].private (joined)`, async () => {
+          const res = await request(app)
+            .get(`/api/v1/chat/groups/${groups[1].private._id}/members`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(200);
+          expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
+          expect(res.body.groupMembers.length).toBe(2);
+          // sorted by join time
+          expect(res.body.groupMembers[0].fullname).toBe(users[1].fullname);
+          expect(res.body.groupMembers[1].fullname).toBe(users[0].fullname);
+        });
+
+        test(`users[0] get members of groups[0].public (owned, 2 members)`, async () => {
+          const res = await request(app)
+            .get(`/api/v1/chat/groups/${groups[0].public._id}/members`)
+            // request with user[0] account
+            .set('Authorization', `Bearer ${token0}`);
+
+          expect(res.status).toBe(200);
+          expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
+          expect(res.body.groupMembers.length).toBe(2);
+          // sorted by join time
+          expect(res.body.groupMembers[0].fullname).toBe(users[0].fullname);
+          expect(res.body.groupMembers[1].fullname).toBe(users[1].fullname);
+        });
+      });
+    });
+
+    xdescribe(`POST /chat/groups/:groupid/members - current logged in user join the group`, () => {});
+
+    xdescribe(`DELETE /chat/groups/:groupid/members/:userid - current logged in user leave the group or kick someone`, () => {});
   });
 });
