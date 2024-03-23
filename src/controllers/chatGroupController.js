@@ -97,33 +97,44 @@ module.exports.chat_group_get = asyncHandler(async (req, res, next) => {
   const group = await Group.findById(req.params.groupid).populate('creator').exec();
   if (group === null) return res.sendStatus(404);
 
-  // get all references of members in this group
-  const groupMembers = await GroupMember.find({ group }).populate('user', 'name _id').exec();
+  // get all references of members in this group, sort by time join
+  const groupMembers = await GroupMember.find({ group }).populate('user', 'fullname _id').sort({ createdAt: 1 }).exec();
+
+  // console.log(`groupMembers of this group belike: `, groupMembers);
 
   // GroupMember to find reference between this current logged in user vs the group (check member and also creator at the same time)
   const userInGroupMembers = groupMembers[groupMembers.findIndex((memRef) => memRef.user.id === req.user.id)];
 
-  console.log(`the userInGroupMembers belike: `, userInGroupMembers);
+  // console.log(`the userInGroupMembers belike: `, userInGroupMembers);
 
   // current logged in user joined group or not
-  const canReadMessages = !!userInGroupMembers;
+  const isMember = !!userInGroupMembers;
+  const isCreator = !!userInGroupMembers?.isCreator;
 
-  let messages;
+  let groupMessages;
 
-  if (canReadMessages) {
+  // current logged in user can read group's messages
+  if (isMember) {
     // find all messages is being sent to this group
-    messages = await Message.find({ groupReceive: group }).exec();
+    groupMessages = await Message.find({ groupReceive: group }).sort({ createdAt: 1 }).exec();
   }
-  //
+  // null to determine that current logged in user is not joined
   else {
-    messages = [];
+    groupMessages = null;
   }
 
   return (
     res
       // base on user joined group or not
-      .status(canReadMessages ? 200 : 403)
-      .json({ requestedUser: req.user, receivedGroup: group, messages, groupMembers })
+      .status(isMember ? 200 : 403)
+      .json({
+        requestedUser: req.user,
+        receivedGroup: group,
+        groupMessages,
+        groupMembers: groupMembers.map((ref) => ref.user),
+        isCreator,
+        isMember,
+      })
   );
 });
 

@@ -405,7 +405,7 @@ describe(`/chat/groups`, () => {
     // TODO should work like /chat/users/:userid
     // but extra info like
 
-    describe(`GET /chat/groups/:groupid`, () => {
+    describe(`GET /chat/groups/:groupid - get group's messages, groups's info, group's members`, () => {
       test(`users[0] get group not exists`, async () => {
         const res = await request(app)
           .get(`/api/v1/chat/groups/someRandomString`)
@@ -421,20 +421,70 @@ describe(`/chat/groups`, () => {
           // request with user[0] account
           .set('Authorization', `Bearer ${token0}`);
 
+        // 403 when not joined
         expect(res.status).toBe(403);
-        // TODO BUG
+        expect(res.body.groupMessages).toEqual(null);
+        expect(res.body.groupMembers.length).toBe(1);
+
+        // console.log(res.body.groupMembers[0]);
+
+        expect(res.body.groupMembers[0].fullname).toBe(users[1].fullname);
+        expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
+        expect(res.body.receivedGroup.name).toBe(groups[1].public.name);
+        expect(res.body.receivedGroup.creator.fullname).toBe(users[1].fullname);
+        expect(res.body.isCreator).toBe(false);
+        expect(res.body.isMember).toBe(false);
       });
 
       test(`users[0] get groups[1].private (joined)`, async () => {
-        //
+        const res = await request(app)
+          .get(`/api/v1/chat/groups/${groups[1].private._id}`)
+          // request with user[0] account
+          .set('Authorization', `Bearer ${token0}`);
+
+        // 200 when joined
+        expect(res.status).toBe(200);
+        // not messages yet
+        expect(res.body.groupMessages).toEqual([]);
+        // the same above but 2 users now users[0] and [1]
+        expect(res.body.groupMembers.length).toBe(2);
+
+        // console.log(res.body.groupMembers[0]);
+
+        expect(res.body.groupMembers[0].fullname).toBe(users[1].fullname);
+        expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
+        expect(res.body.receivedGroup.name).toBe(groups[1].private.name);
+        expect(res.body.receivedGroup.creator.fullname).toBe(users[1].fullname);
+        expect(res.body.isCreator).toBe(false);
+        expect(res.body.isMember).toBe(true);
       });
 
       test(`users[0] get groups[0].public (created, users[1] also joined)`, async () => {
-        //
+        const res = await request(app)
+          .get(`/api/v1/chat/groups/${groups[0].public._id}`)
+          // request with user[0] account
+          .set('Authorization', `Bearer ${token0}`);
+
+        // 200 when joined
+        expect(res.status).toBe(200);
+        // not messages yet
+        expect(res.body.groupMessages).toEqual([]);
+        // the same above but 2 users now users[0] and [1]
+        expect(res.body.groupMembers.length).toBe(2);
+
+        // console.log(res.body.groupMembers[0]);
+
+        // members is sorted by time joined
+        expect(res.body.groupMembers[0].fullname).toBe(users[0].fullname);
+        expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
+        expect(res.body.receivedGroup.name).toBe(groups[0].public.name);
+        expect(res.body.receivedGroup.creator.fullname).toBe(users[0].fullname);
+        expect(res.body.isCreator).toBe(true);
+        expect(res.body.isMember).toBe(true);
       });
     });
 
-    describe(`POST /chat/groups/:groupid`, () => {
+    describe(`POST /chat/groups/:groupid - post a message to group chat`, () => {
       //
     });
   });
