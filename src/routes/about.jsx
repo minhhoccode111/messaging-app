@@ -1,3 +1,5 @@
+import { OutsideLink } from '../components';
+
 export default function About() {
   return (
     <section className="mx-auto my-12 p-4 max-w-[65ch] w-full text-slate-700">
@@ -5,36 +7,23 @@ export default function About() {
         <h2 className="text-4xl font-bold">About</h2>
       </header>
       <article className="flex flex-col gap-3 py-4">
-        <p className="">To win this game you have to find 3 hidden characters.</p>
         <p className="">
-          <a href="https://github.com/minhhoccode111/personal-portfolio" target="_blank" rel="noopener" className="text-link underline decoration-dotted hover:decoration-solid">
-            Project
-          </a>{' '}
-          is made by{' '}
-          <a href="https://github.com/minhhoccode111" target="_blank" rel="noopener" className="text-sky-500 underline decoration-dotted hover:decoration-solid">
-            minhhoccode111
-          </a>
-          .
+          Simple message app <OutsideLink>without</OutsideLink> real time update
+        </p>
+        <p className="">
+          <OutsideLink to={'https://github.com/minhhoccode111/messaging-app-front'}>Project</OutsideLink> is made by{' '}
+          <OutsideLink to={'https://github.com/minhhoccode111'}> minhhoccode111 </OutsideLink>.
         </p>
 
         <p className="">
-          To showcase the{' '}
-          <a href="https://github.com/minhhoccode111/wheres-waldo-back" target="_blank" rel="noopener" className="text-link underline decoration-dotted hover:decoration-solid">
-            Where&apos;s Waldo (A photo tagging app)
-          </a>{' '}
-          developed for{' '}
-          <a
-            href="https://www.theodinproject.com/lessons/nodejs-where-s-waldo-a-photo-tagging-app"
-            target="_blank"
-            rel="noopener"
-            className="text-link underline decoration-dotted hover:decoration-solid"
-          >
-            The Odin Project&apos;s NodeJS course
-          </a>
-          .
+          To showcase the <OutsideLink to="https://github.com/minhhoccode111/messaging-app-back"> Messaging App Back </OutsideLink> developed for{' '}
+          <OutsideLink to="https://www.theodinproject.com/lessons/nodejs-messaging-app"> The Odin Project&apos;s NodeJS course </OutsideLink>.
         </p>
 
-        <p className="">This project&apos;s backend uses free tier hosting on Glitch, which can cause significant delays in the server&apos;s response time for API requests or data fetching.</p>
+        <p className="">
+          This project&apos;s backend uses free tier hosting on <OutsideLink to={'https://glitch.com'}>Glitch</OutsideLink>, which can cause significant delays in the server&apos;s response time for
+          API requests or data fetching. (However, I still really appreciate the fact that Glitch offers a free tier for hosting Backend projects.)
+        </p>
       </article>
     </section>
   );

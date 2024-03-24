@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { Timer, Character } from './../components';
+// import { Timer, Character } from './../components';
 import axios from 'axios';
-import Odlaw from './../assets/odlaw.gif';
-import Wizard from './../assets/wizard.gif';
-import Waldo from './../assets/waldo.png';
-import Playground from './../assets/wheres-waldo-playground.jpg';
+// import Odlaw from './../assets/odlaw.gif';
+// import Wizard from './../assets/wizard.gif';
+// import Waldo from './../assets/waldo.png';
+// import Playground from './../assets/wheres-waldo-playground.jpg';
 
 function CharacterFac(name, link, found = false) {
   return { name, link, found };
@@ -84,11 +84,11 @@ export default function Game() {
   }, [isPopup]);
 
   // default 3 characters
-  const [characters, setCharacters] = useState([
-    CharacterFac('waldo', Waldo), // create default object characters
-    CharacterFac('wizard', Wizard),
-    CharacterFac('odlaw', Odlaw),
-  ]);
+  // const [characters, setCharacters] = useState([
+  //   CharacterFac('waldo', Waldo), // create default object characters
+  //   CharacterFac('wizard', Wizard),
+  //   CharacterFac('odlaw', Odlaw),
+  // ]);
 
   // odlaw's head 10% - 35%
   // wizard's head 26% - 34%
@@ -114,25 +114,25 @@ export default function Game() {
       });
 
       // display match
-      setCharacters((characters) =>
-        characters.map((char) => {
-          if (char.name === res.data.charname) {
-            return {
-              ...char,
-              // mark found
-              found: true,
-              // replace name with second to find that char
-              name: (res.data.time - startTime) / 1000,
-            };
-          }
-          // else keep the same
-          else return char;
-        })
-      );
+      // setCharacters((characters) =>
+      //   characters.map((char) => {
+      //     if (char.name === res.data.charname) {
+      //       return {
+      //         ...char,
+      //         // mark found
+      //         found: true,
+      //         // replace name with second to find that char
+      //         name: (res.data.time - startTime) / 1000,
+      //       };
+      //     }
+      //     // else keep the same
+      //     else return char;
+      //   })
+      // );
 
-      const count = characters.filter((char) => char.found).length;
+      // const count = characters.filter((char) => char.found).length;
       // because next render it will be 3
-      if (count === 2) setTimePlayed(res.data.time - startTime);
+      // if (count === 2) setTimePlayed(res.data.time - startTime);
 
       // display message
       setMessage('Found!');
@@ -171,7 +171,7 @@ export default function Game() {
       <header className="flex gap-2 justify-between items-center p-3">
         <div className="flex-1">
           {/* counter */}
-          <Timer startTime={startTime} timePlayed={timePlayed} />
+          {/* <Timer startTime={startTime} timePlayed={timePlayed} /> */}
 
           {/* display click position */}
           <div className="p-4 font-bold text-lg">
@@ -180,13 +180,13 @@ export default function Game() {
         </div>
 
         {/* display characters in header */}
-        {characters.map((char, i) => (
+        {/* {characters.map((char, i) => (
           <Character char={char} key={i} />
-        ))}
+        ))} */}
       </header>
 
       {/* display form when every character is found */}
-      {characters.every((c) => c.found) && (
+      {/* {characters.every((c) => c.found) && (
         <div className="fixed z-50 top-0 left-0 h-full w-full bg-[#77777799] flex flex-col gap-4 justify-center items-center">
           <h2 className="text-4xl font-bold text-white">You win!</h2>
           <h2 className="text-4xl font-bold text-white">Enter Your Name</h2>
@@ -212,11 +212,11 @@ export default function Game() {
             </button>
           </form>
         </div>
-      )}
+      )} */}
 
       {/* gameboard */}
       <article className="aspect-16/9 bg-link border-link border-8 rounded-3xl relative">
-        <img ref={playgroundRef} src={Playground} alt="Many people at the beach" className="block w-full cursor-crosshair rounded-xl" />
+        {/* <img ref={playgroundRef} src={Playground} alt="Many people at the beach" className="block w-full cursor-crosshair rounded-xl" /> */}
 
         {/* display messages about game state */}
         <div

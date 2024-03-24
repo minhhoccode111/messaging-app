@@ -1,5 +1,5 @@
 import { AiOutlineLoading } from 'react-icons/ai';
-import { IoIosCloseCircleOutline, IoIosMenu } from 'react-icons/io';
+import { IoIosCloseCircleOutline, IoIosPersonAdd, IoIosMenu, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
 import { RiSignalWifiErrorFill } from 'react-icons/ri';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { NavLink, Link } from 'react-router-dom';
@@ -19,14 +19,6 @@ export function Error({ className = 'text-2xl' }) {
       <RiSignalWifiErrorFill className="" />
     </span>
   );
-}
-
-export function NavigateButton() {
-  return <></>;
-}
-
-export function CustomButton() {
-  return <></>;
 }
 
 export function Character({ char }) {
@@ -96,18 +88,25 @@ export function Footer() {
   return (
     <footer className="p-8 grid place-items-center">
       <p className="">
-        <a href="https://github.com/minhhoccode111/wheres-waldo-front" target="_blank" rel="noopener" className="text-link underline decoration-dotted hover:decoration-solid">
-          This
-        </a>{' '}
-        is made by{' '}
-        <a href="https://github.com/minhhoccode111" target="_blank" rel="noopener" className="text-sky-500 underline decoration-dotted hover:decoration-solid">
-          minhhoccode111
-        </a>
+        <OutsideLink to={'https://github.com/minhhoccode111/messaging-app-front'}> Project</OutsideLink> is made by <OutsideLink to={'https://github.com/minhhoccode111'}> minhhoccode111 </OutsideLink>
         .
       </p>
     </footer>
   );
 }
+
+export function OutsideLink({ children, to }) {
+  return (
+    <a href={to} target="_blank" rel="noopener" className="text-link underline decoration-dotted hover:decoration-solid cursor-pointer">
+      {children}
+    </a>
+  );
+}
+
+OutsideLink.propTypes = {
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+  to: PropTypes.string,
+};
 
 export function RipperLink({ children, to }) {
   return (
@@ -132,7 +131,7 @@ export function RipperButton({ children, onClick }) {
   );
 }
 
-export function Header() {
+export function Header({ loginState, isLightTheme, setIsLightTheme }) {
   // hamburger menu state
   const [isShowMenu, setIsShowMenu] = useState(false);
 
@@ -178,16 +177,16 @@ export function Header() {
         {/* link to about section */}
         <NavLink
           className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
-          to={'game'}
+          to={'chat'}
         >
-          Game
+          Chat
         </NavLink>
 
         <NavLink
           className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
-          to={'score'}
+          to={'profile'}
         >
-          Score
+          Profile
         </NavLink>
 
         <NavLink
@@ -197,9 +196,70 @@ export function Header() {
           About
         </NavLink>
       </nav>
+
+      {/* token not expired */}
+      {new Date(loginState?.expiresInDate) > new Date() ? (
+        <div className="flex gap-2 md:gap-4 max-sm:justify-end">
+          {/* display authentication */}
+          <p className={'max-sm:rounded-xl rounded-lg transition-all self-center relative border ' + (loginState?.user?.isCreator ? 'text-danger border-danger' : 'text-success border-success')}>
+            {/* a button to toggle username */}
+            <button className="peer flex items-stretch justify-stretch max-sm:p-4 p-2">{loginState?.user?.isCreator ? 'Creator' : 'Viewer'}</button>
+
+            {/* a tooltip to display user name */}
+            <span className="absolute transition-all px-6 py-3 rounded-md hidden peer-focus:block peer-hover:block max-sm:bottom-full sm:top-full my-4 bg-gray-800 left-1/2 -translate-x-1/2 text-center z-10">
+              {loginState?.user?.fullname}
+            </span>
+          </p>
+
+          <div className="border border-slate-900 w-0"></div>
+
+          {/* link to logout section */}
+          <NavLink
+            className={({ isActive }) =>
+              (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all grid place-items-center'
+            }
+            to={'logout'}
+            title="Logout"
+          >
+            <IoIosLogOut className="text-6xl sm:text-2xl md:text-3xl" />
+          </NavLink>
+        </div>
+      ) : (
+        <div className="flex gap-2 md:gap-4 max-sm:justify-end">
+          {/* link to signup section */}
+          <NavLink
+            className={({ isActive }) =>
+              (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all grid place-items-center'
+            }
+            to={'signup'}
+            title="Signup"
+          >
+            <IoIosPersonAdd className="text-6xl sm:text-2xl md:text-3xl" />
+          </NavLink>
+
+          <div className="border border-slate-900 w-0"></div>
+
+          {/* link to login section */}
+          <NavLink
+            className={({ isActive }) =>
+              (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all grid place-items-center'
+            }
+            to={'login'}
+            title="Login"
+          >
+            <IoIosLogIn className="text-6xl sm:text-2xl md:text-3xl" />
+          </NavLink>
+        </div>
+      )}
     </header>
   );
 }
+
+Header.propTypes = {
+  loginState: PropTypes.object,
+  isLightTheme: PropTypes.bool,
+  setIsLightTheme: PropTypes.func,
+};
 
 Error.propTypes = {
   className: PropTypes.string,
@@ -228,4 +288,36 @@ GameResult.propTypes = {
 Timer.propTypes = {
   startTime: PropTypes.number.isRequired,
   timePlayed: PropTypes.number.isRequired,
+};
+
+export function SubmitButton({ children, isDisable }) {
+  return (
+    <button
+      disabled={isDisable}
+      type="submit"
+      className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white transition-all hover:scale-110 hover:shadow hover:shadow-gray-400"
+    >
+      {children}
+    </button>
+  );
+}
+
+export function CustomButton({ isDisable, children, type = 'button', className = 'bg-link text-white' }) {
+  return (
+    <button disabled={isDisable} type={type} className={'inline-block rounded-lg px-5 py-3 text-sm font-medium transition-all hover:scale-110 hover:shadow hover:shadow-gray-400 ' + className}>
+      {children}
+    </button>
+  );
+}
+
+SubmitButton.propTypes = {
+  isDisable: PropTypes.bool.isRequired,
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+};
+
+CustomButton.propTypes = {
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+  isDisable: PropTypes.bool.isRequired,
+  type: PropTypes.string,
+  className: PropTypes.string,
 };

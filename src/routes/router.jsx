@@ -2,9 +2,12 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import NotFound from './404';
 import Layout from './layout';
 import Index from './index';
-import Score from './score';
-import Game from './game';
+import Profile from './profile';
+import Chat from './chat';
 import About from './about';
+import Login from './login';
+import Logout from './logout';
+import Signup from './signup';
 
 export default function Router() {
   // setting router
@@ -21,15 +24,30 @@ export default function Router() {
         },
 
         {
-          path: 'score',
-          element: <Score />,
+          path: 'profile',
+          element: <Profile />,
           errorElement: <NotFound />,
         },
 
         {
-          path: 'game',
-          element: <Game />,
+          path: 'chat',
+          element: <Chat />,
           errorElement: <NotFound />,
+        },
+
+        {
+          path: 'login',
+          element: <Login />,
+        },
+
+        {
+          path: 'logout',
+          element: <Logout />,
+        },
+
+        {
+          path: 'signup',
+          element: <Signup />,
         },
 
         {
