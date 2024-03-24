@@ -1,4 +1,5 @@
-import { OutsideLink } from '../components';
+import { OutsideLink, FakeLink } from '../components';
+import { Link } from 'react-router-dom';
 
 export default function About() {
   return (
@@ -8,7 +9,7 @@ export default function About() {
       </header>
       <article className="flex flex-col gap-3 py-4">
         <p className="">
-          Simple message app <OutsideLink>without</OutsideLink> real time update
+          Simple message app <FakeLink>without</FakeLink> real time update
         </p>
         <p className="">
           <OutsideLink to={'https://github.com/minhhoccode111/messaging-app-front'}>Project</OutsideLink> is made by{' '}
@@ -23,6 +24,14 @@ export default function About() {
         <p className="">
           This project&apos;s backend uses free tier hosting on <OutsideLink to={'https://glitch.com'}>Glitch</OutsideLink>, which can cause significant delays in the server&apos;s response time for
           API requests or data fetching. (However, I still really appreciate the fact that Glitch offers a free tier for hosting Backend projects.)
+        </p>
+
+        <p className="font-bold text-2xl">
+          Since this is a chat app, you will need to{' '}
+          <Link to="/login">
+            <FakeLink>login</FakeLink>
+          </Link>{' '}
+          before doing anything.
         </p>
       </article>
     </section>

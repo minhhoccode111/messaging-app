@@ -121,7 +121,7 @@ export default function Login() {
               </Link>{' '}
               now
             </p>
-            <p>If you just want a quick start, try testing accounts.</p>
+            <p>There are also 20 testing accounts available!</p>
             <p>Username: asd[0...19], password: asd</p>
           </div>
 
