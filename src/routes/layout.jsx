@@ -2,15 +2,8 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Footer, Header } from './../components';
 import { get, set } from './../methods/index';
-// import axios from 'axios';
-
-// things only need to fetch once, like other users and groups
-async function useInitFetch() {
-  return {};
-}
 
 export default function Layout() {
-  useInitFetch();
   // location.pathname - the path of the current URL
   const { pathname } = useLocation();
 

@@ -68,9 +68,7 @@ export default function Login() {
       <div className="mx-auto text-center">
         <h1 className="text-2xl font-bold sm:text-3xl">Login</h1>
 
-        <p className="mt-4 text-gray-500">
-          To participate in the conversation, express your opinions, and share valuable insights with others, consider logging in to chat!
-        </p>
+        <p className="mt-4 text-gray-500">To participate in the conversation, express your opinions, and share valuable insights with others, consider logging in to chat!</p>
       </div>
 
       <form onSubmit={handleLoginFormSubmit} className="mx-auto mb-0 mt-8 space-y-4">
