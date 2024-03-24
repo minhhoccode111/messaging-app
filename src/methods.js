@@ -16,4 +16,4 @@ module.exports.formatVietnameseString = (str) => {
 // created by new Date()
 module.exports.formatDate = (jsDateObject) => DateTime.fromJSDate(jsDateObject).toLocaleString(DateTime.DATE_MED) + ' - ' + DateTime.fromJSDate(jsDateObject).toLocaleString(DateTime.TIME_24_SIMPLE);
 	
-
+module.exports.formatDateIso = (jsDateObject) => DateTime.fromJSDate(jsDateObject).toISODate();

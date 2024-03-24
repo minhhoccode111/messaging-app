@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { formatDate } = require('./../methods');
+const { formatDate, formatDateIso } = require('./../methods');
 
 const Schema = mongoose.Schema;
 
@@ -83,6 +83,18 @@ UserSchema.virtual('updatedAtFormatted').get(function () {
 
 UserSchema.virtual('updatedAtUnix').get(function () {
   if (this.updatedAt) return this.updatedAt.getTime();
+});
+
+UserSchema.virtual('dateOfBirthFormatted').get(function () {
+  if (this.dateOfBirth) return formatDate(this.dateOfBirth);
+});
+
+UserSchema.virtual('dateOfBirthUnix').get(function () {
+  if (this.dateOfBirth) return this.dateOfBirth.getTime();
+});
+
+UserSchema.virtual('dateOfBirthIso').get(function () {
+  if (this.dateOfBirth) return formatDateIso(this.dateOfBirth);
 });
 
 module.exports = mongoose.model('User', UserSchema);
