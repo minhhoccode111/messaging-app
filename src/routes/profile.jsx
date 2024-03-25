@@ -6,6 +6,10 @@ import { Loading, Error, FakeLink } from './../components';
 export default function Profile() {
   const { loginState } = useOutletContext();
 
+  const user = loginState.user;
+
+  const [avatarLinkString, setAvatarLinkString] = useState(user?.avatarLink);
+
   // only logged in user be able to go to this route
   if (!loginState.token || !loginState.user) return <Navigate to={'/login'} />;
 
@@ -13,41 +17,53 @@ export default function Profile() {
     //
   }
 
-  const user = loginState.user;
-
-  const [avatarLinkString, setAvatarLinkString] = useState(user.avatarLink);
-
   return (
     <section className="mx-auto max-w-[60ch] px-4 py-16 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-center w-48 h-48 self-center bg-warn rounded-full">
-          <img className="rounded-full w-full block text-xs" src={avatarLinkString} alt={user?.fullname + ' avatar'} />
+      {/* preview container */}
+
+      <article className="mb-8">
+        <header className="">
+          <h2 className="text-2xl font-bold">Preview</h2>
+        </header>
+
+        <div className="flex items-center justify-center self-center rounded-full my-8">
+          {/* make the alt text center just in case the link is not an image */}
+          <img className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center" src={user.avatarLink} alt={user?.fullname + ' avatar'} />
         </div>
 
-        <div className="">
-          <p className="">Fullname: {user.fullname}</p>
-          <p className="">Status: {user.status}</p>
-          <p className="">Bio: {user.bio}</p>
-          <p className="">Date of birth: {user.dateOfBirthFormatted.split(' - ')[0]}</p>
-        </div>
-
-        <div className="">
-          <h2 className="">Edit</h2>
-
-          <p className="">
-            Fullname: <input type="text" defaultValue={user?.fullname} />
+        <div className="grid gap-4 grid-cols-custom">
+          <h3 className="font-bold">Fullname </h3>
+          <p className="">{user.fullname}</p>
+          <h3 className="font-bold">Status</h3>
+          {/* custom tailwind base on user.status */}
+          <p className={'capitalize' + ' ' + (user.status === 'online' ? 'text-success' : user.status === 'busy' ? 'text-busy' : user.status === 'afk' ? 'text-afk' : 'text-gray-500')}>
+            {user.status}
           </p>
+          <h3 className="font-bold">Bio </h3>
+          <p className="">{user.bio}</p>
+          <h3 className="font-bold">Date of birth</h3>
+          <p className="">{user.dateOfBirthFormatted.split(' - ')[0]}</p>
+        </div>
+      </article>
 
-          <p className="">
+      {/* Update container  */}
+      <article className="mb-8">
+        <header className="">
+          <h2 className="text-2xl font-bold">Update</h2>
+        </header>
+
+        <div className="">
+          <p className="">Fullname</p>
+          <input type="text" defaultValue={user?.fullname} />
+
+          <p className="">Status</p>
+          <select className="" defaultValue={user?.status}>
             Status:
-            <select className="" defaultValue={user?.status}>
-              Status:
-              <option value="online">online</option>
-              <option value="offline">offline</option>
-              <option value="busy">busy</option>
-              <option value="afk">afk</option>
-            </select>
-          </p>
+            <option value="online">Online</option>
+            <option value="offline">Offline</option>
+            <option value="busy">Busy</option>
+            <option value="afk">Afk</option>
+          </select>
 
           <p className="">
             Bio:
@@ -67,13 +83,8 @@ export default function Profile() {
             Avatar Link: <input className="block w-full" onChange={(e) => setAvatarLinkString(e.target.value)} type="text" defaultValue={avatarLinkString} />
           </p>
 
-          <div className="flex gap-4 items-center justify-between">
-            <button className="">
-              <FakeLink>delete user</FakeLink>
-            </button>
-            <button className="">
-              <FakeLink>update user</FakeLink>
-            </button>
+          <div className="flex gap-4 items-center justify-end">
+            <button className="ripper px-4 py-2">Update</button>
           </div>
 
           <hr className="my-4" />
@@ -81,7 +92,7 @@ export default function Profile() {
           <p className="">Created at: {user?.createdAtFormatted}</p>
           <p className="">Updated at: {user?.updatedAtFormatted}</p>
         </div>
-      </div>
+      </article>
     </section>
   );
 }
