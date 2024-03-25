@@ -37,11 +37,11 @@ module.exports.user_put = [
     if (!errors.length) {
       const newUser = new User({
         ...oldUser.toJSON(),
-        fullname: fullname || oldUser.fullname,
-        bio: bio || oldUser.bio,
-        avatarLink: avatarLink || oldUser.avatarLink,
-        status: status || oldUser.status,
-        dateOfBirth: dateOfBirth || oldUser.dateOfBirth,
+        fullname: fullname ?? oldUser.fullname,
+        bio: bio ?? oldUser.bio,
+        avatarLink: avatarLink ?? oldUser.avatarLink,
+        status: status ?? oldUser.status,
+        dateOfBirth: dateOfBirth ?? oldUser.dateOfBirth,
         _id: oldUser._id,
         updatedAt: new Date(),
       });
