@@ -8,7 +8,7 @@ export default function Chat() {
   const { loginState } = useOutletContext();
 
   // only logged in user be able to go to this route
-  if (!loginState.token || !loginState.user) return <Navigate to={'/login'} />;
+  if (!loginState.token || !loginState.user) return <Navigate to={'/'} />;
 
   return <></>;
 }
