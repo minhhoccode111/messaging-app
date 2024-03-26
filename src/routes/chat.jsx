@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, Navigate, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
-import { Loading, Error, SubmitButton, CustomButton } from './../components/more';
+import { Loading, Error, SubmitButton, CustomButton, FakeLink } from './../components/more';
 import UserContact from './../components/contact/UserContact';
 
 function useFetchContact() {
@@ -85,31 +85,54 @@ export default function Chat() {
   // includes info of current user or group, members for group only
   const [currentOptions, setCurrentOptions] = useState({});
 
+  // which section to expand
+  const [currentOpenSection, setCurrentOpenSection] = useState('');
+
   // only logged in user be able to go to this route
   if (!loginState.token || !loginState.user) return <Navigate to={'/'} />;
 
+  // set current open section when button clicked
+  function handleToggleClick(section) {
+    return function () {
+      if (currentOpenSection === section) setCurrentOpenSection('');
+      else setCurrentOpenSection(section);
+    };
+  }
+
+  // based on current open section to return a class
+  function current(current) {
+    return currentOpenSection === current ? 'max-h-full' : 'max-h-0';
+  }
+
   return (
-    <section className="flex-1 text-slate-900 p-2 grid grid-cols-chat gap-2 max-h-full">
+    <section className="text-slate-900 p-2 grid grid-cols-chat grid-rows-chat gap-2 border-2 border-success">
       {/* display contact section */}
-      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem]">
+      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
         {/* other users */}
-        <ul className="">
+        <button className="grid place-items-center font-bold text-xl py-4 text-center w-full" onClick={handleToggleClick('users')}>
+          <FakeLink>Users</FakeLink>
+        </button>
+        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + current('users')}>
           {dataContact?.users?.map((u) => {
             return <UserContact user={u} key={u.id} />;
           })}
         </ul>
 
         {/* joined groups */}
-        <div className=""></div>
+        <button className="grid place-items-center w-full">{/* <h2 className="font-bold text-xl my-2">Users</h2> */}</button>
+        <ul className="max-h-0"></ul>
 
         {/* public groups */}
-        <div className=""></div>
+        <button className="grid place-items-center w-full">{/* <h2 className="font-bold text-xl my-2">Users</h2> */}</button>
+        <ul className="max-h-0"></ul>
 
         {/* private groups */}
-        <div className=""></div>
+        <button className="grid place-items-center w-full">{/* <h2 className="font-bold text-xl my-2">Users</h2> */}</button>
+        <ul className="max-h-0"></ul>
 
         {/* create a group */}
-        <div className=""></div>
+        <button className="grid place-items-center w-full">{/* <h2 className="font-bold text-xl my-2">Users</h2> */}</button>
+        <ul className="max-h-0"></ul>
       </article>
 
       {/* display chat section */}
@@ -122,7 +145,7 @@ export default function Chat() {
       </article>
 
       {/* display option section */}
-      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-4 shadow-2xl bg-white max-w-[10rem]">
+      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
         {/* display user or group  */}
         <div className=""></div>
 

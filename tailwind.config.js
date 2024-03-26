@@ -10,6 +10,9 @@ export default {
         'profile': 'max-content 1fr',
         'chat': 'minmax(10rem, max-content) 1fr minmax(10rem, max-content)',
       },
+      gridTemplateRows: {
+        'chat': '100vh',
+			},
       colors: {
         'semi-transparent': '#ffffffef',
         link: '#0ea5e9',

@@ -59,17 +59,12 @@ OutsideLink.propTypes = {
   to: PropTypes.string,
 };
 
-export function FakeLink({ children, onClick }) {
-  return (
-    <button onClick={onClick} className="text-link underline decoration-dotted hover:decoration-solid cursor-pointer inline">
-      {children}
-    </button>
-  );
+export function FakeLink({ children }) {
+  return <span className="text-link underline decoration-dotted hover:decoration-solid cursor-pointer inline">{children}</span>;
 }
 
 FakeLink.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  onClick: PropTypes.func,
 };
 
 export function Header({ loginState }) {

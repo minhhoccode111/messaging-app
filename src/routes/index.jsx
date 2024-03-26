@@ -4,7 +4,7 @@ export default function Index() {
   const { loginState } = useOutletContext();
 
   return (
-    <section className="flex-1 flex flex-col">
+    <section className="flex flex-col h-full">
       <div className="flex-1 flex flex-col items-center justify-center gap-16 sm:gap-32">
         <div className="text-link ripper underline hover:decoration-2 underline-offset-4 tracking-widest p-4">
           <h1 className="font-bold text-xl whitespace-nowrap">Messaging App</h1>

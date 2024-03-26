@@ -24,12 +24,17 @@ export default function Layout() {
       <Header loginState={loginState} />
 
       {/* dynamic part */}
-      <main className={'flex-1 flex flex-col' + ' ' + (pathname === '/chat' && 'max-h-screen')}>
+      <main
+        className={
+          'flex-1 border-2 border-danger'
+          // + ' ' + (pathname === '/chat' && 'max-h-full')
+        }
+      >
         <Outlet context={{ setLoginState, loginState }} />
       </main>
 
       {/* footer part */}
-      {pathname !== '/' && <Footer />}
+      {pathname !== '/' && pathname !== '/chat' && <Footer />}
     </>
   );
 }
