@@ -4,7 +4,8 @@ import { useOutletContext, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { Loading, Error, SubmitButton, CustomButton, FakeLink, NumberCounter } from './../components/more';
 import UserContact from './../components/contact/UserContact';
-import GroupContact from '../components/contact/GroupContact';
+import GroupContact from './../components/contact/GroupContact';
+import NewGroupForm from './../components/contact/NewGroupForm';
 
 function useFetchContact() {
   const { loginState } = useOutletContext();
@@ -59,7 +60,7 @@ function useFetchContact() {
 
         setDataContact(() => ({ ...data }));
       } catch (error) {
-        console.log(error);
+        // console.log(error);
 
         setIsError(true);
       } finally {
@@ -81,11 +82,14 @@ export default function Chat() {
   const { isLoading, isError, dataContact, setWillFetchContact } = useFetchContact();
 
   // an array of messages to display in chat section
-  const [currentMessages, setCurrentMessages] = useState([]);
+  const [currentMessages, setCurrentMessages] = useState();
 
   // an object to display in options section, {info: {}, members:[]}
   // includes info of current user or group, members for group only
   const [currentOptions, setCurrentOptions] = useState({});
+
+  // identify which conversation current logged in user is engaging
+  const [currentConversation, setCurrentConversation] = useState();
 
   // which section to expand
   const [currentOpenSection, setCurrentOpenSection] = useState('');
@@ -188,9 +192,9 @@ export default function Chat() {
             <FaPlus className="text-white font-bold" />
           </NumberCounter>
         </button>
-        <form className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('new')}>
-          <p className="">khong dieu kien</p>
-        </form>
+        <div className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('new')}>
+          <NewGroupForm setWillFetchContact={setWillFetchContact} />
+        </div>
       </article>
 
       {/* display chat section */}
