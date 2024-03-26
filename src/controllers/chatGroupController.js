@@ -16,7 +16,7 @@ const debug = require('debug')('xxxxxxxxxxxxxxxxxxxx-debug-xxxxxxxxxxxxxxxxxxxx'
 // mongoose to check valid req.params.postid
 const mongoose = require('mongoose');
 
-// get all group that visible to current logged in user (joined, public)
+// get all groups that current logged in user can see
 module.exports.chat_all_group_get = asyncHandler(async (req, res) => {
   // first get all current logged in user joined group references
   let joinedGroups = await GroupMember.find({ user: req.user }).sort({ isCreator: 1 }).populate('group', 'name public avatarLink').exec();
@@ -24,6 +24,7 @@ module.exports.chat_all_group_get = asyncHandler(async (req, res) => {
   joinedGroups = joinedGroups.map((ref) => ({
     // extract needed fields from populated group field
     _id: ref?.group?._id,
+    id: ref?.group?.id,
     name: ref?.group?.name,
     public: ref?.group?.public,
     avatarLink: ref?.group?.avatarLink,
