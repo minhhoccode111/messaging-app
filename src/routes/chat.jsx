@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { useOutletContext, Navigate, useLoaderData } from 'react-router-dom';
+import { FaPlus } from 'react-icons/fa6';
+import { useOutletContext, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import { Loading, Error, SubmitButton, CustomButton, FakeLink } from './../components/more';
+import { Loading, Error, SubmitButton, CustomButton, FakeLink, NumberCounter } from './../components/more';
 import UserContact from './../components/contact/UserContact';
+import GroupContact from '../components/contact/GroupContact';
 
 function useFetchContact() {
   const { loginState } = useOutletContext();
@@ -100,39 +102,95 @@ export default function Chat() {
   }
 
   // based on current open section to return a class
-  function current(current) {
+  function sectionExpand(current) {
     return currentOpenSection === current ? 'max-h-full' : 'max-h-0';
   }
+
+  // based on current open section to return a class
+  function sectionHighlight(current) {
+    return currentOpenSection === current ? 'bg-red-300' : 'bg-red-100';
+  }
+
+  // console.log(dataContact);
+
+  const users = dataContact?.users;
+  const joinedGroups = dataContact?.joinedGroups;
+  const publicGroups = dataContact?.publicGroups;
+  const privateGroups = dataContact?.privateGroups;
 
   return (
     <section className="text-slate-900 p-2 grid grid-cols-chat grid-rows-chat gap-2 border-2 border-success">
       {/* display contact section */}
-      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
+      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full flex flex-col gap-1">
         {/* other users */}
-        <button className="grid place-items-center font-bold text-xl py-4 text-center w-full" onClick={handleToggleClick('users')}>
+        <button
+          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('users')}
+          onClick={handleToggleClick('users')}
+        >
           <FakeLink>Users</FakeLink>
+          <NumberCounter>{users?.length}</NumberCounter>
         </button>
-        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + current('users')}>
-          {dataContact?.users?.map((u) => {
+        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('users')}>
+          {users?.map((u) => {
             return <UserContact user={u} key={u.id} />;
           })}
         </ul>
 
         {/* joined groups */}
-        <button className="grid place-items-center w-full">{/* <h2 className="font-bold text-xl my-2">Users</h2> */}</button>
-        <ul className="max-h-0"></ul>
+        <button
+          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('joined')}
+          onClick={handleToggleClick('joined')}
+        >
+          <FakeLink>Joined Groups</FakeLink>
+          <NumberCounter>{joinedGroups?.length}</NumberCounter>
+        </button>
+        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('joined')}>
+          {joinedGroups?.map((gr) => {
+            return <GroupContact group={gr} key={gr.id} />;
+          })}
+        </ul>
 
         {/* public groups */}
-        <button className="grid place-items-center w-full">{/* <h2 className="font-bold text-xl my-2">Users</h2> */}</button>
-        <ul className="max-h-0"></ul>
+        <button
+          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('public')}
+          onClick={handleToggleClick('public')}
+        >
+          <FakeLink>Public Groups</FakeLink>
+          <NumberCounter>{publicGroups?.length}</NumberCounter>
+        </button>
+        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('public')}>
+          {publicGroups?.map((gr) => {
+            return <GroupContact group={gr} key={gr.id} />;
+          })}
+        </ul>
 
         {/* private groups */}
-        <button className="grid place-items-center w-full">{/* <h2 className="font-bold text-xl my-2">Users</h2> */}</button>
-        <ul className="max-h-0"></ul>
+        <button
+          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('private')}
+          onClick={handleToggleClick('private')}
+        >
+          <FakeLink>Private Groups</FakeLink>
+          <NumberCounter>{privateGroups?.length}</NumberCounter>
+        </button>
+        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('private')}>
+          {privateGroups?.map((gr) => {
+            return <GroupContact group={gr} key={gr.id} />;
+          })}
+        </ul>
 
-        {/* create a group */}
-        <button className="grid place-items-center w-full">{/* <h2 className="font-bold text-xl my-2">Users</h2> */}</button>
-        <ul className="max-h-0"></ul>
+        {/* new group */}
+        <button
+          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('new')}
+          onClick={handleToggleClick('new')}
+        >
+          <FakeLink>New Group</FakeLink>
+          <NumberCounter>
+            <FaPlus className="text-white font-bold" />
+          </NumberCounter>
+        </button>
+        <form className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('new')}>
+          <p className="">khong dieu kien</p>
+        </form>
       </article>
 
       {/* display chat section */}

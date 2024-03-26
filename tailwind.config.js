@@ -11,7 +11,7 @@ export default {
         'chat': 'minmax(10rem, max-content) 1fr minmax(10rem, max-content)',
       },
       gridTemplateRows: {
-        'chat': '100vh',
+        'chat': '96vh',
 			},
       colors: {
         'semi-transparent': '#ffffffef',

@@ -5,6 +5,14 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+export function NumberCounter({ children }) {
+  return <span className="inline-grid w-6 h-6 bg-danger text-white font-bold rounded-full text-xs place-items-center">{children}</span>;
+}
+
+NumberCounter.propTypes = {
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.element]),
+};
+
 export function UserStatus({ status }) {
   let bg;
   if (status === 'online') bg = 'bg-green-500';
