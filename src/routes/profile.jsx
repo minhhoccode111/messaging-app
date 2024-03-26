@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, Navigate, redirect } from 'react-router-dom';
 import axios from 'axios';
-import { Loading, Error, SubmitButton, CustomButton } from './../components';
+import { Loading, Error, SubmitButton, CustomButton } from './../components/more';
 import { domParser } from './../methods/index';
 import { set } from './../methods/index';
 

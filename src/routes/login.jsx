@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
-import { Loading, Error, SubmitButton } from './../components';
+import { Loading, Error, SubmitButton } from './../components/more';
 import { set } from './../methods/index';
 
 export default function Login() {

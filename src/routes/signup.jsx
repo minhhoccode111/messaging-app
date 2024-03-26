@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Loading, Error, SubmitButton } from '../components';
+import { Loading, Error, SubmitButton } from '../components/more';
 // import BackgroundImage2 from '../assets/bg-2.jpg';
 import axios from 'axios';
 

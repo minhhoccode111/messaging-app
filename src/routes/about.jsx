@@ -1,4 +1,4 @@
-import { OutsideLink, FakeLink } from '../components';
+import { OutsideLink, FakeLink } from '../components/more';
 import { Link } from 'react-router-dom';
 
 export default function About() {

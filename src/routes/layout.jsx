@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Footer, Header } from './../components';
+import { Footer, Header } from './../components/more';
 import { get, set } from './../methods/index';
 
 export default function Layout() {
