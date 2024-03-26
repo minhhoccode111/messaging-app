@@ -7,7 +7,8 @@ export default {
         auto: 'repeat(auto-fit, minmax(300px, 1fr))',
         'auto-sm': 'repeat(auto-fit, minmax(160px, 1fr))',
         'auto-md': 'repeat(auto-fit, minmax(220px, 1fr))',
-        'custom': 'max-content 1fr',
+        'profile': 'max-content 1fr',
+        'chat': 'minmax(10rem, max-content) 1fr minmax(10rem, max-content)',
       },
       colors: {
         'semi-transparent': '#ffffffef',

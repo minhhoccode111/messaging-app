@@ -24,7 +24,7 @@ export default function Layout() {
       <Header loginState={loginState} />
 
       {/* dynamic part */}
-      <main className="flex-1 flex flex-col">
+      <main className={'flex-1 flex flex-col' + ' ' + (pathname === '/chat' && 'max-h-screen')}>
         <Outlet context={{ setLoginState, loginState }} />
       </main>
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { useOutletContext, Navigate } from 'react-router-dom';
+import { useOutletContext, Navigate, redirect } from 'react-router-dom';
 import axios from 'axios';
-import { Loading, Error } from './../components';
+import { Loading, Error, SubmitButton, CustomButton } from './../components';
 import { domParser } from './../methods/index';
 import { set } from './../methods/index';
 
@@ -93,7 +93,10 @@ export default function Profile() {
       set({ ...loginState, user });
       setIsUpdate(false);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
+
+      // in case authorization is out of sync, then log out user
+      if (error.response.status === 401) redirect('/logout');
 
       if (error.response.status !== 400) setIsErrorUpdate(true);
       else setIsErrorUpdate(true);
@@ -121,7 +124,7 @@ export default function Profile() {
         </div>
 
         {/* update fullname */}
-        <div className="grid gap-4 grid-cols-custom">
+        <div className="grid gap-4 grid-cols-profile">
           <label htmlFor="fullname" className="font-bold">
             Fullname{' '}
           </label>
@@ -179,13 +182,11 @@ export default function Profile() {
 
         {/* update button */}
         <div className="flex gap-4 items-center justify-between my-4">
-          <button className="px-4 py-2 bg-danger text-white rounded-md" onClick={() => setIsUpdate(false)}>
+          <CustomButton className="text-white bg-danger" onClick={() => setIsUpdate(false)} isDisable={false}>
             Cancel
-          </button>
+          </CustomButton>
 
-          <button disabled={isLoadingUpdate || isErrorUpdate} type="submit" className="ripper px-4 py-2">
-            {isErrorUpdate ? <Error /> : isLoadingUpdate ? <Loading /> : 'Confirm'}
-          </button>
+          <SubmitButton isDisable={isLoadingUpdate || isErrorUpdate}>{isErrorUpdate ? <Error /> : isLoadingUpdate ? <Loading /> : 'Confirm'}</SubmitButton>
         </div>
       </form>
     );
@@ -202,7 +203,7 @@ export default function Profile() {
           <img className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center" src={loginState?.user?.avatarLink} alt={domParser(loginState?.user?.fullname) + ' avatar'} />
         </div>
 
-        <div className="grid gap-4 grid-cols-custom">
+        <div className="grid gap-4 grid-cols-profile">
           <h3 className="font-bold">Fullname </h3>
           {/* unescaped user fullname */}
           <h3 className="">{domParser(loginState?.user?.fullname)}</h3>

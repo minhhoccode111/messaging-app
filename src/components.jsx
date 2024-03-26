@@ -53,29 +53,6 @@ FakeLink.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 };
 
-export function RipperLink({ children, to }) {
-  return (
-    <div className="border-2 h-0 border-sky-500 relative self-stretch">
-      <Link className="ripper px-8 py-8 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-1/2 translate-x-1/2 bottom-0 translate-y-1/2 z-10" to={to}>
-        <span className="text-xl font-bold whitespace-nowrap">{children}</span>
-      </Link>
-    </div>
-  );
-}
-
-export function RipperButton({ children, onClick }) {
-  return (
-    <div className="border-2 h-0 border-sky-500 relative self-stretch">
-      <button
-        className="ripper px-8 py-8 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-1/2 translate-x-1/2 bottom-0 translate-y-1/2 z-10"
-        onClick={onClick}
-      >
-        <span className="text-xl font-bold whitespace-nowrap">{children}</span>
-      </button>
-    </div>
-  );
-}
-
 export function Header({ loginState }) {
   // hamburger menu state
   const [isShowMenu, setIsShowMenu] = useState(false);
@@ -203,16 +180,6 @@ Error.propTypes = {
 
 Loading.propTypes = Error.propTypes;
 
-RipperLink.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  to: PropTypes.string.isRequired,
-};
-
-RipperButton.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  onClick: PropTypes.func.isRequired,
-};
-
 export function SubmitButton({ children, isDisable }) {
   return (
     <button
@@ -225,9 +192,14 @@ export function SubmitButton({ children, isDisable }) {
   );
 }
 
-export function CustomButton({ isDisable, children, type = 'button', className = 'bg-link text-white' }) {
+export function CustomButton({ isDisable, onClick, children, type = 'button', className = 'bg-link text-white' }) {
   return (
-    <button disabled={isDisable} type={type} className={'inline-block rounded-lg px-5 py-3 text-sm font-medium transition-all hover:scale-110 hover:shadow hover:shadow-gray-400 ' + className}>
+    <button
+      onClick={onClick}
+      disabled={isDisable}
+      type={type}
+      className={'inline-block rounded-lg px-5 py-3 text-sm font-medium transition-all hover:scale-110 hover:shadow hover:shadow-gray-400 ' + className}
+    >
       {children}
     </button>
   );
@@ -243,4 +215,5 @@ CustomButton.propTypes = {
   isDisable: PropTypes.bool.isRequired,
   type: PropTypes.string,
   className: PropTypes.string,
+  onClick: PropTypes.func,
 };
