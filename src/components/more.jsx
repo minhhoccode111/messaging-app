@@ -2,8 +2,22 @@ import { AiOutlineLoading } from 'react-icons/ai';
 import { IoIosCloseCircleOutline, IoIosPersonAdd, IoIosMenu, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
 import { RiSignalWifiErrorFill } from 'react-icons/ri';
 import { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
+
+export function UserStatus({ status }) {
+  let bg;
+  if (status === 'online') bg = 'bg-green-500';
+  else if (status === 'busy') bg = 'bg-red-500';
+  else if (status === 'afk') bg = 'bg-yellow-500';
+  else if (status === 'offline') bg = 'bg-gray-500';
+  else bg = 'bg-black';
+  return <span className={'inline-block h-2 w-2 rounded-full mr-2' + ' ' + bg}></span>;
+}
+
+UserStatus.propTypes = {
+  status: PropTypes.string,
+};
 
 export function Loading({ className = 'text-2xl' }) {
   return (
@@ -45,12 +59,17 @@ OutsideLink.propTypes = {
   to: PropTypes.string,
 };
 
-export function FakeLink({ children }) {
-  return <span className="text-link underline decoration-dotted hover:decoration-solid cursor-pointer inline">{children}</span>;
+export function FakeLink({ children, onClick }) {
+  return (
+    <button onClick={onClick} className="text-link underline decoration-dotted hover:decoration-solid cursor-pointer inline">
+      {children}
+    </button>
+  );
 }
 
 FakeLink.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+  onClick: PropTypes.func,
 };
 
 export function Header({ loginState }) {

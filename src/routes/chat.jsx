@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, Navigate, useLoaderData } from 'react-router-dom';
 import axios from 'axios';
 import { Loading, Error, SubmitButton, CustomButton } from './../components/more';
+import UserContact from './../components/contact/UserContact';
 
-async function useFetchContact() {
+function useFetchContact() {
   const { loginState } = useOutletContext();
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -36,18 +37,28 @@ async function useFetchContact() {
 
         // extract data from responses
         const data = {};
-        data.users = userContactRes.data.users;
+        const statusTable = {
+          offline: 0,
+          afk: 1,
+          busy: 2,
+          online: 3,
+        };
+        // 1 extra step to sort users contact data base on status
+        data.users = userContactRes.data.users.sort((a, b) => statusTable[b.status] - statusTable[a.status]);
         data.joinedGroups = groupContactRes.data.joinedGroups;
         data.publicGroups = groupContactRes.data.publicGroups;
         data.privateGroups = groupContactRes.data.privateGroups;
 
-        // console.log(`the data belike: `, data);
-
         // console.log(userContactRes.data);
         // console.log(groupContactRes.data);
 
-        setDataContact(data);
+        // console.log(`the data belike: `, data);
+        // console.log(dataContact);
+
+        setDataContact(() => ({ ...data }));
       } catch (error) {
+        console.log(error);
+
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -80,9 +91,13 @@ export default function Chat() {
   return (
     <section className="flex-1 text-slate-900 p-2 grid grid-cols-chat gap-2 max-h-full">
       {/* display contact section */}
-      <article className="overflow-y-auto shadow-gray-400 rounded-3xl p-4 shadow-2xl bg-white">
+      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem]">
         {/* other users */}
-        <div className=""></div>
+        <ul className="">
+          {dataContact?.users?.map((u) => {
+            return <UserContact user={u} key={u.id} />;
+          })}
+        </ul>
 
         {/* joined groups */}
         <div className=""></div>
@@ -98,7 +113,7 @@ export default function Chat() {
       </article>
 
       {/* display chat section */}
-      <article className="overflow-y-auto shadow-gray-400 rounded-3xl p-4 shadow-2xl bg-white">
+      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-4 shadow-2xl bg-white">
         {/* display old messages section */}
         <div className=""></div>
 
@@ -107,7 +122,7 @@ export default function Chat() {
       </article>
 
       {/* display option section */}
-      <article className="overflow-y-auto shadow-gray-400 rounded-3xl p-4 shadow-2xl bg-white">
+      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-4 shadow-2xl bg-white max-w-[10rem]">
         {/* display user or group  */}
         <div className=""></div>
 
