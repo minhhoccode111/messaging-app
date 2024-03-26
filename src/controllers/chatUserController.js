@@ -17,7 +17,7 @@ const mongoose = require('mongoose');
 // all users that current logged in user can chat with
 module.exports.chat_all_user_get = asyncHandler(async (req, res) => {
   // include minimal info
-  const users = await User.find({ _id: { $ne: req.user._id } }, '_id fullname status').exec();
+  const users = await User.find({ _id: { $ne: req.user._id } }, '_id fullname status avatarLink').exec();
 
   // return extra info req.user because we retrieve it from db anyway
   res.json({ users, requestedUser: req.user });
@@ -35,6 +35,12 @@ module.exports.chat_user_get = asyncHandler(async (req, res) => {
 
   // get all messages between requested user vs that user
   const messages = await Message.find({ sender: req.user, userReceive: user }).sort({ createdAt: 1 }).exec();
+
+  // mark owned messages to display properly
+  messages.forEach((mess) => {
+    if (mess.sender === req.user._id) mess.owned = true;
+    else mess.owned = false;
+  });
 
   res.json({ requestedUser: req.user, receivedUser: user, messages });
 });
@@ -78,6 +84,12 @@ module.exports.chat_user_post = [
 
       // all user's messages between current logged in user vs target user
       const messages = await Message.find({ sender: req.user, userReceive: user }).sort({ createdAt: 1 }).exec();
+
+      // mark owned messages to display properly
+      messages.forEach((mess) => {
+        if (mess.sender === req.user._id) mess.owned = true;
+        else mess.owned = false;
+      });
 
       return res.json({
         requestedUser: req.user,

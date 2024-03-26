@@ -110,8 +110,14 @@ module.exports.chat_group_get = asyncHandler(async (req, res) => {
 
   // current logged in user can read group's messages
   if (isMember) {
-    // find all messages is being sent to this group
+    // find all messages are being sent to this group
     groupMessages = await Message.find({ groupReceive: group }).sort({ createdAt: 1 }).exec();
+
+    // mark ones current logged in user owned
+    groupMessages.forEach((mess) => {
+      if (mess.sender === req.user._id) mess.owned = true;
+      else mess.owned = false;
+    });
   }
   // null to determine that current logged in user is not joined
   else {
@@ -177,6 +183,12 @@ module.exports.chat_group_post = [
 
       // get all messages in this group to response
       const groupMessages = await Message.find({ groupReceive: group }).sort({ createdAt: 1 }).exec();
+
+      // mark ones current logged in user owned
+      groupMessages.forEach((mess) => {
+        if (mess.sender === req.user._id) mess.owned = true;
+        else mess.owned = false;
+      });
 
       return res.json({
         requestedUser: req.user,
