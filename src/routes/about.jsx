@@ -26,6 +26,8 @@ export default function About() {
           API requests or data fetching. (However, I still really appreciate the fact that Glitch offers a free tier for hosting Backend projects.)
         </p>
 
+        <p className="">No responsive design supported, consider using large screen size for better experience.</p>
+
         <p className="font-bold text-2xl">
           Since this is a chat app, you will need to{' '}
           <Link to="/login">

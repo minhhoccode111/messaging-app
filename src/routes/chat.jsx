@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Loading, Error, SubmitButton, CustomButton, FakeLink, NumberCounter } from './../components/more';
 import UserContact from './../components/contact/UserContact';
 import GroupContact from './../components/contact/GroupContact';
-import NewGroupForm from './../components/contact/NewGroupForm';
+import GroupForm from './../components/contact/GroupForm';
 
 function useFetchContact() {
   const { loginState } = useOutletContext();
@@ -90,6 +90,13 @@ export default function Chat() {
 
   // identify which conversation current logged in user is engaging
   const [currentConversation, setCurrentConversation] = useState();
+
+  // clear current working conversation when dataContact change
+  useEffect(() => {
+    setCurrentMessages();
+    setCurrentOptions({});
+    setCurrentConversation();
+  }, [dataContact]);
 
   // which section to expand
   const [currentOpenSection, setCurrentOpenSection] = useState('');
@@ -193,7 +200,7 @@ export default function Chat() {
           </NumberCounter>
         </button>
         <div className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('new')}>
-          <NewGroupForm setWillFetchContact={setWillFetchContact} />
+          <GroupForm setWillFetchContact={setWillFetchContact} />
         </div>
       </article>
 
