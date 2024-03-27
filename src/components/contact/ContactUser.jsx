@@ -19,16 +19,16 @@ export default function ContactUser({ user, chatId, setChatId, chatType, setChat
       className={'my-2 rounded-md flex gap-2 items-center justify-start text-xs font-bold shadow-md p-2 hover:bg-gray-300 transition-colors cursor-pointer' + ' ' + setFocus()}
     >
       <div className="min-w-10">
-        <img src={user.avatarLink} alt={domParser(user.fullname.slice(0, 1).toUpperCase())} className="w-10 h-10 rounded-full bg-gray-200 grid place-items-center overflow-hidden" />
+        <img src={user?.avatarLink} alt={domParser(user?.fullname.slice(0, 1).toUpperCase())} className="w-10 h-10 rounded-full bg-gray-200 grid place-items-center overflow-hidden" />
       </div>
 
       <div className="">
         <p className="text-sm">
-          <FakeLink>{domParser(user.fullname)}</FakeLink>
+          <FakeLink>{domParser(user?.fullname)}</FakeLink>
         </p>
 
         <p className="">
-          <UserStatus status={user.status} />
+          <UserStatus status={user?.status} />
         </p>
       </div>
     </li>

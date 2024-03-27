@@ -330,7 +330,7 @@ export default function Chat() {
       {/* display chat section */}
       <article className="overflow-y-auto shadow-gray-400 rounded-xl shadow-2xl bg-white">
         {/* header to know which conversation we are engaging */}
-        <header className="p-4 border">
+        <header className="p-4 border-b-2 border-black">
           {chatType === '' ? (
             <h2 className="font-bold"> Select a conversation to get started.</h2>
           ) : chatType === 'groups' ? (
