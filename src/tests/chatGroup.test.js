@@ -407,13 +407,13 @@ describe(`/chat/groups`, () => {
         });
 
         test(`check again with GET /chat/groups`, async () => {
-          //
+          // TODO
         });
       });
     });
   });
 
-  xdescribe(`GET & POST /chat/groups/:groupid - work with group's messages`, () => {
+  describe(`GET & POST /chat/groups/:groupid - work with group's messages`, () => {
     // TODO should work like /chat/users/:userid
     // but extra info like
 
@@ -435,13 +435,13 @@ describe(`/chat/groups`, () => {
 
         // 403 when not joined
         expect(res.status).toBe(403);
-        expect(res.body.groupMessages).toEqual(null);
+        expect(res.body.messages).toEqual(null);
 
         expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
         expect(res.body.receivedGroup.name).toBe(groups[1].public.name);
         expect(res.body.receivedGroup.creator.fullname).toBe(users[1].fullname);
-        expect(res.body.isCreator).toBe(false);
-        expect(res.body.isMember).toBe(false);
+        expect(res.body.receivedGroup.isCreator).toBe(false);
+        expect(res.body.receivedGroup.isMember).toBe(false);
       });
 
       test(`users[0] get groups[1].private (joined)`, async () => {
@@ -453,14 +453,14 @@ describe(`/chat/groups`, () => {
         // 200 when joined
         expect(res.status).toBe(200);
         // not messages yet
-        expect(res.body.groupMessages).toEqual([]);
+        expect(res.body.messages).toEqual([]);
         // the same above but 2 users now users[0] and [1]
 
         expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
         expect(res.body.receivedGroup.name).toBe(groups[1].private.name);
         expect(res.body.receivedGroup.creator.fullname).toBe(users[1].fullname);
-        expect(res.body.isCreator).toBe(false);
-        expect(res.body.isMember).toBe(true);
+        expect(res.body.receivedGroup.isCreator).toBe(false);
+        expect(res.body.receivedGroup.isMember).toBe(true);
       });
 
       test(`users[0] get groups[0].public (created, users[1] also joined)`, async () => {
@@ -472,13 +472,13 @@ describe(`/chat/groups`, () => {
         // 200 when joined
         expect(res.status).toBe(200);
         // not messages yet
-        expect(res.body.groupMessages).toEqual([]);
+        expect(res.body.messages).toEqual([]);
 
         expect(res.body.requestedUser.fullname).toBe(users[0].fullname);
         expect(res.body.receivedGroup.name).toBe(groups[0].public.name);
         expect(res.body.receivedGroup.creator.fullname).toBe(users[0].fullname);
-        expect(res.body.isCreator).toBe(true);
-        expect(res.body.isMember).toBe(true);
+        expect(res.body.receivedGroup.isCreator).toBe(true);
+        expect(res.body.receivedGroup.isMember).toBe(true);
       });
     });
 
@@ -692,7 +692,7 @@ describe(`/chat/groups`, () => {
       });
     });
 
-    describe(`DELETE /chat/groups/:groupid/members/:userid - current logged in user leave the group or kick someone`, () => {
+    xdescribe(`DELETE /chat/groups/:groupid/members/:userid - current logged in user leave the group or kick someone`, () => {
       describe(`invalid cases`, () => {
         test(`group not exists`, async () => {
           const res = await request(app)

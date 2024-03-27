@@ -95,7 +95,7 @@ module.exports.chat_group_get = asyncHandler(async (req, res) => {
   if (!isValidId) return res.sendStatus(404);
 
   // check if group we want really exists, populate all fields of group's creator
-  const group = await Group.findById(req.params.groupid).populate('creator').exec();
+  const group = await Group.findById(req.params.groupid, '-__v').populate('creator').exec();
   if (group === null) return res.sendStatus(404);
 
   // current logged in user reference with group
@@ -107,22 +107,27 @@ module.exports.chat_group_get = asyncHandler(async (req, res) => {
   const isMember = currentUserInGroup === null ? false : true;
   const isCreator = currentUserInGroup?.isCreator ?? false;
 
-  let groupMessages;
+  let messages;
 
   // current logged in user can read group's messages
   if (isMember) {
     // find all messages are being sent to this group
-    groupMessages = await Message.find({ groupReceive: group }).sort({ createdAt: 1 }).exec();
+    messages = await Message.find({ groupReceive: group }, '-__v').populate('sender', '_id').sort({ createdAt: 1 }).exec();
 
-    // mark ones current logged in user owned
-    groupMessages.forEach((mess) => {
-      if (mess.sender === req.user._id) mess.owned = true;
-      else mess.owned = false;
+    // mark owned messages to display properly
+    messages = messages.map((mess) => {
+      let owned;
+      if (mess.sender.id === req.user.id) owned = true;
+      else owned = false;
+      // debug(`does current logged in user send the message? `, mess.sender.id === req.user.id);
+      // debug(`the message's sender belike: `, mess.sender.id);
+      // debug(`the req.user.id belike: `, req.user.id);
+      return { ...mess.toJSON(), owned };
     });
   }
   // null to determine that current logged in user is not joined
   else {
-    groupMessages = null;
+    messages = null;
   }
 
   return (
@@ -131,10 +136,8 @@ module.exports.chat_group_get = asyncHandler(async (req, res) => {
       .status(isMember ? 200 : 403)
       .json({
         requestedUser: req.user,
-        receivedGroup: group,
-        groupMessages,
-        isCreator,
-        isMember,
+        receivedGroup: { ...group.toJSON(), isCreator, isMember },
+        messages,
       })
   );
 });
