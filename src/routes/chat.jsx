@@ -1,13 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa6';
 import { useOutletContext, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { Loading, Error, FakeLink, NumberCounter } from './../components/more';
-import UserContact from './../components/contact/UserContact';
-import GroupContact from './../components/contact/GroupContact';
-import GroupForm from './../components/contact/GroupForm';
-import ChatForm from './../components/chat/ChatForm';
-import Message from './../components/chat/Message';
+
+import ContactUser from './../components/contact/ContactUser';
+import ContactGroup from './../components/contact/ContactGroup';
+
+import FormGroup from './../components/contact/FormGroup';
+import FormChat from './../components/chat/FormChat';
+
+import OptionUser from './../components/option/OptionUser';
+import OptionGroup from './../components/option/OptionGroup';
+
+import ChatMessage from './../components/chat/ChatMessage';
+import ChatHeaderGroup from './../components/chat/ChatHeaderGroup';
+import ChatHeaderUser from './../components/chat/ChatHeaderUser';
 
 function useFetchContact() {
   const { loginState } = useOutletContext();
@@ -106,7 +114,7 @@ export default function Chat() {
     // console.log(`chatType belike: `, chatType);
 
     async function userChat() {
-      console.log(`fetch user chat`);
+      // console.log(`fetch user chat`);
 
       try {
         setIsLoadingChat(true);
@@ -120,46 +128,69 @@ export default function Chat() {
           },
         });
 
-        console.log(res.data);
+        // console.log(`the messRes.data.messages belike: `, res.data.messages);
+        // console.log(`the messRes.data.receivedGroup belike: `, res.data.receivedUser);
+
+        setChatMessages(res.data.messages);
+        setChatOptions({ info: res.data.receivedUser });
       } catch (error) {
-        console.log(error);
-        console.log(error.response.status);
+        // console.log(error);
+        // console.log(error.response.status);
 
         setIsErrorChat(true);
       } finally {
-        //
         setIsLoadingChat(false);
       }
     }
+
     async function groupChat() {
-      console.log(`fetch group chat`);
+      // console.log(`fetch group chat`);
 
       try {
         setIsLoadingChat(true);
 
-        const res = await axios({
-          mode: 'cors',
-          method: 'get',
-          url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
-          headers: {
-            Authorization: `Bearer ${loginState?.token}`,
-          },
-        });
+        const [messRes, memRes] = await Promise.all([
+          axios({
+            mode: 'cors',
+            method: 'get',
+            url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
+            headers: {
+              Authorization: `Bearer ${loginState?.token}`,
+            },
+          }),
 
-        console.log(res.data);
+          axios({
+            mode: 'cors',
+            method: 'get',
+            url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}/members`,
+            headers: {
+              Authorization: `Bearer ${loginState?.token}`,
+            },
+          }),
+        ]);
+
+        // console.log(`the messRes.data.messages belike: `, messRes.data.messages);
+        // console.log(`the messRes.data.receivedGroup belike: `, messRes.data.receivedGroup);
+        // console.log(`the memRes.data.groupMembers belike: `, memRes.data.groupMembers);
+
+        setChatMessages(messRes.data.messages);
+        setChatOptions({ info: messRes.data.receivedGroup, members: memRes.data.groupMembers });
       } catch (error) {
-        console.log(error);
-        console.log(error.response.status);
+        // console.log(error);
+        // console.log(error.response.status);
 
         setIsErrorChat(true);
       } finally {
-        //
         setIsLoadingChat(false);
       }
     }
 
-    if (chatType === 'users') userChat();
-    if (chatType === 'groups') groupChat();
+    // states are valid then start fetching
+    if (chatId && chatType && loginState) {
+      // different fetch base on chatType
+      if (chatType === 'users') userChat();
+      else groupChat();
+    }
   }, [chatId, chatType, loginState]);
 
   // clear current working conversation when dataContact change
@@ -186,12 +217,12 @@ export default function Chat() {
     };
   }
 
-  // based on current open section to return a class
+  // based on current open section to return a class, used for <ul>s
   function sectionExpand(current) {
     return currentOpenSection === current ? 'max-h-full' : 'max-h-0';
   }
 
-  // based on current open section to return a class
+  // based on current open section to return a class, used for toggle buttons
   function sectionHighlight(current) {
     return currentOpenSection === current ? 'bg-red-300' : 'bg-red-100';
   }
@@ -202,6 +233,9 @@ export default function Chat() {
   const joinedGroups = dataContact?.joinedGroups;
   const publicGroups = dataContact?.publicGroups;
   const privateGroups = dataContact?.privateGroups;
+
+  // console.log(`the chatMessages belike: `, chatMessages);
+  // console.log(`the chatOptions belike: `, chatOptions);
 
   return (
     <section className="text-slate-900 p-2 grid grid-cols-chat grid-rows-chat gap-2 border-2 border-success">
@@ -220,7 +254,7 @@ export default function Chat() {
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('users')}>
           {users?.map((u) => {
             // to display current chat we are focused
-            return <UserContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} user={u} key={u.id} />;
+            return <ContactUser chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} user={u} key={u.id} />;
           })}
         </ul>
 
@@ -237,7 +271,7 @@ export default function Chat() {
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('joined')}>
           {joinedGroups?.map((gr) => {
             // to display current chat we are focused
-            return <GroupContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+            return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
           })}
         </ul>
 
@@ -254,7 +288,7 @@ export default function Chat() {
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('public')}>
           {publicGroups?.map((gr) => {
             // to display current chat we are focused
-            return <GroupContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+            return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
           })}
         </ul>
 
@@ -271,7 +305,7 @@ export default function Chat() {
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('private')}>
           {privateGroups?.map((gr) => {
             // to display current chat we are focused
-            return <GroupContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+            return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
           })}
         </ul>
 
@@ -289,32 +323,53 @@ export default function Chat() {
         {/* form to create new group */}
         <div className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('new')}>
           {/* to switch flag and fetch contacts again after creating a group */}
-          <GroupForm setWillFetchContact={setWillFetchContact} />
+          <FormGroup setWillFetchContact={setWillFetchContact} />
         </div>
       </article>
 
       {/* display chat section */}
-      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-4 shadow-2xl bg-white">
-        {/* display old messages section */}
+      <article className="overflow-y-auto shadow-gray-400 rounded-xl shadow-2xl bg-white">
+        {/* header to know which conversation we are engaging */}
+        <header className="p-4 border">
+          {chatType === '' ? (
+            <h2 className="font-bold"> Select a conversation to get started.</h2>
+          ) : chatType === 'groups' ? (
+            // {info: {}, members: []}
+            <ChatHeaderGroup chatOptions={chatOptions} />
+          ) : (
+            <ChatHeaderUser chatOptions={chatOptions} />
+          )}
+        </header>
+
+        {/* display messages section */}
         <ul className="overflow-y-auto">
-          {chatMessages?.map((message) => (
-            <Message key={message.id} message={message} />
-          ))}
+          {/* null means not joined groups */}
+          {chatMessages === null ? (
+            <li className="">You are not allowed to read messages in this group.</li>
+          ) : // [] means no messages exists
+          chatMessages?.length === 0 ? (
+            <li className="">No messages here yet. Be the first one to say hi.</li>
+          ) : (
+            // display messages
+            chatMessages?.map((message) => <ChatMessage key={message.id} message={message} />)
+          )}
         </ul>
 
         {/* form to send message section */}
         <div className="">
-          <ChatForm setChatMessages={setChatMessages} />
+          <FormChat setChatMessages={setChatMessages} />
         </div>
       </article>
 
       {/* display option section */}
       <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
-        {/* display user or group  */}
-        <div className=""></div>
-
-        {/* display group's members */}
-        <div className=""></div>
+        {/* base on chat type to display option */}
+        {chatType === 'groups' ? (
+          // {info: {}, members: []}
+          <OptionGroup chatOptions={chatOptions} />
+        ) : (
+          <OptionUser chatOptions={chatOptions} />
+        )}
       </article>
     </section>
   );

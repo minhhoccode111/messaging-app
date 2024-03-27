@@ -5,7 +5,7 @@ import axios from 'axios';
 import { redirect, useOutletContext } from 'react-router-dom';
 import { Loading, Error } from './../more';
 
-export default function GroupForm({ setWillFetchContact }) {
+export default function FormGroup({ setWillFetchContact }) {
   const { loginState } = useOutletContext();
 
   const [isLoadingCreateGroup, setIsLoadingCreateGroup] = useState(false);
@@ -143,6 +143,6 @@ export default function GroupForm({ setWillFetchContact }) {
   );
 }
 
-GroupForm.propTypes = {
+FormGroup.propTypes = {
   setWillFetchContact: PropTypes.func.isRequired,
 };

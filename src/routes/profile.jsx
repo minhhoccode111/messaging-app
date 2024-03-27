@@ -129,7 +129,7 @@ export default function Profile() {
             Fullname{' '}
           </label>
           {/* unescaped default value inputs */}
-          <input id="fullname" name="fullname" type="text" value={fullname} onChange={(e) => setFullname(e.target.value)} required minLength={1} />
+          <input id="fullname" name="fullname" type="text" value={fullname} onChange={(e) => setFullname(e.target.value)} required minLength={1} maxLength={50} />
 
           {/* update current status */}
           <label htmlFor="status" className="font-bold">
