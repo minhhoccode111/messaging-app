@@ -2,22 +2,25 @@ import { useState, useEffect, useRef } from 'react';
 import { FaPlus } from 'react-icons/fa6';
 import { useOutletContext, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import { Loading, Error, SubmitButton, CustomButton, FakeLink, NumberCounter } from './../components/more';
+import { Loading, Error, FakeLink, NumberCounter } from './../components/more';
 import UserContact from './../components/contact/UserContact';
 import GroupContact from './../components/contact/GroupContact';
 import GroupForm from './../components/contact/GroupForm';
+import ChatForm from './../components/chat/ChatForm';
+import Message from './../components/chat/Message';
 
 function useFetchContact() {
   const { loginState } = useOutletContext();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isLoadingContact, setIsLoadingContact] = useState(false);
+  const [isErrorContact, setIsErrorContact] = useState(false);
   const [dataContact, setDataContact] = useState({});
   const [willFetchContact, setWillFetchContact] = useState(false);
 
+  // first load all conversations existed
   useEffect(() => {
     async function tmp() {
       try {
-        setIsLoading(true);
+        setIsLoadingContact(true);
 
         const [userContactRes, groupContactRes] = await Promise.all([
           axios({
@@ -62,9 +65,9 @@ function useFetchContact() {
       } catch (error) {
         // console.log(error);
 
-        setIsError(true);
+        setIsErrorContact(true);
       } finally {
-        setIsLoading(false);
+        setIsLoadingContact(false);
       }
     }
 
@@ -72,39 +75,101 @@ function useFetchContact() {
     // flag to re-fetch
   }, [willFetchContact]);
 
-  return { isLoading, isError, dataContact, setWillFetchContact };
+  return { isLoadingContact, isErrorContact, dataContact, setWillFetchContact };
 }
 
 export default function Chat() {
   const { loginState } = useOutletContext();
 
   // contact data, fetch states, flag to re-fetch
-  const { isLoading, isError, dataContact, setWillFetchContact } = useFetchContact();
+  const { isLoadingContact, isErrorContact, dataContact, setWillFetchContact } = useFetchContact();
 
   // an array of messages to display in chat section
-  const [currentMessages, setCurrentMessages] = useState();
+  const [chatMessages, setChatMessages] = useState();
 
   // an object to display in options section, {info: {}, members:[]}
   // includes info of current user or group, members for group only
-  const [currentOptions, setCurrentOptions] = useState({});
+  const [chatOptions, setChatOptions] = useState({});
 
   // identify which chat current logged in user is engaging
   // like :userid or :groupid
   const [chatId, setChatId] = useState('');
   const [chatType, setChatType] = useState('');
 
-  // change currentMessages and currentOptions base on currentConversation
+  // fetching states of chat (messages and options)
+  const [isLoadingChat, setIsLoadingChat] = useState(false);
+  const [isErrorChat, setIsErrorChat] = useState(false);
+
+  // change chatMessages and chatOptions base on current chat
   useEffect(() => {
     // console.log(`chatId belike: `, chatId);
     // console.log(`chatType belike: `, chatType);
-  }, [chatId, chatType]);
+
+    async function userChat() {
+      console.log(`fetch user chat`);
+
+      try {
+        setIsLoadingChat(true);
+
+        const res = await axios({
+          mode: 'cors',
+          method: 'get',
+          url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
+          headers: {
+            Authorization: `Bearer ${loginState?.token}`,
+          },
+        });
+
+        console.log(res.data);
+      } catch (error) {
+        console.log(error);
+        console.log(error.response.status);
+
+        setIsErrorChat(true);
+      } finally {
+        //
+        setIsLoadingChat(false);
+      }
+    }
+    async function groupChat() {
+      console.log(`fetch group chat`);
+
+      try {
+        setIsLoadingChat(true);
+
+        const res = await axios({
+          mode: 'cors',
+          method: 'get',
+          url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
+          headers: {
+            Authorization: `Bearer ${loginState?.token}`,
+          },
+        });
+
+        console.log(res.data);
+      } catch (error) {
+        console.log(error);
+        console.log(error.response.status);
+
+        setIsErrorChat(true);
+      } finally {
+        //
+        setIsLoadingChat(false);
+      }
+    }
+
+    if (chatType === 'users') userChat();
+    if (chatType === 'groups') groupChat();
+  }, [chatId, chatType, loginState]);
 
   // clear current working conversation when dataContact change
   useEffect(() => {
-    setCurrentMessages();
-    setCurrentOptions({});
+    setChatMessages();
+    setChatOptions({});
     setChatId('');
     setChatType('');
+
+    // console.log('cleared current engaging conversation');
   }, [dataContact]);
 
   // which section to expand
@@ -154,6 +219,7 @@ export default function Chat() {
         {/* ul display other users conversations */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('users')}>
           {users?.map((u) => {
+            // to display current chat we are focused
             return <UserContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} user={u} key={u.id} />;
           })}
         </ul>
@@ -170,6 +236,7 @@ export default function Chat() {
         {/* ul to display all joined groups */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('joined')}>
           {joinedGroups?.map((gr) => {
+            // to display current chat we are focused
             return <GroupContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
           })}
         </ul>
@@ -186,6 +253,7 @@ export default function Chat() {
         {/* ul to display all public groups */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('public')}>
           {publicGroups?.map((gr) => {
+            // to display current chat we are focused
             return <GroupContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
           })}
         </ul>
@@ -202,6 +270,7 @@ export default function Chat() {
         {/* ul to display all private groups */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('private')}>
           {privateGroups?.map((gr) => {
+            // to display current chat we are focused
             return <GroupContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
           })}
         </ul>
@@ -219,6 +288,7 @@ export default function Chat() {
         </button>
         {/* form to create new group */}
         <div className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('new')}>
+          {/* to switch flag and fetch contacts again after creating a group */}
           <GroupForm setWillFetchContact={setWillFetchContact} />
         </div>
       </article>
@@ -226,10 +296,16 @@ export default function Chat() {
       {/* display chat section */}
       <article className="overflow-y-auto shadow-gray-400 rounded-xl p-4 shadow-2xl bg-white">
         {/* display old messages section */}
-        <div className=""></div>
+        <ul className="overflow-y-auto">
+          {chatMessages?.map((message) => (
+            <Message key={message.id} message={message} />
+          ))}
+        </ul>
 
         {/* form to send message section */}
-        <div className=""></div>
+        <div className="">
+          <ChatForm setChatMessages={setChatMessages} />
+        </div>
       </article>
 
       {/* display option section */}

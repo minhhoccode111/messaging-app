@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { SubmitButton } from './../more';
 import { useRef, useState } from 'react';
 import axios from 'axios';
-import { useOutletContext } from 'react-router-dom';
+import { redirect, useOutletContext } from 'react-router-dom';
 import { Loading, Error } from './../more';
 
 export default function GroupForm({ setWillFetchContact }) {
@@ -62,6 +62,9 @@ export default function GroupForm({ setWillFetchContact }) {
       setWillFetchContact((current) => !current);
     } catch (error) {
       console.log(error);
+
+      // if a 401 unauthorized occur log current logged in user out
+      if (error.response.status !== 401) redirect('/logout');
 
       // stop them from sending another request if it's not a 400
       if (error.response.status !== 400) setIsErrorCreateGroup(true);

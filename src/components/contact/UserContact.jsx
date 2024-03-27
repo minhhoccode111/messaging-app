@@ -6,7 +6,7 @@ export default function UserContact({ user, chatId, setChatId, chatType, setChat
   // if (user.status === 'online') console.log(user);
 
   function setFocus() {
-    return chatType === 'user' && chatId === user.id ? 'bg-gray-300' : 'bg-gray-100';
+    return chatType === 'users' && chatId === user.id ? 'bg-gray-300' : 'bg-gray-100';
   }
 
   return (
@@ -14,7 +14,7 @@ export default function UserContact({ user, chatId, setChatId, chatType, setChat
     <li
       onClick={() => {
         setChatId(user.id);
-        setChatType('user');
+        setChatType('users');
       }}
       className={'my-2 rounded-md flex gap-2 items-center justify-between text-xs font-bold shadow-md p-2 hover:bg-gray-300 transition-colors cursor-pointer' + ' ' + setFocus()}
     >
