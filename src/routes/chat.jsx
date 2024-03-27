@@ -88,14 +88,23 @@ export default function Chat() {
   // includes info of current user or group, members for group only
   const [currentOptions, setCurrentOptions] = useState({});
 
-  // identify which conversation current logged in user is engaging
-  const [currentConversation, setCurrentConversation] = useState();
+  // identify which chat current logged in user is engaging
+  // like :userid or :groupid
+  const [chatId, setChatId] = useState('');
+  const [chatType, setChatType] = useState('');
+
+  // change currentMessages and currentOptions base on currentConversation
+  useEffect(() => {
+    // console.log(`chatId belike: `, chatId);
+    // console.log(`chatType belike: `, chatType);
+  }, [chatId, chatType]);
 
   // clear current working conversation when dataContact change
   useEffect(() => {
     setCurrentMessages();
     setCurrentOptions({});
-    setCurrentConversation();
+    setChatId('');
+    setChatType('');
   }, [dataContact]);
 
   // which section to expand
@@ -134,6 +143,7 @@ export default function Chat() {
       {/* display contact section */}
       <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full flex flex-col gap-1">
         {/* other users */}
+        {/* button to toggle expand ul */}
         <button
           className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('users')}
           onClick={handleToggleClick('users')}
@@ -141,13 +151,15 @@ export default function Chat() {
           <FakeLink>Users</FakeLink>
           <NumberCounter>{users?.length}</NumberCounter>
         </button>
+        {/* ul display other users conversations */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('users')}>
           {users?.map((u) => {
-            return <UserContact user={u} key={u.id} />;
+            return <UserContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} user={u} key={u.id} />;
           })}
         </ul>
 
         {/* joined groups */}
+        {/* button to toggle expand ul */}
         <button
           className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('joined')}
           onClick={handleToggleClick('joined')}
@@ -155,13 +167,15 @@ export default function Chat() {
           <FakeLink>Joined Groups</FakeLink>
           <NumberCounter>{joinedGroups?.length}</NumberCounter>
         </button>
+        {/* ul to display all joined groups */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('joined')}>
           {joinedGroups?.map((gr) => {
-            return <GroupContact group={gr} key={gr.id} />;
+            return <GroupContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
           })}
         </ul>
 
         {/* public groups */}
+        {/* button to toggle expand ul */}
         <button
           className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('public')}
           onClick={handleToggleClick('public')}
@@ -169,13 +183,15 @@ export default function Chat() {
           <FakeLink>Public Groups</FakeLink>
           <NumberCounter>{publicGroups?.length}</NumberCounter>
         </button>
+        {/* ul to display all public groups */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('public')}>
           {publicGroups?.map((gr) => {
-            return <GroupContact group={gr} key={gr.id} />;
+            return <GroupContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
           })}
         </ul>
 
         {/* private groups */}
+        {/* button to toggle expand ul */}
         <button
           className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('private')}
           onClick={handleToggleClick('private')}
@@ -183,13 +199,15 @@ export default function Chat() {
           <FakeLink>Private Groups</FakeLink>
           <NumberCounter>{privateGroups?.length}</NumberCounter>
         </button>
+        {/* ul to display all private groups */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('private')}>
           {privateGroups?.map((gr) => {
-            return <GroupContact group={gr} key={gr.id} />;
+            return <GroupContact chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
           })}
         </ul>
 
         {/* new group */}
+        {/* button to toggle expand form */}
         <button
           className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('new')}
           onClick={handleToggleClick('new')}
@@ -199,6 +217,7 @@ export default function Chat() {
             <FaPlus className="text-white font-bold" />
           </NumberCounter>
         </button>
+        {/* form to create new group */}
         <div className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('new')}>
           <GroupForm setWillFetchContact={setWillFetchContact} />
         </div>
