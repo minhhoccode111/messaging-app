@@ -133,7 +133,7 @@ module.exports.chat_group_get = asyncHandler(async (req, res) => {
   return (
     res
       // base on user joined group or not
-      .status(isMember ? 200 : 403)
+      // .status(isMember ? 200 : 403)
       .json({
         requestedUser: req.user,
         receivedGroup: { ...group.toJSON(), isCreator, isMember },
