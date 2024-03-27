@@ -13,6 +13,37 @@ NumberCounter.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.element]),
 };
 
+export function GroupStatus({ publicity, memLen }) {
+  // BUG TODO FIXME here
+  function text() {
+    if (status === 'online') return `text-green-500`;
+    else if (status === 'busy') return `text-red-500`;
+    else if (status === 'afk') return `text-yellow-500`;
+    else if (status === 'offline') return `text-gray-500`;
+    else return `text-black`;
+  }
+
+  function bg() {
+    if (status === 'online') return `bg-green-500`;
+    else if (status === 'busy') return `bg-red-500`;
+    else if (status === 'afk') return `bg-yellow-500`;
+    else if (status === 'offline') return `bg-gray-500`;
+    else return `bg-black`;
+  }
+
+  return (
+    <>
+      <span className={'inline-block h-2 w-2 rounded-full mr-1 color-red-400' + ' ' + bg()}></span>
+      <span className={'capitalize' + ' ' + text()}>{publicity ? 'public' : 'private'}</span>
+    </>
+  );
+}
+
+GroupStatus.propTypes = {
+  public: PropTypes.bool.isRequired,
+  memLen: PropTypes.number.isRequired,
+};
+
 export function UserStatus({ status }) {
   function text() {
     if (status === 'online') return `text-green-500`;
