@@ -101,13 +101,29 @@ module.exports.chat_user_post = [
 
       await message.save();
 
-      // all user's messages between current logged in user vs target user
-      const messages = await Message.find({ sender: req.user, userReceive: user }).sort({ createdAt: 1 }).exec();
+      // return all messages again
+      let messages = await Message.find(
+        {
+          $or: [
+            { sender: req.user, userReceive: user },
+            { sender: user, userReceive: req.user },
+          ],
+        },
+        '-__v'
+      )
+        .populate('sender', '_id avatarLink')
+        .sort({ createdAt: 1 })
+        .exec();
 
       // mark owned messages to display properly
-      messages.forEach((mess) => {
-        if (mess.sender === req.user._id) mess.owned = true;
-        else mess.owned = false;
+      messages = messages.map((mess) => {
+        let owned;
+        if (mess.sender.id === req.user.id) owned = true;
+        else owned = false;
+        // debug(`does current logged in user send the message? `, mess.sender.id === req.user.id);
+        // debug(`the message's sender belike: `, mess.sender.id);
+        // debug(`the req.user.id belike: `, req.user.id);
+        return { ...mess.toJSON(), owned };
       });
 
       return res.json({

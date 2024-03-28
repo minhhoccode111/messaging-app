@@ -35,11 +35,13 @@ const GroupSchema = new Schema(
         max: 260,
       },
       required: true,
+      default: () => `Some contents are created automatically, please consider update profile.`,
     },
 
     avatarLink: {
       type: String,
       maxLength: 500,
+      default: () => `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSX12hdq7FMZRu7mtAqwmzmgHjR8rQ8qa0FEfWRbqsxfB2FG7jB688i&usqp=CAE&s`,
     },
 
     createdAt: {

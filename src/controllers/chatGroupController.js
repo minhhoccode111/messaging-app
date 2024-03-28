@@ -185,19 +185,24 @@ module.exports.chat_group_post = [
 
       await message.save();
 
-      // get all messages in this group to response
-      const groupMessages = await Message.find({ groupReceive: group }).sort({ createdAt: 1 }).exec();
+      // find all messages are being sent to this group
+      let messages = await Message.find({ groupReceive: group }, '-__v').populate('sender', '_id avatarLink').sort({ createdAt: 1 }).exec();
 
-      // mark ones current logged in user owned
-      groupMessages.forEach((mess) => {
-        if (mess.sender === req.user._id) mess.owned = true;
-        else mess.owned = false;
+      // mark owned messages to display properly
+      messages = messages.map((mess) => {
+        let owned;
+        if (mess.sender.id === req.user.id) owned = true;
+        else owned = false;
+        // debug(`does current logged in user send the message? `, mess.sender.id === req.user.id);
+        // debug(`the message's sender belike: `, mess.sender.id);
+        // debug(`the req.user.id belike: `, req.user.id);
+        return { ...mess.toJSON(), owned };
       });
 
       return res.json({
         requestedUser: req.user,
         receivedGroup: group,
-        groupMessages,
+        messages,
       });
     }
 
