@@ -367,16 +367,18 @@ export default function Chat() {
       </article>
 
       {/* display option section */}
-      <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
-        {/* base on chat type to display option */}
-        {/* only when a conversation is selected */}
-        {chatType === 'groups' && (
-          // {info: {}, members: []}
-          <OptionGroup setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
-        )}
+      {chatType !== '' && (
+        <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
+          {/* base on chat type to display option */}
+          {/* only when a conversation is selected */}
+          {chatType === 'groups' && (
+            // {info: {}, members: []}
+            <OptionGroup setChatId={setChatId} setChatType={setChatType} setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
+          )}
 
-        {chatType === 'users' && <OptionUser info={chatOptions?.info} />}
-      </article>
+          {chatType === 'users' && <OptionUser info={chatOptions?.info} />}
+        </article>
+      )}
     </section>
   );
 }

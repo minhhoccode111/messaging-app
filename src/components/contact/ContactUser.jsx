@@ -25,6 +25,7 @@ export default function ContactUser({ user, chatId, setChatId, chatType, setChat
       <div className="">
         <p className="text-sm">
           <FakeLink>{domParser(user?.fullname)}</FakeLink>
+          {user?.isCreator && <span className="font-bold text-green-500"> (Creator) </span>}
         </p>
 
         <p className="">
@@ -38,7 +39,7 @@ export default function ContactUser({ user, chatId, setChatId, chatType, setChat
 ContactUser.propTypes = {
   user: PropTypes.object,
   chatId: PropTypes.string,
-  chatType: PropTypes.string,
   setChatId: PropTypes.func,
+  chatType: PropTypes.string,
   setChatType: PropTypes.func,
 };

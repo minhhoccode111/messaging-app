@@ -112,7 +112,7 @@ export function Footer() {
 
 export function OutsideLink({ children, to }) {
   return (
-    <a href={to} target="_blank" rel="noopener" className="text-link underline decoration-dotted hover:decoration-solid cursor-pointer">
+    <a href={to} target="_blank" rel="noopener" className="text-link underline underline-offset-2 decoration-dotted hover:decoration-solid cursor-pointer">
       {children}
     </a>
   );
@@ -124,7 +124,7 @@ OutsideLink.propTypes = {
 };
 
 export function FakeLink({ children }) {
-  return <span className="text-link underline decoration-dotted hover:decoration-solid cursor-pointer inline">{children}</span>;
+  return <span className="text-link underline underline-offset-2 decoration-dotted hover:decoration-solid cursor-pointer inline">{children}</span>;
 }
 
 FakeLink.propTypes = {
