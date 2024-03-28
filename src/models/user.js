@@ -39,21 +39,25 @@ const UserSchema = new Schema(
 
     status: {
       type: String,
-			enum: statusEnum,
+      enum: statusEnum,
+      default: () => 'online',
     },
 
     bio: {
       type: String,
       maxLength: 500,
+      default: () => `Some contents are created automatically, please consider update profile.`,
     },
 
     avatarLink: {
       type: String,
       maxLength: 500,
+      default: () => `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSX12hdq7FMZRu7mtAqwmzmgHjR8rQ8qa0FEfWRbqsxfB2FG7jB688i&usqp=CAE&s`,
     },
 
     dateOfBirth: {
       type: Date,
+      default: () => new Date('2001-01-01'),
     },
 
     createdAt: {
@@ -64,13 +68,12 @@ const UserSchema = new Schema(
     updatedAt: {
       type: Date,
     },
-
   },
   { toJSON: { virtuals: true } }
 );
 
 UserSchema.virtual('createdAtFormatted').get(function () {
-	if (this.createdAt) return formatDate(this.createdAt);
+  if (this.createdAt) return formatDate(this.createdAt);
 });
 
 UserSchema.virtual('createdAtUnix').get(function () {

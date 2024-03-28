@@ -112,7 +112,11 @@ module.exports.signup_post = [
     if (errors.length === 0) {
       const hashedPassword = await bcrypt.hash(password, Number(process.env.SECRET)); // encode password
 
-      await new User({ ...user, password: hashedPassword, isCreator: false }).save();
+      await new User({
+        ...user,
+        password: hashedPassword,
+        isCreator: false,
+      }).save();
 
       return res.status(200).json({
         message: `Success`,

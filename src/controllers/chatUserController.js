@@ -44,7 +44,7 @@ module.exports.chat_user_get = asyncHandler(async (req, res) => {
     },
     '-__v'
   )
-    .populate('sender', '_id')
+    .populate('sender', '_id avatarLink')
     .sort({ createdAt: 1 })
     .exec();
 

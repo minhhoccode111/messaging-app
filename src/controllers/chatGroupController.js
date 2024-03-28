@@ -112,7 +112,7 @@ module.exports.chat_group_get = asyncHandler(async (req, res) => {
   // current logged in user can read group's messages
   if (isMember) {
     // find all messages are being sent to this group
-    messages = await Message.find({ groupReceive: group }, '-__v').populate('sender', '_id').sort({ createdAt: 1 }).exec();
+    messages = await Message.find({ groupReceive: group }, '-__v').populate('sender', '_id avatarLink').sort({ createdAt: 1 }).exec();
 
     // mark owned messages to display properly
     messages = messages.map((mess) => {

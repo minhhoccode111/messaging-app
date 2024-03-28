@@ -22,7 +22,7 @@ const app = express();
 app.disable('x-powered-by');
 
 // rate limit // TODO change to 120 in production
-const limiter = RateLimit({ windowMs: 1 * 60 * 1000, max: 160 }); // max 160/min
+const limiter = RateLimit({ windowMs: 1 * 60 * 1000, max: 1600 }); // max 160/min
 app.use(limiter);
 
 // compress responses for performance
