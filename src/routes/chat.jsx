@@ -328,7 +328,7 @@ export default function Chat() {
       </article>
 
       {/* display chat section */}
-      <article className="overflow-y-auto shadow-gray-400 rounded-xl shadow-2xl bg-white">
+      <article className="h-full shadow-gray-400 rounded-xl shadow-2xl bg-white flex flex-col gap-2 justify-between">
         {/* header to know which conversation we are engaging */}
         <header className="p-4 border-b-2 border-black">
           {chatType === '' ? (
@@ -342,7 +342,7 @@ export default function Chat() {
         </header>
 
         {/* display messages section */}
-        <ul className="overflow-y-auto">
+        <ul className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 ">
           {/* null means not joined groups */}
           {chatMessages === null ? (
             <li className="">You are not allowed to read messages in this group.</li>
@@ -353,7 +353,7 @@ export default function Chat() {
               <p className="">Be the first one to say hi.</p>
             </li>
           ) : (
-            // display messages
+            // display messages, 2 avatars to display with messages
             chatMessages?.map((message) => <ChatMessage key={message.id} message={message} />)
           )}
         </ul>
