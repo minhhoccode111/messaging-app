@@ -4,16 +4,16 @@ import { IoIosCall, IoIosVideocam, IoIosMore } from 'react-icons/io';
 import { GroupStatus } from '../more';
 
 export default function ChatHeaderGroup({ chatOptions }) {
-  console.log(chatOptions);
+  // console.log(chatOptions);
   const group = chatOptions?.info;
 
-  const memLen = chatOptions?.members?.length;
+  const membersLength = chatOptions?.members?.length;
 
   return (
     <h2 className={'flex gap-2 items-center justify-start text-lg font-bold text-slate-700'}>
       {/* display avatar */}
       <div className="w-10">
-        <img src={group?.avatarLink} alt={domParser(group?.name.slice(0, 1).toUpperCase())} className="w-10 h-10 rounded-full bg-gray-200 grid place-items-center overflow-hidden" />
+        <img src={group?.avatarLink} alt={domParser(group?.name?.slice(0, 1)?.toUpperCase())} className="w-10 h-10 rounded-full bg-gray-200 grid place-items-center overflow-hidden" />
       </div>
 
       {/* display name and status */}
@@ -21,8 +21,8 @@ export default function ChatHeaderGroup({ chatOptions }) {
         <p className="">{domParser(group?.name)}</p>
 
         <p className="text-sm">
-          {/* BUG TODO FIXME here */}
-          <GroupStatus public={group?.public} memLen={memLen} />
+          {/* display group publicity status and number of member */}
+          <GroupStatus publicity={group?.public} membersLength={membersLength} />
         </p>
       </div>
 

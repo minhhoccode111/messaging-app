@@ -12,7 +12,7 @@ export default function ChatHeaderUser({ chatOptions }) {
     <h2 className={'flex gap-2 items-center justify-start text-lg font-bold text-slate-700'}>
       {/* display avatar */}
       <div className="w-10">
-        <img src={user?.avatarLink} alt={domParser(user?.fullname.slice(0, 1).toUpperCase())} className="w-10 h-10 rounded-full bg-gray-200 grid place-items-center overflow-hidden" />
+        <img src={user?.avatarLink} alt={domParser(user?.fullname?.slice(0, 1)?.toUpperCase())} className="w-10 h-10 rounded-full bg-gray-200 grid place-items-center overflow-hidden" />
       </div>
 
       {/* display name and status */}
