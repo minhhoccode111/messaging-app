@@ -35,7 +35,7 @@ module.exports.chat_all_group_get = asyncHandler(async (req, res) => {
 
   // console.log(joinedGroups);
 
-  // find in g
+  // find every groups left that not exists in joinedGroups
   const notJoinedGroups = await Group.find({ _id: { $nin: joinedGroups } }, 'name public avatarLink').exec();
 
   // console.log(`notJoinedGroups belike: `, notJoinedGroups);
@@ -142,7 +142,7 @@ module.exports.chat_group_get = asyncHandler(async (req, res) => {
   );
 });
 
-// post a message with a specific group
+// post a message to a specific group
 module.exports.chat_group_post = [
   body('content').trim().escape(),
   body('imageLink')
@@ -259,7 +259,7 @@ module.exports.chat_group_put = [
     const countGroupName = await Group.countDocuments({ name }).exec();
     if (countGroupName > 0 && oldGroup.name !== name) errors.push({ msg: `Group name exists.` });
 
-    // forbidden current logged in user try to update group not own
+    // forbidden current logged in user try to update group not owned
     if (oldGroup.creator.id !== req.user.id) return res.sendStatus(403);
 
     if (!errors.length) {
@@ -301,7 +301,7 @@ module.exports.chat_group_all_members_get = asyncHandler(async (req, res) => {
   const groupMembersRef = await GroupMember.find({ group }, 'user isCreator').populate('user', '_id fullname avatarLink status').exec();
 
   // extract data
-  const groupMembers = groupMembersRef.map((ref) => ({ ...ref.user, isCreator: ref.isCreator }));
+  const groupMembers = groupMembersRef.map((ref) => ({ ...ref.toJSON().user, isCreator: ref.isCreator }));
 
   res.json({ requestedUser: req.user, groupMembers });
 });
