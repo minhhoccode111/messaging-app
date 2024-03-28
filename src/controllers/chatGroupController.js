@@ -298,10 +298,10 @@ module.exports.chat_group_all_members_get = asyncHandler(async (req, res) => {
   if (group === null) return res.sendStatus(404);
 
   // find all members' references in this group
-  const groupMembersRef = await GroupMember.find({ group }, 'user').populate('user', '_id fullname avatarLink status').exec();
+  const groupMembersRef = await GroupMember.find({ group }, 'user isCreator').populate('user', '_id fullname avatarLink status').exec();
 
   // extract data
-  const groupMembers = groupMembersRef.map((ref) => ref.user);
+  const groupMembers = groupMembersRef.map((ref) => ({ ...ref.user, isCreator: ref.isCreator }));
 
   res.json({ requestedUser: req.user, groupMembers });
 });
