@@ -359,7 +359,7 @@ export default function Chat() {
         </ul>
 
         {/* form to send message section */}
-        <div className="">
+        <div className="p-4 border-t-2 border-black">
           <FormChat setChatMessages={setChatMessages} />
         </div>
       </article>
