@@ -34,7 +34,19 @@ module.exports.chat_user_get = asyncHandler(async (req, res) => {
   if (user === null) return res.sendStatus(404);
 
   // get all messages between requested user vs that user
-  let messages = await Message.find({ sender: req.user, userReceive: user }, '-__v').populate('sender', '_id').sort({ createdAt: 1 }).exec();
+  // BUG that only get messages that current logged in user sent
+  let messages = await Message.find(
+    {
+      $or: [
+        { sender: req.user, userReceive: user },
+        { sender: user, userReceive: req.user },
+      ],
+    },
+    '-__v'
+  )
+    .populate('sender', '_id')
+    .sort({ createdAt: 1 })
+    .exec();
 
   // mark owned messages to display properly
   messages = messages.map((mess) => {
