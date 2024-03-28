@@ -263,12 +263,34 @@ export function SubmitButton({ children, isDisable }) {
     <button
       disabled={isDisable}
       type="submit"
-      className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white transition-all hover:scale-110 hover:shadow hover:shadow-gray-400"
+      className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white transition-all hover:scale-105 hover:shadow hover:shadow-gray-400"
     >
       {children}
     </button>
   );
 }
+
+export function SubmitWithStates({ isRipper, isLoading, isError, children, bg = 'bg-blue-500' }) {
+  let classes;
+  if (isRipper) {
+    classes = `inline-block rounded-lg px-4 py-2 text-sm font-medium text-white transition-all hover:scale-105 hover:shadow hover:shadow-gray-400 ripper`;
+  } else {
+    classes = `inline-block rounded-lg px-4 py-2 text-sm font-medium text-white transition-all hover:scale-105 hover:shadow hover:shadow-gray-400 ${bg}`;
+  }
+  return (
+    <button disabled={isLoading || isError} className={classes}>
+      {isError ? <Error className="" /> : isLoading ? <Loading className="" /> : children}
+    </button>
+  );
+}
+
+SubmitWithStates.propTypes = {
+  isRipper: PropTypes.bool,
+  isLoading: PropTypes.bool,
+  isError: PropTypes.bool,
+  bg: PropTypes.string,
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+};
 
 export function CustomButton({ isDisable, onClick, children, type = 'button', className = 'bg-link text-white' }) {
   return (

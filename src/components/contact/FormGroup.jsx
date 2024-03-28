@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { SubmitButton } from './../more';
 import { useRef, useState } from 'react';
 import axios from 'axios';
 import { redirect, useOutletContext } from 'react-router-dom';
-import { Loading, Error } from './../more';
+import { IoIosPaperPlane } from 'react-icons/io';
+import { SubmitWithStates } from '../more';
 
 export default function FormGroup({ setWillFetchContact }) {
   const { loginState } = useOutletContext();
@@ -127,17 +127,11 @@ export default function FormGroup({ setWillFetchContact }) {
       </div>
 
       <div className="flex justify-end">
-        {isErrorCreateGroup ? (
-          <SubmitButton isDisable={true}>
-            <Error />
-          </SubmitButton>
-        ) : isLoadingCreateGroup ? (
-          <SubmitButton isDisable={true}>
-            <Loading />
-          </SubmitButton>
-        ) : (
-          <SubmitButton isDisable={false}>Create</SubmitButton>
-        )}
+        <SubmitWithStates isLoading={isLoadingCreateGroup} isError={isErrorCreateGroup}>
+          <span className="text-xl">
+            <IoIosPaperPlane />
+          </span>
+        </SubmitWithStates>
       </div>
     </form>
   );

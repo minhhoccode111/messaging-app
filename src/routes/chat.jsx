@@ -358,10 +358,12 @@ export default function Chat() {
           )}
         </ul>
 
-        {/* form to send message section */}
-        <div className="p-4 border-t-2 border-black">
-          <FormChat setChatMessages={setChatMessages} />
-        </div>
+        {/* form to send message section, only for joined groups */}
+        {chatMessages && (
+          <div className="p-4 border-t-2 border-black">
+            <FormChat chatId={chatId} chatType={chatType} setChatMessages={setChatMessages} />
+          </div>
+        )}
       </article>
 
       {/* display option section */}

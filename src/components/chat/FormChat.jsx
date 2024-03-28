@@ -1,25 +1,63 @@
 import PropTypes from 'prop-types';
+import { useOutletContext } from 'react-router-dom';
+import { useState } from 'react';
 import { IoIosPaperPlane } from 'react-icons/io';
-import { useState, useRef } from 'react';
-import { SubmitButton } from '../more';
+import { SubmitWithStates } from '../more';
+import axios from 'axios';
 
-export default function FormChat({ setChatMessages }) {
+export default function FormChat({ setChatMessages, chatId, chatType }) {
   const [content, setContent] = useState('');
   const [imageLink, setImageLink] = useState('');
+
+  const { loginState } = useOutletContext();
 
   const [isSending, setIsSending] = useState(false);
   const [isError, setIsError] = useState(false);
 
   function handleMessageSend(field) {
-    return async function () {
-      //
+    return async function (e) {
+      e.preventDefault();
+
+      // console.log(`submit form in field: `, field);
+
+      // console.log(`the content belike: `, content);
+      // console.log(`the imageLink belike: `, imageLink);
+
+      try {
+        setIsSending(true);
+
+        const res = await axios({
+          mode: 'cors',
+          method: 'post',
+          url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
+          headers: {
+            Authorization: `Bearer ${loginState?.token}`,
+          },
+          data: {
+            imageLink: field === 'imageLink' ? imageLink : undefined,
+            content: field === 'content' ? content : undefined,
+          },
+        });
+
+        if (field === 'content') setContent('');
+        else setImageLink('');
+
+        console.log(`messages response from the post request belike: `, res?.data?.messages);
+        setChatMessages(res?.data?.messages);
+      } catch (error) {
+        console.log(`there is an error when trying to send that message: `, error);
+
+        setIsError(true);
+      } finally {
+        setIsSending(false);
+      }
     };
   }
 
   return (
     <>
       {/* send an image message */}
-      <form onSubmit={handleMessageSend('imageLink')} className="flex gap-2 items-center">
+      <form onSubmit={handleMessageSend('imageLink')} className="flex gap-2 items-center mb-2">
         <label
           htmlFor="imageLink"
           className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1 flex-1 self-stretch"
@@ -29,7 +67,7 @@ export default function FormChat({ setChatMessages }) {
             id="imageLink"
             value={imageLink}
             onChange={(e) => setImageLink(e.target.value)}
-            className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
+            className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
             placeholder="Image link ..."
             required
           />
@@ -39,10 +77,12 @@ export default function FormChat({ setChatMessages }) {
           </span>
         </label>
 
-        <SubmitButton isDisable={false}>Send</SubmitButton>
+        <SubmitWithStates isLoading={isSending} isError={isError}>
+          <span className="text-xl">
+            <IoIosPaperPlane />
+          </span>
+        </SubmitWithStates>
       </form>
-
-      <br className="" />
 
       {/* send a text message */}
       <form onSubmit={handleMessageSend('content')} className="flex gap-2 items-center">
@@ -55,7 +95,7 @@ export default function FormChat({ setChatMessages }) {
             id="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
+            className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
             placeholder="Text ..."
             required
           />
@@ -65,7 +105,11 @@ export default function FormChat({ setChatMessages }) {
           </span>
         </label>
 
-        <SubmitButton isDisable={false}>Send</SubmitButton>
+        <SubmitWithStates isLoading={isSending} isError={isError}>
+          <span className="text-xl">
+            <IoIosPaperPlane />
+          </span>
+        </SubmitWithStates>
       </form>
     </>
   );
@@ -73,4 +117,6 @@ export default function FormChat({ setChatMessages }) {
 
 FormChat.propTypes = {
   setChatMessages: PropTypes.func.isRequired,
+  chatId: PropTypes.string.isRequired,
+  chatType: PropTypes.string.isRequired,
 };

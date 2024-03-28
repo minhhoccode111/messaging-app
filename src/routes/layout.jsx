@@ -21,7 +21,8 @@ export default function Layout() {
 
   return (
     <>
-      <Header loginState={loginState} />
+      {/* TODO MAYBE /chat don't have header */}
+      {pathname !== '/chat' && <Header loginState={loginState} />}
 
       {/* dynamic part */}
       <main className={'flex-1 border-2 border-danger'}>

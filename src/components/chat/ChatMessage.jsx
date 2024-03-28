@@ -1,30 +1,23 @@
 import PropTypes from 'prop-types';
 import { CircleAvatar } from '../more';
+import { domParser } from '../../methods';
 
 export default function ChatMessage({ message }) {
-  // console.log(`the message in ChatMessage beliek: `, message);
+  // console.log(`the message in ChatMessage belike: `, message);
 
   // display differently base on content type
   let jsx;
   if (message?.content) {
-    jsx = (
-      <div className={'max-w-full'}>
-        <p className="">{message?.content}</p>
-      </div>
-    );
+    jsx = <p className="">{message?.content}</p>;
   } else if (message?.imageLink) {
     jsx = (
       // prevent too large image
-      <div className={'max-w-[200px]'}>
-        <div className="">
-          <img src={message?.imageLink} alt="" className="block w-full max-w-xs" />
-        </div>
-      </div>
+      <img src={domParser(message?.imageLink)} alt={`Can't display that image link`} className="block w-full" />
     );
   }
 
   // base on owned state to align message
-  const alignFlex = () => (message?.owned ? `self-end` : `self-start`);
+  const alignFlex = () => (message?.owned ? `self-end justify-end` : `self-start justify-start`);
   const alignText = () => (message?.owned ? `text-right` : `text-left`);
 
   // base on owned state to order small avatar
@@ -33,15 +26,16 @@ export default function ChatMessage({ message }) {
   // console.log(`the message belike: `, message);
 
   return (
-    <li className={'max-w-[70%] border flex gap-2 ' + alignFlex()}>
+    <li className={'w-full max-w-[70%] border flex gap-2 ' + alignFlex()}>
       {/* message's sender avatar */}
       <div className={'w-8 h-8 flex-shrink-0 ' + order()}>
         <CircleAvatar src={message?.sender?.avatarLink} alt={message?.sender?.fullname?.slice(0, 1)?.toUpperCase()}></CircleAvatar>
       </div>
 
-      <div className="">
+      {/* only take full width if that's an image */}
+      <div className={'' + (message?.imageLink && 'flex-1')}>
         {/* message's content */}
-        {jsx}
+        <div className={'w-full ' + alignText()}>{jsx}</div>
 
         {/* time stamp */}
         <div className="">
