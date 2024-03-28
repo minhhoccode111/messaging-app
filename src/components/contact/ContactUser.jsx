@@ -18,7 +18,9 @@ export default function ContactUser({ user, chatId, setChatId, chatType, setChat
       }}
       className={'my-2 rounded-md flex gap-2 items-center justify-start text-xs font-bold shadow-md p-2 hover:bg-gray-300 transition-colors cursor-pointer' + ' ' + setFocus()}
     >
-      <CircleAvatar src={user?.avatarLink} alt={domParser(user?.fullname?.slice(0, 1)?.toUpperCase())} size={10} />
+      <div className={'w-11 h-11 flex-shrink-0'}>
+        <CircleAvatar src={user?.avatarLink} alt={domParser(user?.fullname?.slice(0, 1)?.toUpperCase())} />
+      </div>
 
       <div className="">
         <p className="text-sm">

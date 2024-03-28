@@ -35,8 +35,8 @@ export default function ChatMessage({ message }) {
   return (
     <li className={'max-w-[70%] border flex gap-2 ' + alignFlex()}>
       {/* message's sender avatar */}
-      <div className={'flex-shrink-0 ' + order()}>
-        <CircleAvatar src={message?.sender?.avatarLink} alt={message?.sender?.fullname?.slice(0, 1)?.toUpperCase()} size={8}></CircleAvatar>
+      <div className={'w-8 h-8 flex-shrink-0 ' + order()}>
+        <CircleAvatar src={message?.sender?.avatarLink} alt={message?.sender?.fullname?.slice(0, 1)?.toUpperCase()}></CircleAvatar>
       </div>
 
       <div className="">

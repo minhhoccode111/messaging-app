@@ -13,20 +13,17 @@ NumberCounter.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.element]),
 };
 
-export function CircleAvatar({ src, alt, size }) {
-  // const min = () => `min-w-${size} min-h-${size}`;
-
-  // const actual = () => `w-${size} h-${size}`;
-
+export function CircleAvatar({ src, alt }) {
+  // need a wrapper for this
   return (
-    <div className={`min-w-${size} min-h-${size} rounded-full flex-shrink-0`}>
+    <>
       {/* if the link not valid we take first character in name to place in the avatar */}
-      <img src={src} alt={alt} className={'rounded-full bg-gray-200 grid place-items-center overflow-hidden' + ' ' + `w-${size} h-${size}`} />
-    </div>
+      <img src={src} alt={alt} className={'rounded-full bg-gray-200 grid place-items-center overflow-hidden w-full h-full'} />
+    </>
   );
 }
+
 CircleAvatar.propTypes = {
-  size: PropTypes.number,
   src: PropTypes.string,
   alt: PropTypes.string,
 };

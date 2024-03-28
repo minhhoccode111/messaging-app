@@ -27,6 +27,8 @@ export default function FormChat({ setChatMessages }) {
           <input
             type="text"
             id="imageLink"
+            value={imageLink}
+            onChange={(e) => setImageLink(e.target.value)}
             className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
             placeholder="Image link ..."
             required
@@ -51,6 +53,8 @@ export default function FormChat({ setChatMessages }) {
           <input
             type="text"
             id="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
             placeholder="Text ..."
             required

@@ -17,7 +17,9 @@ export default function ContactGroup({ group, chatId, setChatId, chatType, setCh
       }}
       className={'my-2 rounded-md flex gap-2 items-center justify-start text-xs font-bold shadow-md p-2 bg-gray-100 hover:bg-gray-300 transition-colors cursor-pointer' + ' ' + setFocus()}
     >
-      <CircleAvatar src={group?.avatarLink} alt={domParser(group?.name?.slice(0, 1)?.toUpperCase())} size={10} />
+      <div className={'w-11 h-11 flex-shrink-0'}>
+        <CircleAvatar src={group?.avatarLink} alt={domParser(group?.fullname?.slice(0, 1)?.toUpperCase())} />
+      </div>
 
       <p className="text-sm">
         <FakeLink>{domParser(group.name)}</FakeLink>
