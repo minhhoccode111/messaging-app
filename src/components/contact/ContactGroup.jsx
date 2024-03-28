@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { domParser } from './../../methods/index';
-import { FakeLink } from '../more';
+import { FakeLink, CircleAvatar } from '../more';
 
 export default function ContactGroup({ group, chatId, setChatId, chatType, setChatType }) {
   // if (user.status === 'online') console.log(user);
@@ -17,9 +17,7 @@ export default function ContactGroup({ group, chatId, setChatId, chatType, setCh
       }}
       className={'my-2 rounded-md flex gap-2 items-center justify-start text-xs font-bold shadow-md p-2 bg-gray-100 hover:bg-gray-300 transition-colors cursor-pointer' + ' ' + setFocus()}
     >
-      <div className="min-w-10">
-        <img src={group.avatarLink} alt={domParser(group.name.slice(0, 1).toUpperCase())} className="w-10 h-10 rounded-full bg-gray-200 grid place-items-center overflow-hidden" />
-      </div>
+      <CircleAvatar src={group?.avatarLink} alt={domParser(group?.name?.slice(0, 1)?.toUpperCase())} size={10} />
 
       <p className="text-sm">
         <FakeLink>{domParser(group.name)}</FakeLink>

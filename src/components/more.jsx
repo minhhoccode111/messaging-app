@@ -13,6 +13,24 @@ NumberCounter.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.element]),
 };
 
+export function CircleAvatar({ src, alt, size }) {
+  const min = () => `min-w-${size} min-h-${size}`;
+
+  const actual = () => `w-${size} h-${size}`;
+
+  return (
+    <div className={min()}>
+      {/* if the link not valid we take first character in name to place in the avatar */}
+      <img src={src} alt={alt} className={'rounded-full bg-gray-200 grid place-items-center overflow-hidden' + ' ' + actual()} />
+    </div>
+  );
+}
+CircleAvatar.propTypes = {
+  size: PropTypes.number,
+  src: PropTypes.string,
+  alt: PropTypes.string,
+};
+
 export function GroupStatus({ publicity, membersLength }) {
   function text() {
     if (publicity) return `text-green-500`;
@@ -58,7 +76,7 @@ export function UserStatus({ status }) {
 
   return (
     <>
-      <span className={'inline-block h-2 w-2 rounded-full mr-1 color-red-400' + ' ' + bg()}></span>
+      <span className={'inline-block h-2 w-2 rounded-full mr-1' + ' ' + bg()}></span>
       <span className={'capitalize' + ' ' + text()}>{status || 'unknown'}</span>
     </>
   );

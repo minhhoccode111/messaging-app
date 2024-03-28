@@ -346,9 +346,12 @@ export default function Chat() {
           {/* null means not joined groups */}
           {chatMessages === null ? (
             <li className="">You are not allowed to read messages in this group.</li>
-          ) : // [] means no messages exists
+          ) : // [] means no messages exist
           chatMessages?.length === 0 ? (
-            <li className="">No messages here yet. Be the first one to say hi.</li>
+            <li className="">
+              <p className="">No messages here yet.</p>
+              <p className="">Be the first one to say hi.</p>
+            </li>
           ) : (
             // display messages
             chatMessages?.map((message) => <ChatMessage key={message.id} message={message} />)

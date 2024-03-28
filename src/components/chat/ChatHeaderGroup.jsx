@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { domParser } from './../../methods/index';
 import { IoIosCall, IoIosVideocam, IoIosMore } from 'react-icons/io';
-import { GroupStatus } from '../more';
+import { GroupStatus, CircleAvatar } from '../more';
 
 export default function ChatHeaderGroup({ chatOptions }) {
   // console.log(chatOptions);
@@ -12,9 +12,7 @@ export default function ChatHeaderGroup({ chatOptions }) {
   return (
     <h2 className={'flex gap-2 items-center justify-start text-lg font-bold text-slate-700'}>
       {/* display avatar */}
-      <div className="w-10">
-        <img src={group?.avatarLink} alt={domParser(group?.name?.slice(0, 1)?.toUpperCase())} className="w-10 h-10 rounded-full bg-gray-200 grid place-items-center overflow-hidden" />
-      </div>
+      <CircleAvatar src={group?.avatarLink} alt={domParser(group?.name?.slice(0, 1)?.toUpperCase())} size={10} />
 
       {/* display name and status */}
       <div className="flex-1">
