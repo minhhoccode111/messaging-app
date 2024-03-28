@@ -3,7 +3,7 @@ import { CircleAvatar } from '../more';
 import { domParser } from '../../methods';
 
 export default function OptionUser({ info }) {
-  console.log(`the info belike: `, info);
+  // console.log(`the info belike: `, info);
 
   const textColor = () => {
     if (info?.status === 'online') return `text-green-500`;
@@ -27,7 +27,7 @@ export default function OptionUser({ info }) {
 
         <h3 className="font-bold">Status</h3>
         {/* custom tailwind base on info?.status */}
-        <p className={'capitalize ' + textColor()}>{info?.status ?? 'Unknown'}</p>
+        <p className={'capitalize font-bold ' + textColor()}>{info?.status ?? 'Unknown'}</p>
 
         <h3 className="font-bold">Bio </h3>
         <p className="">{domParser(info?.bio)}</p>

@@ -328,7 +328,7 @@ export default function Chat() {
       </article>
 
       {/* display chat section */}
-      <article className="h-full shadow-gray-400 rounded-xl shadow-2xl bg-white flex flex-col gap-2 justify-between">
+      <article className="h-full shadow-gray-400 rounded-xl shadow-2xl bg-white flex flex-col justify-between">
         {/* header to know which conversation we are engaging */}
         <header className="p-4 border-b-2 border-black">
           {chatType === '' ? (
@@ -368,14 +368,14 @@ export default function Chat() {
 
       {/* display option section */}
       <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
-        {/* base on chat type to display option, only when a conversation is selected */}
-        {chatMessages &&
-          (chatType === 'groups' ? (
-            // {info: {}, members: []}
-            <OptionGroup members={chatOptions?.members} info={chatOptions?.info} />
-          ) : (
-            <OptionUser info={chatOptions?.info} />
-          ))}
+        {/* base on chat type to display option */}
+        {/* only when a conversation is selected */}
+        {chatType === 'groups' && (
+          // {info: {}, members: []}
+          <OptionGroup setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
+        )}
+
+        {chatType === 'users' && <OptionUser info={chatOptions?.info} />}
       </article>
     </section>
   );
