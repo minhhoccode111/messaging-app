@@ -12,7 +12,7 @@ export default function ChatHeaderUser({ chatOptions }) {
     <h2 className={'flex gap-2 items-center justify-start text-lg font-bold text-slate-700'}>
       {/* display avatar */}
       <div className={'w-14 h-14 flex-shrink-0'}>
-        <CircleAvatar src={user?.avatarLink} alt={domParser(user?.fullname?.slice(0, 1)?.toUpperCase())} />
+        <CircleAvatar src={domParser(user?.avatarLink)} alt={domParser(user?.fullname?.slice(0, 1)?.toUpperCase())} />
       </div>
 
       {/* display name and status */}

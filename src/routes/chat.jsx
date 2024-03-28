@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa6';
 import { useOutletContext, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import { Loading, Error, FakeLink, NumberCounter } from './../components/more';
+import { FakeLink, NumberCounter } from './../components/more';
 
 import ContactUser from './../components/contact/ContactUser';
 import ContactGroup from './../components/contact/ContactGroup';
@@ -368,13 +368,14 @@ export default function Chat() {
 
       {/* display option section */}
       <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
-        {/* base on chat type to display option */}
-        {chatType === 'groups' ? (
-          // {info: {}, members: []}
-          <OptionGroup chatOptions={chatOptions} />
-        ) : (
-          <OptionUser chatOptions={chatOptions} />
-        )}
+        {/* base on chat type to display option, only when a conversation is selected */}
+        {chatMessages &&
+          (chatType === 'groups' ? (
+            // {info: {}, members: []}
+            <OptionGroup members={chatOptions?.members} info={chatOptions?.info} />
+          ) : (
+            <OptionUser info={chatOptions?.info} />
+          ))}
       </article>
     </section>
   );
