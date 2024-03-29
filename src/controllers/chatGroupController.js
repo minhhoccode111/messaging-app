@@ -346,17 +346,21 @@ module.exports.chat_group_member_delete = asyncHandler(async (req, res) => {
   const group = await Group.findById(req.params.groupid, '_id').exec();
   if (group === null) return res.sendStatus(404);
 
+  // find all members' references in this group
+  const groupMembersRef = await GroupMember.find({ group }, 'user isCreator').populate('user', '_id fullname avatarLink status').exec();
+
   // references of current logged in user and user to be deleted with the group
-  const [userToDeleteRefInGroup, loggedInUserRefInGroup] = await Promise.all([
-    GroupMember.findOne({ group, user: req.params.userid }, 'isCreator').populate('user', '_id').exec(),
-    GroupMember.findOne({ group, user: req.user }, 'isCreator').populate('user', '_id').exec(),
-  ]);
+  const userToDeleteRefInGroupIndex = groupMembersRef.findIndex((ref) => ref.user.id === req.params.userid);
+  const loggedInUserRefInGroupIndex = groupMembersRef.findIndex((ref) => ref.user.id === req.user.id);
 
-  // console.log(`userToDeleteRefInGroup belike: `, userToDeleteRefInGroup);
-  // console.log(`loggedInUserRefInGroup belike: `, loggedInUserRefInGroup);
+  // console.log(`userToDeleteRefInGroup belike: `, userToDeleteRefInGroupIndex);
+  // console.log(`loggedInUserRefInGroup belike: `, loggedInUserRefInGroupIndex);
 
-  // user to delete not in group
-  if (userToDeleteRefInGroup === null) return res.sendStatus(404);
+  // index of user to delete not in group
+  if (userToDeleteRefInGroupIndex < 0) return res.sendStatus(404);
+
+  const userToDeleteRefInGroup = groupMembersRef[userToDeleteRefInGroupIndex];
+  const loggedInUserRefInGroup = groupMembersRef[loggedInUserRefInGroupIndex];
 
   // try to delete other member but current logged in user is not a group creator
   // or the creator try to leave the group (delete the group instead)
@@ -365,5 +369,12 @@ module.exports.chat_group_member_delete = asyncHandler(async (req, res) => {
   // delete reference between the target user vs the group
   await GroupMember.deleteOne({ group, user: req.params.userid });
 
-  return res.sendStatus(200);
+  // modify data
+  const groupMembers = groupMembersRef
+    // first remove the deleted ref
+    .filter((ref) => ref?.user?.id !== userToDeleteRefInGroup.user.id)
+    // extract the populated ref.user
+    .map((ref) => ({ ...ref.toJSON().user, isCreator: ref?.isCreator }));
+
+  return res.json(groupMembers);
 });

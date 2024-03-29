@@ -241,8 +241,8 @@ describe(`/chat/groups`, () => {
       });
     });
 
-    describe(`DELETE & PUT /chat/groups/:groupid`, () => {
-      xdescribe(`DELETE /chat/groups/:groupid - invalid request (not group's creator) or group not exists`, () => {
+    xdescribe(`DELETE & PUT /chat/groups/:groupid`, () => {
+      describe(`DELETE /chat/groups/:groupid - invalid request (not group's creator) or group not exists`, () => {
         test(`users[0] try to delete groups[1] public (users[1] created)`, async () => {
           const res = await request(app)
             .delete(`/api/v1/chat/groups/${groups[1].public._id}`)
@@ -264,7 +264,7 @@ describe(`/chat/groups`, () => {
         });
       });
 
-      xdescribe(`DELETE /chat/groups/:groupid - valid request`, () => {
+      describe(`DELETE /chat/groups/:groupid - valid request`, () => {
         test(`users[0] delete his groups[0].private group`, async () => {
           const res = await request(app)
             .delete(`/api/v1/chat/groups/${groups[0].private._id}`)
@@ -306,7 +306,7 @@ describe(`/chat/groups`, () => {
         });
       });
 
-      xdescribe(`PUT /chat/groups/:groupid - invalid request`, () => {
+      describe(`PUT /chat/groups/:groupid - invalid request`, () => {
         test(`not group's creator`, async () => {
           const res = await request(app)
             .put(`/api/v1/chat/groups/${groups[1].public._id}`)
@@ -380,7 +380,7 @@ describe(`/chat/groups`, () => {
         });
       });
 
-      xdescribe(`PUT /chat/groups/:groupid - valid request`, () => {
+      describe(`PUT /chat/groups/:groupid - valid request`, () => {
         test(`users[0] update public group (which users[1] joined)`, async () => {
           const beforeUpdate = groups[0].public;
 
@@ -417,7 +417,7 @@ describe(`/chat/groups`, () => {
     // TODO should work like /chat/users/:userid
     // but extra info like
 
-    describe(`GET /chat/groups/:groupid - get group's messages, groups's info, group's members`, () => {
+    xdescribe(`GET /chat/groups/:groupid - get group's messages, groups's info, group's members`, () => {
       test(`users[0] get group not exists`, async () => {
         const res = await request(app)
           .get(`/api/v1/chat/groups/someRandomString`)
@@ -482,7 +482,7 @@ describe(`/chat/groups`, () => {
       });
     });
 
-    describe(`POST /chat/groups/:groupid - post a message to group chat`, () => {
+    xdescribe(`POST /chat/groups/:groupid - post a message to group chat`, () => {
       describe(`invalid cases`, () => {
         test(`not exists group`, async () => {
           const res = await request(app)
@@ -692,7 +692,7 @@ describe(`/chat/groups`, () => {
       });
     });
 
-    xdescribe(`DELETE /chat/groups/:groupid/members/:userid - current logged in user leave the group or kick someone`, () => {
+    describe(`DELETE /chat/groups/:groupid/members/:userid - current logged in user leave the group or kick someone`, () => {
       describe(`invalid cases`, () => {
         test(`group not exists`, async () => {
           const res = await request(app)
