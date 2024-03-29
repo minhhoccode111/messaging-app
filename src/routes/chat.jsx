@@ -92,7 +92,7 @@ export default function Chat() {
   // contact data, fetch states, flag to re-fetch
   const { isLoadingContact, isErrorContact, dataContact, setWillFetchContact } = useFetchContact();
 
-  // an array of messages to display in chat section
+  // an array of messages to display in chat section and also used for authorization undefined means not load yet null means can't read messages, empty [] means can read but no messages yet
   const [chatMessages, setChatMessages] = useState();
 
   // an object to display in options section, {info: {}, members:[]}
@@ -237,12 +237,6 @@ export default function Chat() {
   // console.log(`the chatMessages belike: `, chatMessages);
   // console.log(`the chatOptions belike: `, chatOptions);
 
-  const isMember = chatOptions?.info?.isMember;
-  const isCreator = chatOptions?.info?.isCreator;
-
-  // console.log(`isMember belike: `, isMember);
-  // console.log(`isCreator belike: `, isCreator);
-
   return (
     <section className="text-slate-900 p-2 grid grid-cols-chat grid-rows-chat gap-2 border-2 border-success">
       {/* display contact section */}
@@ -350,7 +344,7 @@ export default function Chat() {
         {/* display messages section */}
         <ul className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 ">
           {/* not joined groups */}
-          {!isMember ? (
+          {chatMessages === null || chatMessages === undefined ? (
             <li className="">You are not allowed to read messages in this group.</li>
           ) : // [] means no messages exist
           !chatMessages?.length ? (
@@ -364,8 +358,8 @@ export default function Chat() {
           )}
         </ul>
 
-        {/* form to send message section, only for joined groups */}
-        {isMember && (
+        {/* form to send message section, only for allowed conversation */}
+        {chatMessages !== null && (
           <div className="p-4 border-t-2 border-black">
             <FormChat chatId={chatId} chatType={chatType} setChatMessages={setChatMessages} />
           </div>
@@ -378,7 +372,7 @@ export default function Chat() {
           {/* base on chat type to display option */}
           {chatType === 'groups' && (
             // {info: {}, members: []}
-            <OptionGroup isCreator={isCreator} isMember={isMember} setChatId={setChatId} setChatType={setChatType} setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
+            <OptionGroup setChatId={setChatId} setChatType={setChatType} setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
           )}
 
           {chatType === 'users' && <OptionUser info={chatOptions?.info} />}

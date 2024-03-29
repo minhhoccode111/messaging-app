@@ -5,7 +5,7 @@ import { domParser } from '../../methods';
 import ContactUser from '../contact/ContactUser';
 import { useState, useRef } from 'react';
 
-export default function OptionGroup({ info, members, setChatId, setChatType, setWillFetchContact, isMember, isCreator }) {
+export default function OptionGroup({ info, members, setChatId, setChatType, setWillFetchContact }) {
   // console.log(`the info belike: `, info);
   // console.log(`the members belike: `, members);
 
@@ -44,6 +44,14 @@ export default function OptionGroup({ info, members, setChatId, setChatType, set
   const handleToggleSection = (section) => () => setCurrentSection((current) => (current === section ? '' : section));
 
   const expand = (section) => (currentSection === section ? 'max-h-full' : 'max-h-0');
+
+  const isMember = info?.isMember;
+  const isCreator = info?.isCreator;
+  const isPublic = info?.public;
+
+  // console.log(`isMember belike: `, isMember);
+  // console.log(`isCreator belike: `, isCreator);
+  // console.log(`isPublic belike: `, isCreator);
 
   return (
     <div className="flex flex-col gap-2 p-2 max-h-full h-full">
@@ -174,6 +182,9 @@ export default function OptionGroup({ info, members, setChatId, setChatType, set
           <ContactUser setChatId={setChatId} setChatType={setChatType} user={user} key={user.id}></ContactUser>
         ))}
       </ul>
+
+      {/* do something with group's authorization */}
+      {isCreator ? 'delete' : isMember ? 'leave' : isPublic ? 'join' : ''}
     </div>
   );
 }
@@ -184,6 +195,4 @@ OptionGroup.propTypes = {
   setWillFetchContact: PropTypes.func,
   setChatId: PropTypes.func,
   setChatType: PropTypes.func,
-  isCreator: PropTypes.bool,
-  isMember: PropTypes.bool,
 };

@@ -14,13 +14,13 @@ export default function OptionUser({ info }) {
   };
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-2 p-2 max-h-full">
       <div className="grid place-items-center self-center rounded-full my-8 w-28 h-28">
         {/* make the alt text center just in case the link is not an image, also make it unescaped */}
         <CircleAvatar src={domParser(info?.avatarLink)} alt={domParser(info?.fullname) + ' avatar'} />
       </div>
 
-      <div className="grid gap-4 grid-cols-profile">
+      <div className="grid gap-4 grid-cols-profile overflow-y-auto">
         <h3 className="font-bold">Name</h3>
         {/* unescaped user fullname */}
         <h3 className="">{domParser(info?.fullname)}</h3>
