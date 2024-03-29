@@ -19,7 +19,7 @@ const mongoose = require('mongoose');
 // get all groups that current logged in user can see
 module.exports.chat_all_group_get = asyncHandler(async (req, res) => {
   // first get all current logged in user joined group references
-  let joinedGroups = await GroupMember.find({ user: req.user }).sort({ isCreator: 1 }).populate('group', 'name public avatarLink').exec();
+  let joinedGroups = await GroupMember.find({ user: req.user }).sort({ isCreator: -1 }).populate('group', 'name public avatarLink').exec();
 
   joinedGroups = joinedGroups.map((ref) => ({
     // extract needed fields from populated group field
