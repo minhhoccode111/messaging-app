@@ -333,7 +333,14 @@ module.exports.chat_group_all_members_post = asyncHandler(async (req, res) => {
 
   await member.save();
 
-  res.sendStatus(200);
+  // return new members array
+  // find all members' references in this group
+  const groupMembersRef = await GroupMember.find({ group }, 'user isCreator').populate('user', '_id fullname avatarLink status').exec();
+
+  // extract user from ref
+  const groupMembers = groupMembersRef.map((ref) => ({ ...ref.toJSON().user, isCreator: ref.isCreator }));
+
+  res.json(groupMembers);
 });
 
 // delete a member from a group (leave or get kicked)
@@ -372,9 +379,9 @@ module.exports.chat_group_member_delete = asyncHandler(async (req, res) => {
   // modify data
   const groupMembers = groupMembersRef
     // first remove the deleted ref
-    .filter((ref) => ref?.user?.id !== userToDeleteRefInGroup.user.id)
+    .filter((ref) => ref.user.id !== userToDeleteRefInGroup.user.id)
     // extract the populated ref.user
-    .map((ref) => ({ ...ref.toJSON().user, isCreator: ref?.isCreator }));
+    .map((ref) => ({ ...ref.toJSON().user, isCreator: ref.isCreator }));
 
   return res.json(groupMembers);
 });
