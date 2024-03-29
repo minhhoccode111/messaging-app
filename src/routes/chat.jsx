@@ -234,6 +234,10 @@ export default function Chat() {
   const publicGroups = dataContact?.publicGroups;
   const privateGroups = dataContact?.privateGroups;
 
+  // console.log(`joinedGroups belike: `, joinedGroups);
+  // console.log(`publicGroups belike: `, publicGroups);
+  // console.log(`privateGroup belike: `, privateGroups);
+
   // console.log(`the chatMessages belike: `, chatMessages);
   // console.log(`the chatOptions belike: `, chatOptions);
 
@@ -343,8 +347,11 @@ export default function Chat() {
 
         {/* display messages section */}
         <ul className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 ">
-          {/* not joined groups */}
-          {chatMessages === null || chatMessages === undefined ? (
+          {/* not select conversation */}
+          {chatMessages === undefined ? (
+            <></>
+          ) : // not joined groups
+          chatMessages === null ? (
             <li className="">You are not allowed to read messages in this group.</li>
           ) : // [] means no messages exist
           !chatMessages?.length ? (
@@ -372,7 +379,7 @@ export default function Chat() {
           {/* base on chat type to display option */}
           {chatType === 'groups' && (
             // {info: {}, members: []}
-            <OptionGroup setChatId={setChatId} setChatType={setChatType} setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
+            <OptionGroup chatId={chatId} setChatId={setChatId} setChatType={setChatType} setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
           )}
 
           {chatType === 'users' && <OptionUser info={chatOptions?.info} />}
