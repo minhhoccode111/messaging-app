@@ -7,7 +7,10 @@ import { useState, useRef } from 'react';
 import axios from 'axios';
 import { useOutletContext } from 'react-router-dom';
 
-export default function OptionGroup({ info, members, chatId, setChatId, setChatType, setWillFetchContact }) {
+export default function OptionGroup({ chatId, setChatId, setChatType, setWillFetchContact, setChatOptions, chatOptions }) {
+  const info = chatOptions?.info;
+  const members = chatOptions?.members;
+
   // console.log(`the info belike: `, info);
   // console.log(`the members belike: `, members);
 
@@ -43,14 +46,16 @@ export default function OptionGroup({ info, members, chatId, setChatId, setChatT
     }
   };
 
-  const handleDeleteUser = (id) => async (e) => {
+  const handleDeleteUser = (id, isCreator) => async (e) => {
     e.preventDefault();
 
-    console.log(`try to kick user with id: `, id);
+    // if (isCreator) console.log(`try to kick user with id: `, id);
+    // else console.log(`try to leave the group`);
+
     try {
       setIsLoading(true);
 
-      await axios({
+      const res = await axios({
         mode: 'cors',
         method: 'delete',
         url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}/members/${id}`,
@@ -59,9 +64,14 @@ export default function OptionGroup({ info, members, chatId, setChatId, setChatT
         },
       });
 
-      // console.log(res.data);
+      // console.log(`members before deletion`, members);
 
-      setWillFetchContact((current) => !current);
+      // console.log(`members after deletion`, res.data);
+
+      // update group's members list if it's a kick
+      if (isCreator) setChatOptions((current) => ({ ...current, members: res?.data }));
+      // if it's a leave then just refetch everything (cause we also need to update group's states)
+      else setWillFetchContact((current) => !current);
     } catch (err) {
       console.log(`error occurs when trying to delete user with id: `, err, id);
 
@@ -216,25 +226,27 @@ export default function OptionGroup({ info, members, chatId, setChatId, setChatT
         {members?.map((user) => (
           <ContactUser setChatId={setChatId} setChatType={setChatType} user={user} key={user.id} isCreator={isCreator} isMember={isMember}>
             {/* only joined ones can kick or leave */}
-            {(isCreator || isMember) && (
+            {isCreator || isMember ? (
               // kick and leave use the same API with endpoint user.id
               // but creator can't leave the group (delete gr instead)
               // and normal member can't kick others (leave only)
               // BUG bad practice onClick form element
               // but have to stop propagation to prevent going to chat with the user (the <li> inside ContactUser element)
-              <form onClick={(e) => e.stopPropagation()} onSubmit={handleDeleteUser(user.id)} className="">
+              <form onClick={(e) => e.stopPropagation()} onSubmit={handleDeleteUser(user.id, isCreator)} className="">
                 <SubmitWithStates bg="bg-red-500 text-xs" isLoading={isLoading} isError={isError}>
                   {/* display text different */}
                   {isCreator ? 'Kick' : 'Leave'}
                 </SubmitWithStates>
               </form>
+            ) : (
+              <></>
             )}
           </ContactUser>
         ))}
       </ul>
 
       {/* do something with group's authorization */}
-      {isCreator ? 'delete' : isMember ? 'leave' : isPublic ? 'join' : 'nothing to do with this private group'}
+      {isCreator ? 'delete' : isPublic ? 'join' : 'nothing to do with this private group'}
 
       {/* confirmation */}
     </div>
@@ -242,8 +254,8 @@ export default function OptionGroup({ info, members, chatId, setChatId, setChatT
 }
 
 OptionGroup.propTypes = {
-  info: PropTypes.object,
-  members: PropTypes.array,
+  setChatOptions: PropTypes.func,
+  chatOptions: PropTypes.object,
   setWillFetchContact: PropTypes.func,
   chatId: PropTypes.string,
   setChatId: PropTypes.func,

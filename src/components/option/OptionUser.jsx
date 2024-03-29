@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import { CircleAvatar } from '../more';
 import { domParser } from '../../methods';
 
-export default function OptionUser({ info }) {
+export default function OptionUser({ chatOptions }) {
+  const info = chatOptions?.info;
   // console.log(`the info belike: `, info);
 
   const textColor = () => {
@@ -40,5 +41,5 @@ export default function OptionUser({ info }) {
 }
 
 OptionUser.propTypes = {
-  info: PropTypes.object,
+  chatOptions: PropTypes.object,
 };

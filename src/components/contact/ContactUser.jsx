@@ -2,8 +2,9 @@ import PropTypes from 'prop-types';
 import { domParser } from './../../methods/index';
 import { FakeLink, UserStatus, CircleAvatar } from '../more';
 import { useOutletContext } from 'react-router-dom';
+import { memo } from 'react';
 
-export default function ContactUser({
+const ContactUser = memo(function ContactUser({
   user,
   chatId,
   setChatId,
@@ -22,6 +23,8 @@ export default function ContactUser({
   function setFocus() {
     return chatType === 'users' && chatId === user?.id ? 'bg-gray-300' : 'bg-gray-100';
   }
+
+  console.log(`the children belike: `);
 
   return (
     // BUG not accessibility best practice using onClick on <li></li> tag
@@ -67,7 +70,9 @@ export default function ContactUser({
       )}
     </li>
   );
-}
+});
+
+export default ContactUser;
 
 ContactUser.propTypes = {
   user: PropTypes.object,

@@ -19,8 +19,8 @@ import ChatHeaderUser from './../components/chat/ChatHeaderUser';
 
 function useFetchContact() {
   const { loginState } = useOutletContext();
-  const [isLoadingContact, setIsLoadingContact] = useState(false);
-  const [isErrorContact, setIsErrorContact] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [dataContact, setDataContact] = useState({});
   const [willFetchContact, setWillFetchContact] = useState(false);
 
@@ -28,7 +28,7 @@ function useFetchContact() {
   useEffect(() => {
     async function tmp() {
       try {
-        setIsLoadingContact(true);
+        setIsLoading(true);
 
         const [userContactRes, groupContactRes] = await Promise.all([
           axios({
@@ -73,9 +73,9 @@ function useFetchContact() {
       } catch (error) {
         // console.log(error);
 
-        setIsErrorContact(true);
+        setIsError(true);
       } finally {
-        setIsLoadingContact(false);
+        setIsLoading(false);
       }
     }
 
@@ -83,14 +83,14 @@ function useFetchContact() {
     // flag to re-fetch
   }, [willFetchContact]);
 
-  return { isLoadingContact, isErrorContact, dataContact, setWillFetchContact };
+  return { isLoading, setIsLoading, isError, setIsError, dataContact, setWillFetchContact };
 }
 
 export default function Chat() {
   const { loginState } = useOutletContext();
 
   // contact data, fetch states, flag to re-fetch
-  const { isLoadingContact, isErrorContact, dataContact, setWillFetchContact } = useFetchContact();
+  const { isLoading, setIsLoading, isError, setIsError, dataContact, setWillFetchContact } = useFetchContact();
 
   // an array of messages to display in chat section and also used for authorization undefined means not load yet null means can't read messages, empty [] means can read but no messages yet
   const [chatMessages, setChatMessages] = useState();
@@ -104,10 +104,6 @@ export default function Chat() {
   const [chatId, setChatId] = useState('');
   const [chatType, setChatType] = useState('');
 
-  // fetching states of chat (messages and options)
-  const [isLoadingChat, setIsLoadingChat] = useState(false);
-  const [isErrorChat, setIsErrorChat] = useState(false);
-
   // change chatMessages and chatOptions base on current chat
   useEffect(() => {
     // console.log(`chatId belike: `, chatId);
@@ -117,7 +113,7 @@ export default function Chat() {
       // console.log(`fetch user chat`);
 
       try {
-        setIsLoadingChat(true);
+        setIsLoading(true);
 
         const res = await axios({
           mode: 'cors',
@@ -137,9 +133,9 @@ export default function Chat() {
         // console.log(error);
         // console.log(error.response.status);
 
-        setIsErrorChat(true);
+        setIsError(true);
       } finally {
-        setIsLoadingChat(false);
+        setIsLoading(false);
       }
     }
 
@@ -147,7 +143,7 @@ export default function Chat() {
       // console.log(`fetch group chat`);
 
       try {
-        setIsLoadingChat(true);
+        setIsLoading(true);
 
         const [messRes, memRes] = await Promise.all([
           axios({
@@ -179,9 +175,9 @@ export default function Chat() {
         // console.log(error);
         // console.log(error.response.status);
 
-        setIsErrorChat(true);
+        setIsError(true);
       } finally {
-        setIsLoadingChat(false);
+        setIsLoading(false);
       }
     }
 
@@ -191,7 +187,7 @@ export default function Chat() {
       if (chatType === 'users') userChat();
       else groupChat();
     }
-  }, [chatId, chatType, loginState]);
+  }, [chatId, chatType, loginState, setIsError, setIsLoading]);
 
   // clear current working conversation when dataContact change
   useEffect(() => {
@@ -366,7 +362,7 @@ export default function Chat() {
         </ul>
 
         {/* form to send message section, only for allowed conversation */}
-        {chatMessages !== null && (
+        {chatMessages && (
           <div className="p-4 border-t-2 border-black">
             <FormChat chatId={chatId} chatType={chatType} setChatMessages={setChatMessages} />
           </div>
@@ -379,10 +375,21 @@ export default function Chat() {
           {/* base on chat type to display option */}
           {chatType === 'groups' && (
             // {info: {}, members: []}
-            <OptionGroup chatId={chatId} setChatId={setChatId} setChatType={setChatType} setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
+            <OptionGroup
+              // to know if current logged in user is a member of group
+              chatId={chatId}
+              // to jump to inbox with a member in a group
+              setChatId={setChatId}
+              setChatType={setChatType}
+              // fetch data again if current logged in user leave group
+              setWillFetchContact={setWillFetchContact}
+              // to display group's info and to update members if current logged in user kick someone in the group
+              chatOptions={chatOptions}
+              setChatOptions={setChatOptions}
+            />
           )}
 
-          {chatType === 'users' && <OptionUser info={chatOptions?.info} />}
+          {chatType === 'users' && <OptionUser chatOptions={chatOptions} />}
         </article>
       )}
     </section>
