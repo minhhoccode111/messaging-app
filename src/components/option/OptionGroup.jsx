@@ -12,9 +12,12 @@ export default function OptionGroup({ info, members, setChatId, setChatType, set
   // toggle open sections
   const [currentSection, setCurrentSection] = useState('');
 
+  // which needs confirmation (delete, join, leave, kick)
+  const [currentConfirmation, setCurrentConfirmation] = useState('');
+
   // update group's info fetching states
-  const [isLoadingUpdateGroup, setIsLoadingUpdateGroup] = useState(false);
-  const [isErrorUpdateGroup, setIsErrorUpdateGroup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   // form ref to get inputs inside
   const formRef = useRef(null);
@@ -23,16 +26,33 @@ export default function OptionGroup({ info, members, setChatId, setChatType, set
     e.preventDefault();
 
     try {
-      setIsLoadingUpdateGroup(true);
+      setIsLoading(true);
       //
     } catch (err) {
       console.log(err);
 
       //
-      setIsErrorUpdateGroup(true);
+      setIsError(true);
     } finally {
-      setIsLoadingUpdateGroup(false);
+      setIsLoading(false);
       //
+    }
+  };
+
+  const handleKickUser = (id) => (e) => {
+    e.preventDefault();
+
+    console.log(`try to kick user with id: `, id);
+    try {
+      setIsLoading(true);
+
+      //
+    } catch (err) {
+      console.log(`error occurs when trying to delete user with id: `, err, id);
+
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -158,7 +178,7 @@ export default function OptionGroup({ info, members, setChatId, setChatType, set
             </div>
 
             <div className="flex justify-end">
-              <SubmitWithStates isLoading={isLoadingUpdateGroup} isError={isErrorUpdateGroup}>
+              <SubmitWithStates isLoading={isLoading} isError={isError}>
                 <span className="text-xl">
                   <IoIosPaperPlane />
                 </span>
@@ -179,12 +199,23 @@ export default function OptionGroup({ info, members, setChatId, setChatType, set
 
       <ul className={'overflow-y-auto transition-all origin-top ' + expand('members')}>
         {members?.map((user) => (
-          <ContactUser setChatId={setChatId} setChatType={setChatType} user={user} key={user.id}></ContactUser>
+          <ContactUser setChatId={setChatId} setChatType={setChatType} user={user} key={user.id} isCreator={isCreator} isMember={isMember}>
+            {/* only joined one can kick or leave */}
+            {(isCreator || isMember) && (
+              <form onSubmit={handleKickUser(user.id)} className="">
+                <SubmitWithStates bg="bg-red-500 text-xs" isLoading={isLoading} isError={isError}>
+                  {isCreator ? 'Kick' : isMember ? 'Leave' : ''}
+                </SubmitWithStates>
+              </form>
+            )}
+          </ContactUser>
         ))}
       </ul>
 
       {/* do something with group's authorization */}
-      {isCreator ? 'delete' : isMember ? 'leave' : isPublic ? 'join' : ''}
+      {isCreator ? 'delete' : isMember ? 'leave' : isPublic ? 'join' : 'nothing to do with this private group'}
+
+      {/* confirmation */}
     </div>
   );
 }

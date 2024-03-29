@@ -3,7 +3,18 @@ import { domParser } from './../../methods/index';
 import { FakeLink, UserStatus, CircleAvatar } from '../more';
 import { useOutletContext } from 'react-router-dom';
 
-export default function ContactUser({ user, chatId, setChatId, chatType, setChatType }) {
+export default function ContactUser({
+  user,
+  chatId,
+  setChatId,
+  chatType,
+  setChatType,
+
+  // those props only being used when display option group joined
+  children,
+  isCreator,
+  isMember,
+}) {
   // if (user.status === 'online') console.log(user);
 
   const { loginState } = useOutletContext();
@@ -25,10 +36,10 @@ export default function ContactUser({ user, chatId, setChatId, chatType, setChat
         <CircleAvatar src={user?.avatarLink} alt={domParser(user?.fullname?.slice(0, 1)?.toUpperCase())} />
       </div>
 
-      <div className="">
+      <div className="flex-1">
         <p className="text-sm">
           <FakeLink>
-            {domParser(user?.fullname) === domParser(loginState?.user?.fullname)
+            {user?.id === loginState?.user?.id
               ? // differentiate if you are group's creator
                 'You'
               : domParser(user?.fullname)}
@@ -40,6 +51,20 @@ export default function ContactUser({ user, chatId, setChatId, chatType, setChat
           <UserStatus status={user?.status} />
         </p>
       </div>
+
+      {/* kick or leave group logic, used for option group joined */}
+      {/* if group's creator */}
+      {isCreator ? (
+        // display kick to every one but ourselves
+        user?.id !== loginState?.user?.id && children
+      ) : // else if group's member
+      isMember ? (
+        // display leave to no one but ourselves
+        user?.id === loginState?.user?.id && children
+      ) : (
+        // else display nothing
+        <></>
+      )}
     </li>
   );
 }
@@ -50,4 +75,9 @@ ContactUser.propTypes = {
   setChatId: PropTypes.func,
   chatType: PropTypes.string,
   setChatType: PropTypes.func,
+
+  // only use these props when display members in options group joined
+  children: PropTypes.element,
+  isCreator: PropTypes.bool,
+  isMember: PropTypes.bool,
 };
