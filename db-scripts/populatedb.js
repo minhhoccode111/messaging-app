@@ -1,6 +1,16 @@
+// to access environment variables
+require('dotenv').config(); // this line cause me 30 mins to deBUG
+
 const mongoDB = process.argv.slice(2)[0] || process.env.DEVELOPMENT_MONGO;
 
-console.log(mongoDB);
+// const custom = require('debug')('debug-custom');
+const custom = (...str) => {
+  for (const s of str) {
+    console.log(s);
+  }
+};
+
+custom(mongoDB);
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
@@ -37,13 +47,6 @@ const User = require('./../src/models/user');
 const Message = require('./../src/models/message');
 const Group = require('./../src/models/group');
 const GroupMember = require('./../src/models/groupMember');
-
-// const custom = require('debug')('debug-custom');
-const custom = (...str) => {
-  for (const s of str) {
-    console.log(s);
-  }
-};
 
 const users = [];
 const messages = [];
