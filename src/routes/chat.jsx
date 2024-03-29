@@ -237,6 +237,12 @@ export default function Chat() {
   // console.log(`the chatMessages belike: `, chatMessages);
   // console.log(`the chatOptions belike: `, chatOptions);
 
+  const isMember = chatOptions?.info?.isMember;
+  const isCreator = chatOptions?.info?.isCreator;
+
+  // console.log(`isMember belike: `, isMember);
+  // console.log(`isCreator belike: `, isCreator);
+
   return (
     <section className="text-slate-900 p-2 grid grid-cols-chat grid-rows-chat gap-2 border-2 border-success">
       {/* display contact section */}
@@ -343,11 +349,11 @@ export default function Chat() {
 
         {/* display messages section */}
         <ul className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 ">
-          {/* null means not joined groups */}
-          {chatMessages === null ? (
+          {/* not joined groups */}
+          {!isMember ? (
             <li className="">You are not allowed to read messages in this group.</li>
           ) : // [] means no messages exist
-          chatMessages?.length === 0 ? (
+          !chatMessages?.length ? (
             <li className="">
               <p className="">No messages here yet.</p>
               <p className="">Be the first one to say hi.</p>
@@ -359,21 +365,20 @@ export default function Chat() {
         </ul>
 
         {/* form to send message section, only for joined groups */}
-        {chatMessages && (
+        {isMember && (
           <div className="p-4 border-t-2 border-black">
             <FormChat chatId={chatId} chatType={chatType} setChatMessages={setChatMessages} />
           </div>
         )}
       </article>
 
-      {/* display option section */}
+      {/* display option section only when a conversation is selected */}
       {chatType !== '' && (
         <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
           {/* base on chat type to display option */}
-          {/* only when a conversation is selected */}
           {chatType === 'groups' && (
             // {info: {}, members: []}
-            <OptionGroup setChatId={setChatId} setChatType={setChatType} setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
+            <OptionGroup isCreator={isCreator} isMember={isMember} setChatId={setChatId} setChatType={setChatType} setWillFetchContact={setWillFetchContact} members={chatOptions?.members} info={chatOptions?.info} />
           )}
 
           {chatType === 'users' && <OptionUser info={chatOptions?.info} />}

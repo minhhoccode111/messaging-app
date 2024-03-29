@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import { domParser } from './../../methods/index';
 import { FakeLink, UserStatus, CircleAvatar } from '../more';
+import { useOutletContext } from 'react-router-dom';
 
 export default function ContactUser({ user, chatId, setChatId, chatType, setChatType }) {
   // if (user.status === 'online') console.log(user);
+
+  const { loginState } = useOutletContext();
 
   function setFocus() {
     return chatType === 'users' && chatId === user?.id ? 'bg-gray-300' : 'bg-gray-100';
@@ -24,7 +27,12 @@ export default function ContactUser({ user, chatId, setChatId, chatType, setChat
 
       <div className="">
         <p className="text-sm">
-          <FakeLink>{domParser(user?.fullname)}</FakeLink>
+          <FakeLink>
+            {domParser(user?.fullname) === domParser(loginState?.user?.fullname)
+              ? // differentiate if you are group's creator
+                'You'
+              : domParser(user?.fullname)}
+          </FakeLink>
           {user?.isCreator && <span className="font-bold text-green-500"> (Creator) </span>}
         </p>
 
