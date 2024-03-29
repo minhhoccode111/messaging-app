@@ -84,7 +84,12 @@ export default function FormGroup({ setWillFetchContact }) {
       </label>
 
       <label htmlFor="avatarLink" className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1">
-        <input type="text" id="avatarLink" className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full" placeholder="Avatar Link" />
+        <input
+          type="text"
+          id="avatarLink"
+          className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
+          placeholder="Avatar Link"
+        />
 
         <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
           Avatar Link
@@ -117,14 +122,20 @@ export default function FormGroup({ setWillFetchContact }) {
         </div>
       </fieldset>
 
-      <div className="p-2">
-        <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
-          {' '}
-          Bio{' '}
-        </label>
-
-        <textarea id="bio" className="mt-2 w-full rounded-lg border-gray-200 p-2 align-top shadow-sm sm:text-sm" rows="3" placeholder="Enter group bio here" required></textarea>
-      </div>
+      <label
+        htmlFor="bio"
+        className="text-sm font-medium text-gray-700 block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1"
+      >
+        {' '}
+        Bio{' '}
+        <textarea
+          id="bio"
+          className="border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
+          rows="3"
+          placeholder="Enter group bio here"
+          required
+        ></textarea>
+      </label>
 
       <div className="flex justify-end">
         <SubmitWithStates isLoading={isLoadingCreateGroup} isError={isErrorCreateGroup}>

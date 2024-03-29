@@ -18,7 +18,7 @@ export function CircleAvatar({ src, alt }) {
   return (
     <>
       {/* if the link not valid we take first character in name to place in the avatar */}
-      <img src={src} alt={alt} className={'rounded-full bg-gray-200 grid place-items-center overflow-hidden w-full h-full'} />
+      <img src={src} alt={alt} className={'rounded-full border bg-gray-200 grid place-items-center overflow-hidden w-full h-full'} />
     </>
   );
 }
@@ -124,7 +124,7 @@ OutsideLink.propTypes = {
 };
 
 export function FakeLink({ children }) {
-  return <span className="text-link underline underline-offset-2 decoration-dotted hover:decoration-solid cursor-pointer inline">{children}</span>;
+  return <span className="text-link underline underline-offset-2 decoration-dotted hover:decoration-solid cursor-pointer">{children}</span>;
 }
 
 FakeLink.propTypes = {

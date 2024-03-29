@@ -42,7 +42,7 @@ export default function FormChat({ setChatMessages, chatId, chatType }) {
         if (field === 'content') setContent('');
         else setImageLink('');
 
-        console.log(`messages response from the post request belike: `, res?.data?.messages);
+        // console.log(`messages response from the post request belike: `, res?.data?.messages);
         setChatMessages(res?.data?.messages);
       } catch (error) {
         console.log(`there is an error when trying to send that message: `, error);

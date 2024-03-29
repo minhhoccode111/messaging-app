@@ -206,22 +206,13 @@ export default function Chat() {
   if (!loginState.token || !loginState.user) return <Navigate to={'/'} />;
 
   // set current open section when button clicked
-  function handleToggleClick(section) {
-    return function () {
-      if (currentOpenSection === section) setCurrentOpenSection('');
-      else setCurrentOpenSection(section);
-    };
-  }
+  const handleToggleClick = (section) => () => (currentOpenSection === section ? setCurrentOpenSection('') : setCurrentOpenSection(section));
 
   // based on current open section to return a class, used for <ul>s
-  function sectionExpand(current) {
-    return currentOpenSection === current ? 'max-h-full' : 'max-h-0';
-  }
+  const sectionExpand = (current) => (currentOpenSection === current ? 'max-h-full' : 'max-h-0');
 
   // based on current open section to return a class, used for toggle buttons
-  function sectionHighlight(current) {
-    return currentOpenSection === current ? 'bg-red-300' : 'bg-red-100';
-  }
+  const sectionHighlight = (current) => (currentOpenSection === current ? 'bg-red-100' : 'bg-red-50');
 
   // console.log(dataContact);
 
@@ -245,84 +236,100 @@ export default function Chat() {
   // console.log(`the chatOptions belike: `, chatOptions);
 
   return (
-    <section className="text-slate-900 p-2 grid grid-cols-chat grid-rows-chat gap-2 border-2 border-success">
+    <section className="text-gray-700 p-[1vh] grid grid-cols-chat grid-rows-chat gap-2 max-w-screen-xl mx-auto h-full max-h-full">
       {/* display contact section */}
       <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full flex flex-col gap-1">
         {/* other users */}
         {/* button to toggle expand ul */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('users')}
+          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('users')}
           onClick={handleToggleClick('users')}
         >
-          <FakeLink>Users</FakeLink>
+          <h2 className="">Users</h2>
           <NumberCounter>{users?.length}</NumberCounter>
         </button>
         {/* ul display other users conversations */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('users')}>
-          {users?.map((u) => {
-            // to display current chat we are focused
-            return <ContactUser chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} user={u} key={u.id} />;
-          })}
+          {users?.length !== 0 ? (
+            users?.map((u) => {
+              // to display current chat we are focused
+              return <ContactUser chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} user={u} key={u.id} />;
+            })
+          ) : (
+            <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No user to display</li>
+          )}
         </ul>
 
         {/* joined groups */}
         {/* button to toggle expand ul */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('joined')}
+          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4  text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('joined')}
           onClick={handleToggleClick('joined')}
         >
-          <FakeLink>Joined Groups</FakeLink>
+          <h2 className="">Joined groups</h2>
           <NumberCounter>{joinedGroups?.length}</NumberCounter>
         </button>
         {/* ul to display all joined groups */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('joined')}>
-          {joinedGroups?.map((gr) => {
-            // to display current chat we are focused
-            return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
-          })}
+          {joinedGroups?.length !== 0 ? (
+            joinedGroups?.map((gr) => {
+              // to display current chat we are focused
+              return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+            })
+          ) : (
+            <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
+          )}
         </ul>
 
         {/* public groups */}
         {/* button to toggle expand ul */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('public')}
+          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('public')}
           onClick={handleToggleClick('public')}
         >
-          <FakeLink>Public Groups</FakeLink>
+          <h2 className="">Public groups</h2>
           <NumberCounter>{publicGroups?.length}</NumberCounter>
         </button>
         {/* ul to display all public groups */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('public')}>
-          {publicGroups?.map((gr) => {
-            // to display current chat we are focused
-            return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
-          })}
+          {publicGroups?.length !== 0 ? (
+            publicGroups?.map((gr) => {
+              // to display current chat we are focused
+              return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+            })
+          ) : (
+            <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
+          )}
         </ul>
 
         {/* private groups */}
         {/* button to toggle expand ul */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('private')}
+          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4  text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('private')}
           onClick={handleToggleClick('private')}
         >
-          <FakeLink>Private Groups</FakeLink>
+          <h2 className="">Private groups</h2>
           <NumberCounter>{privateGroups?.length}</NumberCounter>
         </button>
         {/* ul to display all private groups */}
         <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('private')}>
-          {privateGroups?.map((gr) => {
-            // to display current chat we are focused
-            return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
-          })}
+          {privateGroups?.length !== 0 ? (
+            privateGroups?.map((gr) => {
+              // to display current chat we are focused
+              return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+            })
+          ) : (
+            <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
+          )}
         </ul>
 
         {/* new group */}
         {/* button to toggle expand form */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-xl p-4 text-center w-full rounded-md hover:bg-red-300 transition-all shadow-md' + ' ' + sectionHighlight('new')}
+          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('new')}
           onClick={handleToggleClick('new')}
         >
-          <FakeLink>New Group</FakeLink>
+          <h2 className="">New group</h2>
           <NumberCounter>
             <FaPlus className="text-white font-bold" />
           </NumberCounter>
@@ -339,7 +346,7 @@ export default function Chat() {
         {/* header to know which conversation we are engaging */}
         <header className="p-4 border-b-2 border-black">
           {chatType === '' ? (
-            <h2 className="font-bold"> Select a conversation to get started.</h2>
+            <h2 className="font-bold text-xl text-center"> Select a conversation to get started.</h2>
           ) : chatType === 'groups' ? (
             // {info: {}, members: []}
             <ChatHeaderGroup chatOptions={chatOptions} />
@@ -355,10 +362,10 @@ export default function Chat() {
             <></>
           ) : // not joined groups
           chatMessages === null ? (
-            <li className="">You are not allowed to read messages in this group.</li>
+            <li className="p-4 font-bold text-xl text-center text-danger">You are not allowed to read messages in this group.</li>
           ) : // [] means no messages exist
           !chatMessages?.length ? (
-            <li className="">
+            <li className="p-4 font-bold text-xl text-center">
               <p className="">No messages here yet.</p>
               <p className="">Be the first one to say hi.</p>
             </li>

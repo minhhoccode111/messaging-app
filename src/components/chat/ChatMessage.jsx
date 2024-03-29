@@ -26,7 +26,7 @@ export default function ChatMessage({ message }) {
   // console.log(`the message belike: `, message);
 
   return (
-    <li className={'w-full max-w-[70%] border flex gap-2 ' + alignFlex()}>
+    <li className={'w-full max-w-[70%] flex gap-2 ' + alignFlex()}>
       {/* message's sender avatar */}
       <div className={'w-8 h-8 flex-shrink-0 ' + order()}>
         <CircleAvatar src={message?.sender?.avatarLink} alt={message?.sender?.fullname?.slice(0, 1)?.toUpperCase()}></CircleAvatar>

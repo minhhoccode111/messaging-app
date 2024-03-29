@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { domParser } from './../../methods/index';
-import { FakeLink, CircleAvatar } from '../more';
+import { CircleAvatar } from '../more';
 
 export default function ContactGroup({ group, chatId, setChatId, chatType, setChatType }) {
   // if (user.status === 'online') console.log(user);
@@ -24,9 +24,7 @@ export default function ContactGroup({ group, chatId, setChatId, chatType, setCh
         <CircleAvatar src={domParser(group?.avatarLink)} alt={domParser(group?.name?.slice(0, 1)?.toUpperCase())} />
       </div>
 
-      <p className="text-sm">
-        <FakeLink>{domParser(group?.name)}</FakeLink>
-      </p>
+      <p className="text-sm">{domParser(group?.name)}</p>
     </li>
   );
 }

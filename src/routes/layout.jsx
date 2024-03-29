@@ -25,7 +25,7 @@ export default function Layout() {
       {pathname !== '/chat' && <Header loginState={loginState} />}
 
       {/* dynamic part */}
-      <main className={'flex-1 border-2 border-danger'}>
+      <main className={'flex-1 h-screen max-h-screen'}>
         <Outlet context={{ setLoginState, loginState }} />
       </main>
 

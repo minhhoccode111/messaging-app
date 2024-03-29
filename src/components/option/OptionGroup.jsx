@@ -69,7 +69,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
         },
       });
 
-      console.log(res.data);
+      // console.log(res.data);
 
       // clear after success
       nameInput.value = '';
@@ -180,14 +180,13 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
     }
   };
 
-  const textColor = () => {
-    if (info?.public) return `text-green-500`;
-    else return `text-gray-500`;
-  };
+  const textColor = () => (info?.public ? `text-green-500` : `text-gray-500`);
 
   const handleToggleSection = (section) => () => setCurrentSection((current) => (current === section ? '' : section));
 
   const expand = (section) => (currentSection === section ? 'max-h-full' : 'max-h-0');
+
+  const focus = (section) => (currentSection === section ? 'bg-red-100' : 'bg-red-50');
 
   const isMember = info?.isMember;
   const isCreator = info?.isCreator;
@@ -198,7 +197,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
   // console.log(`isPublic belike: `, isCreator);
 
   return (
-    <div className="flex flex-col gap-2 p-2 max-h-full h-full">
+    <div className="flex flex-col gap-1 p-2 max-h-full h-full">
       <div className="grid place-items-center self-center rounded-full my-4 w-28 h-28 min-h-28 font-bold text-5xl">
         {/* make the alt text center just in case the link is not an image, also make it unescaped */}
         <CircleAvatar src={domParser(info?.avatarLink)} alt={domParser(info?.name?.slice(0, 1)?.toUpperCase())} />
@@ -207,9 +206,10 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
       {/* toggle display info section */}
       <button
         onClick={handleToggleSection('info')}
-        className="flex items-center justify-between gap-2 font-bold text-xl p-4 text-center rounded-md hover:bg-red-300 bg-red-100 transition-all shadow-md"
+        className={'flex items-center justify-between gap-2 font-bold text-xl px-4 py-2 text-center rounded-md hover:bg-red-100 transition-all shadow-md ' + focus('info')}
       >
-        <FakeLink>About</FakeLink>
+        <h2 className="">About</h2>
+
         {/* <NumberCounter>{members?.length}</NumberCounter> */}
       </button>
 
@@ -238,9 +238,9 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
           {/* toggle display edit section */}
           <button
             onClick={handleToggleSection('update')}
-            className="flex items-center justify-between gap-2 font-bold text-xl p-4 text-center rounded-md hover:bg-red-300 bg-red-100 transition-all shadow-md"
+            className={'flex items-center justify-between gap-2 font-bold text-xl px-4 py-2 text-center rounded-md hover:bg-red-100 transition-all shadow-md ' + focus('update')}
           >
-            <FakeLink>Update</FakeLink>
+            <h2 className="">Update</h2>
             {/* <NumberCounter>{members?.length}</NumberCounter> */}
           </button>
 
@@ -307,24 +307,30 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
               </div>
             </fieldset>
 
-            <div className="p-2">
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
-                {' '}
-                Bio{' '}
-              </label>
+            <label
+              htmlFor="bio"
+              className="text-sm font-medium text-gray-700 block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1"
+            >
+              {' '}
+              Bio{' '}
+              <textarea
+                id="bio"
+                className="border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
+                rows="3"
+                placeholder="Enter group bio here"
+                required
+              ></textarea>
+            </label>
 
-              <textarea id="bio" className="mt-2 w-full rounded-lg border-gray-200 p-2 align-top shadow-sm sm:text-sm" rows="3" placeholder="Enter group bio here" required></textarea>
-            </div>
-
-            {!isWarning && (
-              <div className="flex justify-end">
+            <div className="flex justify-end mb-3">
+              {!isWarning && (
                 <SubmitWithStates isLoading={isLoading} isError={isError}>
                   <span className="text-xl">
                     <IoIosPaperPlane />
                   </span>
                 </SubmitWithStates>
-              </div>
-            )}
+              )}
+            </div>
           </form>
         </>
       )}
@@ -332,9 +338,9 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
       {/* toggle display members section */}
       <button
         onClick={handleToggleSection('members')}
-        className="flex items-center justify-between gap-2 font-bold text-xl p-4 text-center rounded-md hover:bg-red-300 bg-red-100 transition-all shadow-md"
+        className={'flex items-center justify-between gap-2 font-bold text-xl px-4 py-2 text-center rounded-md hover:bg-red-100 bg-red-100 transition-all shadow-md ' + focus('members')}
       >
-        <FakeLink>Members</FakeLink>
+        <h2 className="">Members</h2>
         <NumberCounter>{members?.length}</NumberCounter>
       </button>
 
@@ -380,8 +386,8 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
         </form>
       ) : (
         <div className="">
-          <SubmitWithStates bg="bg-green-500" isLoading={isLoading} isError={isError}>
-            Do nothing to do
+          <SubmitWithStates bg="bg-black" isLoading={isLoading} isError={isError}>
+            Chat with group&apos;s creator
           </SubmitWithStates>
         </div>
       )}

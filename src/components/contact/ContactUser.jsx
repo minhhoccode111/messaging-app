@@ -30,6 +30,10 @@ const ContactUser = memo(function ContactUser({
     // BUG not accessibility best practice using onClick on <li></li> tag
     <li
       onClick={() => {
+        // not allowed to chat with ourselves
+        if (loginState?.user?.id === user?.id) return;
+
+        // set chat to fetch
         setChatId(user?.id);
         setChatType('users');
       }}
@@ -41,12 +45,11 @@ const ContactUser = memo(function ContactUser({
 
       <div className="flex-1">
         <p className="text-sm">
-          <FakeLink>
-            {user?.id === loginState?.user?.id
-              ? // differentiate if you are group's creator
-                'You'
-              : domParser(user?.fullname)}
-          </FakeLink>
+          {user?.id === loginState?.user?.id
+            ? // differentiate if you are group's creator
+              'You'
+            : domParser(user?.fullname)}
+
           {user?.isCreator && <span className="font-bold text-green-500"> (Creator) </span>}
         </p>
 
