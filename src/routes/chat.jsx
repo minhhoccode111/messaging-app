@@ -226,9 +226,16 @@ export default function Chat() {
   // console.log(dataContact);
 
   const users = dataContact?.users;
-  const joinedGroups = dataContact?.joinedGroups;
-  const publicGroups = dataContact?.publicGroups;
-  const privateGroups = dataContact?.privateGroups;
+  const joinedGroups = dataContact?.joinedGroups ?? [];
+  const publicGroups = dataContact?.publicGroups ?? [];
+  const privateGroups = dataContact?.privateGroups ?? [];
+
+  const everyGroupNames = [...joinedGroups, ...publicGroups, ...privateGroups]
+    // extract name only
+    .map((gr) => gr.name)
+    // allow to update group with old name
+    .filter((name) => name !== chatOptions?.info?.name);
+  // console.log(everyGroupNames);
 
   // console.log(`joinedGroups belike: `, joinedGroups);
   // console.log(`publicGroups belike: `, publicGroups);
@@ -386,6 +393,8 @@ export default function Chat() {
               // to display group's info and to update members if current logged in user kick someone in the group
               chatOptions={chatOptions}
               setChatOptions={setChatOptions}
+              // prevent update to existed name
+              everyGroupNames={everyGroupNames}
             />
           )}
 

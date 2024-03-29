@@ -3,11 +3,11 @@ import { IoIosPaperPlane } from 'react-icons/io';
 import { CircleAvatar, SubmitWithStates, FakeLink, NumberCounter } from '../more';
 import { domParser } from '../../methods';
 import ContactUser from '../contact/ContactUser';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useOutletContext } from 'react-router-dom';
 
-export default function OptionGroup({ chatId, setChatId, setChatType, setWillFetchContact, setChatOptions, chatOptions }) {
+export default function OptionGroup({ chatId, setChatId, setChatType, setWillFetchContact, setChatOptions, chatOptions, everyGroupNames }) {
   const info = chatOptions?.info;
   const members = chatOptions?.members;
 
@@ -19,9 +19,6 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
   // toggle open sections
   const [currentSection, setCurrentSection] = useState('');
 
-  // which needs confirmation (delete, join, leave, kick)
-  const [currentConfirmation, setCurrentConfirmation] = useState('');
-
   // update group's info fetching states
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -29,21 +26,64 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
   // form ref to get inputs inside
   const formRef = useRef(null);
 
+  // name state to make sure don't update group name to exists name
+  const [updateName, setUpdateName] = useState('');
+  const [isWarning, setIsWarning] = useState(false);
+  useEffect(() => {
+    const trim = updateName.trim();
+    if (trim.length < 8) setIsWarning(true);
+    else if (everyGroupNames.includes(trim)) setIsWarning(true);
+    else setIsWarning(false);
+  }, [updateName, everyGroupNames]);
+
   // creator update group's info
-  const handleUpdateGroup = (e) => {
+  const handleUpdateGroup = async (e) => {
     e.preventDefault();
 
+    if (isWarning) return;
+
     try {
+      const form = formRef.current;
+      const nameInput = form.querySelector('#name');
+      const avatarLinkInput = form.querySelector('#avatarLink');
+      const bioInput = form.querySelector('#bio');
+      const publicInput = form.querySelector('input[type="radio"]:checked');
+
+      // still allow user to create group but we add default values for them
+      if (avatarLinkInput.value.trim().length > 500) avatarLinkInput.value = ``;
+
       setIsLoading(true);
-      //
+
+      const res = await axios({
+        mode: 'cors',
+        method: 'put',
+        url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}`,
+        headers: {
+          Authorization: `Bearer ${loginState?.token}`,
+        },
+        data: {
+          name: nameInput.value,
+          avatarLink: avatarLinkInput.value,
+          bio: bioInput.value,
+          public: publicInput.value,
+        },
+      });
+
+      console.log(res.data);
+
+      // clear after success
+      nameInput.value = '';
+      avatarLinkInput.value = '';
+      bioInput.value = '';
+      publicInput.value = '';
+
+      setWillFetchContact((current) => !current);
     } catch (err) {
       console.log(err);
 
-      //
       setIsError(true);
     } finally {
       setIsLoading(false);
-      //
     }
   };
 
@@ -89,7 +129,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
   const handleJoinGroup = async (e) => {
     e.preventDefault();
 
-    console.log(`try to join a group`);
+    // console.log(`try to join a group`);
 
     try {
       setIsLoading(true);
@@ -159,7 +199,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
 
   return (
     <div className="flex flex-col gap-2 p-2 max-h-full h-full">
-      <div className="grid place-items-center self-center rounded-full my-4 w-28 h-28 font-bold text-5xl">
+      <div className="grid place-items-center self-center rounded-full my-4 w-28 h-28 min-h-28 font-bold text-5xl">
         {/* make the alt text center just in case the link is not an image, also make it unescaped */}
         <CircleAvatar src={domParser(info?.avatarLink)} alt={domParser(info?.name?.slice(0, 1)?.toUpperCase())} />
       </div>
@@ -205,19 +245,34 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
           </button>
 
           <form ref={formRef} className={'overflow-y-auto transition-all origin-top flex flex-col gap-3 px-2 ' + expand('update')} onSubmit={handleUpdateGroup}>
-            <label htmlFor="name" className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 px-1 pt-2">
-              <input type="text" id="name" className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0" placeholder="Name" required />
+            <label htmlFor="name" className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1 mt-3">
+              <input
+                type="text"
+                id="name"
+                className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
+                placeholder="Name"
+                required
+                value={updateName}
+                onChange={(e) => setUpdateName(e.target.value)}
+              />
 
               <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
                 Name
               </span>
             </label>
 
+            {isWarning && (
+              <>
+                <p className="text-danger font-bold text-xs">*Group name must be unique</p>
+                <p className="text-danger font-bold text-xs">And between 8 - 60 characters</p>
+              </>
+            )}
+
             <label htmlFor="avatarLink" className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1">
               <input
                 type="text"
                 id="avatarLink"
-                className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
+                className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
                 placeholder="Avatar Link"
               />
 
@@ -261,13 +316,15 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
               <textarea id="bio" className="mt-2 w-full rounded-lg border-gray-200 p-2 align-top shadow-sm sm:text-sm" rows="3" placeholder="Enter group bio here" required></textarea>
             </div>
 
-            <div className="flex justify-end">
-              <SubmitWithStates isLoading={isLoading} isError={isError}>
-                <span className="text-xl">
-                  <IoIosPaperPlane />
-                </span>
-              </SubmitWithStates>
-            </div>
+            {!isWarning && (
+              <div className="flex justify-end">
+                <SubmitWithStates isLoading={isLoading} isError={isError}>
+                  <span className="text-xl">
+                    <IoIosPaperPlane />
+                  </span>
+                </SubmitWithStates>
+              </div>
+            )}
           </form>
         </>
       )}
@@ -339,4 +396,5 @@ OptionGroup.propTypes = {
   chatId: PropTypes.string,
   setChatId: PropTypes.func,
   setChatType: PropTypes.func,
+  everyGroupNames: PropTypes.array,
 };
