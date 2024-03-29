@@ -29,6 +29,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
   // form ref to get inputs inside
   const formRef = useRef(null);
 
+  // creator update group's info
   const handleUpdateGroup = (e) => {
     e.preventDefault();
 
@@ -46,34 +47,92 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
     }
   };
 
-  const handleDeleteUser = (id, isCreator) => async (e) => {
+  // leave group or kick another user in group
+  const handleDeleteUser =
+    (isCreator, id = loginState?.user?.id) =>
+    async (e) => {
+      e.preventDefault();
+
+      // if (isCreator) console.log(`try to kick user with id: `, id);
+      // else console.log(`try to leave the group`);
+
+      try {
+        setIsLoading(true);
+
+        const res = await axios({
+          mode: 'cors',
+          method: 'delete',
+          url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}/members/${id}`,
+          headers: {
+            Authorization: `Bearer ${loginState?.token}`,
+          },
+        });
+
+        // console.log(`members before deletion`, members);
+
+        // console.log(`members after deletion`, res.data);
+
+        // update group's members list if it's a kick
+        if (isCreator) setChatOptions((current) => ({ ...current, members: res?.data }));
+        // if it's a leave then just refetch everything (cause we also need to update group's states)
+        else setWillFetchContact((current) => !current);
+      } catch (err) {
+        console.log(`error occurs when trying to delete user with id: `, err, id);
+
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+  // join public group
+  const handleJoinGroup = async (e) => {
     e.preventDefault();
 
-    // if (isCreator) console.log(`try to kick user with id: `, id);
-    // else console.log(`try to leave the group`);
+    console.log(`try to join a group`);
 
     try {
       setIsLoading(true);
 
-      const res = await axios({
+      await axios({
         mode: 'cors',
-        method: 'delete',
-        url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}/members/${id}`,
+        method: 'post',
+        url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}/members/`,
         headers: {
           Authorization: `Bearer ${loginState?.token}`,
         },
       });
 
-      // console.log(`members before deletion`, members);
+      // console.log(res.data);
 
-      // console.log(`members after deletion`, res.data);
+      setWillFetchContact((current) => !current);
+    } catch (error) {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      // update group's members list if it's a kick
-      if (isCreator) setChatOptions((current) => ({ ...current, members: res?.data }));
-      // if it's a leave then just refetch everything (cause we also need to update group's states)
-      else setWillFetchContact((current) => !current);
-    } catch (err) {
-      console.log(`error occurs when trying to delete user with id: `, err, id);
+  const handleDeleteGroup = async (e) => {
+    e.preventDefault();
+
+    try {
+      setIsLoading(true);
+
+      await axios({
+        mode: 'cors',
+        method: 'delete',
+        url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}`,
+        headers: {
+          Authorization: `Bearer ${loginState?.token}`,
+        },
+      });
+
+      // console.log(`res after deletion belike: `, res.data);
+
+      setWillFetchContact((current) => !current);
+    } catch (error) {
+      console.log(`there is an error trying to delete this group`, error);
 
       setIsError(true);
     } finally {
@@ -226,29 +285,49 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
         {members?.map((user) => (
           <ContactUser setChatId={setChatId} setChatType={setChatType} user={user} key={user.id} isCreator={isCreator} isMember={isMember}>
             {/* only joined ones can kick or leave */}
-            {isCreator || isMember ? (
+            {(isCreator || isMember) && (
               // kick and leave use the same API with endpoint user.id
               // but creator can't leave the group (delete gr instead)
               // and normal member can't kick others (leave only)
               // BUG bad practice onClick form element
               // but have to stop propagation to prevent going to chat with the user (the <li> inside ContactUser element)
-              <form onClick={(e) => e.stopPropagation()} onSubmit={handleDeleteUser(user.id, isCreator)} className="">
+              <form onClick={(e) => e.stopPropagation()} onSubmit={handleDeleteUser(isCreator, user.id)} className="">
                 <SubmitWithStates bg="bg-red-500 text-xs" isLoading={isLoading} isError={isError}>
                   {/* display text different */}
                   {isCreator ? 'Kick' : 'Leave'}
                 </SubmitWithStates>
               </form>
-            ) : (
-              <></>
             )}
           </ContactUser>
         ))}
       </ul>
 
       {/* do something with group's authorization */}
-      {isCreator ? 'delete' : isPublic ? 'join' : 'nothing to do with this private group'}
-
-      {/* confirmation */}
+      {isCreator ? (
+        <form onSubmit={handleDeleteGroup} className="">
+          <SubmitWithStates bg="bg-red-500" isLoading={isLoading} isError={isError}>
+            Delete group
+          </SubmitWithStates>
+        </form>
+      ) : isMember ? (
+        <form onSubmit={handleDeleteUser(false)} className="">
+          <SubmitWithStates bg="bg-red-500" isLoading={isLoading} isError={isError}>
+            Leave group
+          </SubmitWithStates>
+        </form>
+      ) : isPublic ? (
+        <form onSubmit={handleJoinGroup} className="">
+          <SubmitWithStates bg="bg-green-500" isLoading={isLoading} isError={isError}>
+            Join group
+          </SubmitWithStates>
+        </form>
+      ) : (
+        <div className="">
+          <SubmitWithStates bg="bg-green-500" isLoading={isLoading} isError={isError}>
+            Do nothing to do
+          </SubmitWithStates>
+        </div>
+      )}
     </div>
   );
 }

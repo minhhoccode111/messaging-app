@@ -24,7 +24,7 @@ const ContactUser = memo(function ContactUser({
     return chatType === 'users' && chatId === user?.id ? 'bg-gray-300' : 'bg-gray-100';
   }
 
-  console.log(`the children belike: `);
+  // console.log(`the children belike: `);
 
   return (
     // BUG not accessibility best practice using onClick on <li></li> tag
@@ -82,7 +82,7 @@ ContactUser.propTypes = {
   setChatType: PropTypes.func,
 
   // only use these props when display members in options group joined
-  children: PropTypes.element,
+  children: PropTypes.oneOfType([PropTypes.element, PropTypes.bool]),
   isCreator: PropTypes.bool,
   isMember: PropTypes.bool,
 };
