@@ -99,6 +99,32 @@ export function Error({ className = 'text-2xl' }) {
   );
 }
 
+export function StateWrapper({ children, containerClassName, childClassName, isLoading, isError }) {
+  return (
+    <>
+      {isError ? (
+        <div className={containerClassName}>
+          <Error className={childClassName || 'text-2xl'} />
+        </div>
+      ) : isLoading ? (
+        <div className={containerClassName}>
+          <Loading className={childClassName || 'text-2xl'} />
+        </div>
+      ) : (
+        children
+      )}
+    </>
+  );
+}
+
+StateWrapper.propTypes = {
+  isError: PropTypes.bool,
+  isLoading: PropTypes.bool,
+  children: PropTypes.element,
+  childClassName: PropTypes.string,
+  containerClassName: PropTypes.string, // copy exactly like the {children} className to replace it while loading or error state
+};
+
 export function Footer() {
   return (
     <footer className="p-8 grid place-items-center">

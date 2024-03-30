@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { IoIosPaperPlane } from 'react-icons/io';
-import { CircleAvatar, SubmitWithStates, FakeLink, NumberCounter } from '../more';
+import { CircleAvatar, SubmitWithStates, NumberCounter } from '../more';
 import { domParser } from '../../methods';
 import ContactUser from '../contact/ContactUser';
 import { useState, useRef, useEffect } from 'react';
@@ -54,7 +54,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
 
       setIsLoading(true);
 
-      const res = await axios({
+      await axios({
         mode: 'cors',
         method: 'put',
         url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}`,
@@ -191,10 +191,6 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
   const isMember = info?.isMember;
   const isCreator = info?.isCreator;
   const isPublic = info?.public;
-
-  // console.log(`isMember belike: `, isMember);
-  // console.log(`isCreator belike: `, isCreator);
-  // console.log(`isPublic belike: `, isCreator);
 
   return (
     <div className="flex flex-col gap-1 p-2 max-h-full h-full">
@@ -367,24 +363,28 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
 
       {/* do something with group's authorization */}
       {isCreator ? (
+        // joined group's creator will have button to delete the group
         <form onSubmit={handleDeleteGroup} className="">
           <SubmitWithStates bg="bg-red-500" isLoading={isLoading} isError={isError}>
             Delete group
           </SubmitWithStates>
         </form>
       ) : isMember ? (
+        // joined group's member will have button to leave the group
         <form onSubmit={handleDeleteUser(false)} className="">
           <SubmitWithStates bg="bg-red-500" isLoading={isLoading} isError={isError}>
             Leave group
           </SubmitWithStates>
         </form>
       ) : isPublic ? (
+        // public group will have button to join
         <form onSubmit={handleJoinGroup} className="">
           <SubmitWithStates bg="bg-green-500" isLoading={isLoading} isError={isError}>
             Join group
           </SubmitWithStates>
         </form>
       ) : (
+        // can't do anything with private group
         <div className="">
           <SubmitWithStates bg="bg-black" isLoading={isLoading} isError={isError}>
             Chat with group&apos;s creator

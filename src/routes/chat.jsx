@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa6';
 import { useOutletContext, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import { FakeLink, NumberCounter } from './../components/more';
+import { NumberCounter, StateWrapper } from './../components/more';
 
 import ContactUser from './../components/contact/ContactUser';
 import ContactGroup from './../components/contact/ContactGroup';
@@ -19,8 +19,8 @@ import ChatHeaderUser from './../components/chat/ChatHeaderUser';
 
 function useFetchContact() {
   const { loginState } = useOutletContext();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isContactLoading, setIsContactLoading] = useState(false);
+  const [isContactError, setIsContactError] = useState(false);
   const [dataContact, setDataContact] = useState({});
   const [willFetchContact, setWillFetchContact] = useState(false);
 
@@ -28,7 +28,7 @@ function useFetchContact() {
   useEffect(() => {
     async function tmp() {
       try {
-        setIsLoading(true);
+        setIsContactLoading(true);
 
         const [userContactRes, groupContactRes] = await Promise.all([
           axios({
@@ -73,9 +73,9 @@ function useFetchContact() {
       } catch (error) {
         // console.log(error);
 
-        setIsError(true);
+        setIsContactError(true);
       } finally {
-        setIsLoading(false);
+        setIsContactLoading(false);
       }
     }
 
@@ -83,14 +83,18 @@ function useFetchContact() {
     // flag to re-fetch
   }, [willFetchContact]);
 
-  return { isLoading, setIsLoading, isError, setIsError, dataContact, setWillFetchContact };
+  return { isContactLoading, setIsContactLoading, isContactError, setIsContactError, dataContact, setWillFetchContact };
 }
 
 export default function Chat() {
   const { loginState } = useOutletContext();
 
   // contact data, fetch states, flag to re-fetch
-  const { isLoading, setIsLoading, isError, setIsError, dataContact, setWillFetchContact } = useFetchContact();
+  const { isContactLoading, setIsContactLoading, isContactError, setIsContactError, dataContact, setWillFetchContact } = useFetchContact();
+
+  // load a specific chat states
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isChatError, setIsChatError] = useState(false);
 
   // an array of messages to display in chat section and also used for authorization undefined means not load yet null means can't read messages, empty [] means can read but no messages yet
   const [chatMessages, setChatMessages] = useState();
@@ -113,7 +117,7 @@ export default function Chat() {
       // console.log(`fetch user chat`);
 
       try {
-        setIsLoading(true);
+        setIsChatLoading(true);
 
         const res = await axios({
           mode: 'cors',
@@ -133,9 +137,9 @@ export default function Chat() {
         // console.log(error);
         // console.log(error.response.status);
 
-        setIsError(true);
+        setIsChatError(true);
       } finally {
-        setIsLoading(false);
+        setIsChatLoading(false);
       }
     }
 
@@ -143,7 +147,7 @@ export default function Chat() {
       // console.log(`fetch group chat`);
 
       try {
-        setIsLoading(true);
+        setIsChatLoading(true);
 
         const [messRes, memRes] = await Promise.all([
           axios({
@@ -175,9 +179,9 @@ export default function Chat() {
         // console.log(error);
         // console.log(error.response.status);
 
-        setIsError(true);
+        setIsChatError(true);
       } finally {
-        setIsLoading(false);
+        setIsChatLoading(false);
       }
     }
 
@@ -187,7 +191,7 @@ export default function Chat() {
       if (chatType === 'users') userChat();
       else groupChat();
     }
-  }, [chatId, chatType, loginState, setIsError, setIsLoading]);
+  }, [chatId, chatType, loginState, setIsChatError, setIsContactError]);
 
   // clear current working conversation when dataContact change
   useEffect(() => {
@@ -246,40 +250,54 @@ export default function Chat() {
           onClick={handleToggleClick('users')}
         >
           <h2 className="">Users</h2>
-          <NumberCounter>{users?.length}</NumberCounter>
+          <NumberCounter>{users?.length || 0}</NumberCounter>
         </button>
         {/* ul display other users conversations */}
-        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('users')}>
-          {users?.length !== 0 ? (
-            users?.map((u) => {
-              // to display current chat we are focused
-              return <ContactUser chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} user={u} key={u.id} />;
-            })
-          ) : (
-            <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No user to display</li>
-          )}
-        </ul>
+        <StateWrapper
+          isError={isContactError}
+          isLoading={isContactLoading}
+          containerClassName={'overflow-y-auto transition-all origin-top grid place-items-center text-warn ' + ' ' + sectionExpand('users')}
+          childClassName={'text-8xl p-4'}
+        >
+          <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('users')}>
+            {users?.length !== 0 ? (
+              users?.map((u) => {
+                // to display current chat we are focused
+                return <ContactUser chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} user={u} key={u.id} />;
+              })
+            ) : (
+              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No user to display</li>
+            )}
+          </ul>
+        </StateWrapper>
 
         {/* joined groups */}
         {/* button to toggle expand ul */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4  text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('joined')}
+          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('joined')}
           onClick={handleToggleClick('joined')}
         >
           <h2 className="">Joined groups</h2>
-          <NumberCounter>{joinedGroups?.length}</NumberCounter>
+          <NumberCounter>{joinedGroups?.length || 0}</NumberCounter>
         </button>
         {/* ul to display all joined groups */}
-        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('joined')}>
-          {joinedGroups?.length !== 0 ? (
-            joinedGroups?.map((gr) => {
-              // to display current chat we are focused
-              return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
-            })
-          ) : (
-            <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
-          )}
-        </ul>
+        <StateWrapper
+          isError={isContactError}
+          isLoading={isContactLoading}
+          containerClassName={'overflow-y-auto transition-all origin-top grid place-items-center text-warn ' + ' ' + sectionExpand('joined')}
+          childClassName={'text-8xl p-4'}
+        >
+          <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('joined')}>
+            {joinedGroups?.length !== 0 ? (
+              joinedGroups?.map((gr) => {
+                // to display current chat we are focused
+                return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+              })
+            ) : (
+              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
+            )}
+          </ul>
+        </StateWrapper>
 
         {/* public groups */}
         {/* button to toggle expand ul */}
@@ -288,19 +306,26 @@ export default function Chat() {
           onClick={handleToggleClick('public')}
         >
           <h2 className="">Public groups</h2>
-          <NumberCounter>{publicGroups?.length}</NumberCounter>
+          <NumberCounter>{publicGroups?.length || 0}</NumberCounter>
         </button>
         {/* ul to display all public groups */}
-        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('public')}>
-          {publicGroups?.length !== 0 ? (
-            publicGroups?.map((gr) => {
-              // to display current chat we are focused
-              return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
-            })
-          ) : (
-            <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
-          )}
-        </ul>
+        <StateWrapper
+          isError={isContactError}
+          isLoading={isContactLoading}
+          containerClassName={'overflow-y-auto transition-all origin-top grid place-items-center text-warn ' + ' ' + sectionExpand('public')}
+          childClassName={'text-8xl p-4'}
+        >
+          <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('public')}>
+            {publicGroups?.length !== 0 ? (
+              publicGroups?.map((gr) => {
+                // to display current chat we are focused
+                return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+              })
+            ) : (
+              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
+            )}
+          </ul>
+        </StateWrapper>
 
         {/* private groups */}
         {/* button to toggle expand ul */}
@@ -309,19 +334,26 @@ export default function Chat() {
           onClick={handleToggleClick('private')}
         >
           <h2 className="">Private groups</h2>
-          <NumberCounter>{privateGroups?.length}</NumberCounter>
+          <NumberCounter>{privateGroups?.length || 0}</NumberCounter>
         </button>
         {/* ul to display all private groups */}
-        <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('private')}>
-          {privateGroups?.length !== 0 ? (
-            privateGroups?.map((gr) => {
-              // to display current chat we are focused
-              return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
-            })
-          ) : (
-            <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
-          )}
-        </ul>
+        <StateWrapper
+          isError={isContactError}
+          isLoading={isContactLoading}
+          containerClassName={'overflow-y-auto transition-all origin-top grid place-items-center text-warn ' + ' ' + sectionExpand('private')}
+          childClassName={'text-8xl p-4'}
+        >
+          <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('private')}>
+            {privateGroups?.length !== 0 ? (
+              privateGroups?.map((gr) => {
+                // to display current chat we are focused
+                return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+              })
+            ) : (
+              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
+            )}
+          </ul>
+        </StateWrapper>
 
         {/* new group */}
         {/* button to toggle expand form */}
@@ -344,36 +376,41 @@ export default function Chat() {
       {/* display chat section */}
       <article className="h-full shadow-gray-400 rounded-xl shadow-2xl bg-white flex flex-col justify-between">
         {/* header to know which conversation we are engaging */}
-        <header className="p-4 border-b-2 border-black">
-          {chatType === '' ? (
-            <h2 className="font-bold text-xl text-center"> Select a conversation to get started.</h2>
-          ) : chatType === 'groups' ? (
-            // {info: {}, members: []}
-            <ChatHeaderGroup chatOptions={chatOptions} />
-          ) : (
-            <ChatHeaderUser chatOptions={chatOptions} />
-          )}
-        </header>
+
+        <StateWrapper isError={isChatError} isLoading={isChatLoading} containerClassName={'p-4 border-b-2 border-gray-700 grid place-items-center text-warn'} childClassName={'text-4xl'}>
+          <header className="p-4 border-b-2 border-black">
+            {chatType === '' ? (
+              <h2 className="font-bold text-xl text-center"> Select a conversation to get started.</h2>
+            ) : chatType === 'groups' ? (
+              // {info: {}, members: []}
+              <ChatHeaderGroup chatOptions={chatOptions} />
+            ) : (
+              <ChatHeaderUser chatOptions={chatOptions} />
+            )}
+          </header>
+        </StateWrapper>
 
         {/* display messages section */}
-        <ul className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 ">
-          {/* not select conversation */}
-          {chatMessages === undefined ? (
-            <></>
-          ) : // not joined groups
-          chatMessages === null ? (
-            <li className="p-4 font-bold text-xl text-center text-danger">You are not allowed to read messages in this group.</li>
-          ) : // [] means no messages exist
-          !chatMessages?.length ? (
-            <li className="p-4 font-bold text-xl text-center">
-              <p className="">No messages here yet.</p>
-              <p className="">Be the first one to say hi.</p>
-            </li>
-          ) : (
-            // display messages, 2 avatars to display with messages
-            chatMessages?.map((message) => <ChatMessage key={message.id} message={message} />)
-          )}
-        </ul>
+        <StateWrapper isError={isChatError} isLoading={isChatLoading} containerClassName={'overflow-y-auto flex-1 grid place-items-center p-4 text-warn'} childClassName={'text-8xl'}>
+          <ul className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 ">
+            {/* not select conversation */}
+            {chatMessages === undefined ? (
+              <></>
+            ) : // not joined groups
+            chatMessages === null ? (
+              <li className="p-4 font-bold text-xl text-center text-danger">You are not allowed to read messages in this group.</li>
+            ) : // [] means no messages exist
+            !chatMessages?.length ? (
+              <li className="p-4 font-bold text-xl text-center">
+                <p className="">No messages here yet.</p>
+                <p className="">Be the first one to say hi.</p>
+              </li>
+            ) : (
+              // display messages, 2 avatars to display with messages
+              chatMessages?.map((message) => <ChatMessage key={message.id} message={message} />)
+            )}
+          </ul>
+        </StateWrapper>
 
         {/* form to send message section, only for allowed conversation */}
         {chatMessages && (
@@ -383,9 +420,13 @@ export default function Chat() {
         )}
       </article>
 
-      {/* display option section only when a conversation is selected */}
-      {chatType !== '' && (
-        <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full">
+      <StateWrapper
+        isError={isChatError}
+        isLoading={isChatLoading}
+        containerClassName={'overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white grid place-items-center text-warn'}
+        childClassName={'text-8xl'}
+      >
+        <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white">
           {/* base on chat type to display option */}
           {chatType === 'groups' && (
             // {info: {}, members: []}
@@ -407,7 +448,7 @@ export default function Chat() {
 
           {chatType === 'users' && <OptionUser chatOptions={chatOptions} />}
         </article>
-      )}
+      </StateWrapper>
     </section>
   );
 }

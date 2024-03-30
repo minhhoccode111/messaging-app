@@ -8,7 +8,8 @@ export default {
         'auto-sm': 'repeat(auto-fit, minmax(160px, 1fr))',
         'auto-md': 'repeat(auto-fit, minmax(220px, 1fr))',
         'profile': 'max-content 1fr',
-        'chat': 'minmax(10rem, max-content) 1fr minmax(0, max-content)',
+        // hard coded mean no responsive supported
+        'chat': '20rem 1fr 20rem',
       },
       gridTemplateRows: {
         'chat': '98vh',
