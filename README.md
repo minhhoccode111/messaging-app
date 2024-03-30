@@ -4,8 +4,6 @@ The **Messaging App TOP** is created according to the assignment from **The Odin
 <br>
 <br>
 
-![Preview](public/)
-
 ### 🔗 **Live preview** of the project is [here](https://messagingapptop.vercel.app/).
 
 ## **Features**
@@ -13,22 +11,15 @@ The **Messaging App TOP** is created according to the assignment from **The Odin
 - MERN stack
 - RESTful API
 - CRUD actions
-- Allow user to put anything they want while still sanitize and validate data in backend
-- Handle loading and error data fetching states properly
-- Simple markdown parser
-<!-- - Beautiful UI ^^ -->
-<!-- - Fully responsive -->
 
 ## **Outcome**
 
 - Used **React**
 - Used **Tailwindcss**
-- Used **Bun**
 - Used **Vite**
-- Used **animista** for beautiful animations
-- Used **[Messaging App API](https://github.com/minhhoccode111/messaging-app-back)** - my backend
 - Used **React Router Dom**
-- Learned markdown parser, dom parser
+- Used **[Messaging App API](https://github.com/minhhoccode111/messaging-app-back)** - my backend
+- And more
 
 ## **Getting Started**
 
@@ -51,6 +42,12 @@ npm start
 - Edit other user (like nickname)
 - Light, dark themes
 - Upload images
+- Nicely UI and design
+- Clean code, refactor (spaghetti)
+- Frontend design patterns
+- Performance considerations
+- Real time
+- Over flow `/chat` when toggle open `Users` contact or any given group that has inside child make everything overflow on Chromium based browsers
 
 ## **Navigation**
 
@@ -63,3 +60,10 @@ npm start
 * See this project backend [Messaging App Back](https://github.com/minhhoccode111/messaging-app-back)
 
 <!-- * See my next project []() -->
+
+## **Preview**
+
+![Preview](public/messaging-users.png)
+![Preview](public/messaging-joined.png)
+![Preview](public/messaging-public.png)
+![Preview](public/messaging-joined-update.png)
