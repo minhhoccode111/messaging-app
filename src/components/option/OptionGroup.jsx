@@ -3,7 +3,7 @@ import { IoIosPaperPlane } from 'react-icons/io';
 import { CircleAvatar, SubmitWithStates, NumberCounter } from '../more';
 import { domParser } from '../../methods';
 import ContactUser from '../contact/ContactUser';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useOutletContext } from 'react-router-dom';
 
@@ -31,7 +31,8 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
   const publicity = publicInput === 'public';
 
   const [warning, setWarning] = useState('');
-  // name state to make sure don't update group name to exists name
+
+  // manually handle validation
   useEffect(() => {
     const notChange =
       nameInput.trim() === domParser(info?.name) &&
@@ -39,11 +40,10 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
       bioInput.trim() === domParser(info?.bio) &&
       avatarLinkInput.trim() === domParser(info?.avatarLink) &&
       publicity === info?.public;
-
     if (nameInput.trim().length === 0) setWarning(`Name is empty`);
     else if (nameInput.trim().length > 50) setWarning(`Name is too long`);
     else if (bioInput?.trim().length > 250) setWarning(`Bio is too long`);
-    else if (everyGroupNames?.includes(nameInput)) setWarning(`Name is already existed`);
+    else if (everyGroupNames?.includes(nameInput)) setWarning(`${nameInput} is already existed`);
     else if (notChange) setWarning(`No changes to be updated`);
     else setWarning('');
   }, [nameInput, avatarLinkInput, bioInput, everyGroupNames, info, publicity]);
@@ -334,17 +334,17 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
             </label>
 
             {/* display warning */}
-            {warning !== '' && <p className="text-danger font-bold text-xs">{warning}</p>}
-
-            <div className="flex justify-end mb-3">
-              {warning === '' && (
+            {warning !== '' ? (
+              <p className="text-danger font-bold text-xs">{warning}</p>
+            ) : (
+              <div className="flex justify-end mb-3">
                 <SubmitWithStates isLoading={isLoading} isError={isError}>
                   <span className="text-xl">
                     <IoIosPaperPlane />
                   </span>
                 </SubmitWithStates>
-              )}
-            </div>
+              </div>
+            )}
           </form>
         </>
       )}

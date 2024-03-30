@@ -26,13 +26,11 @@ export default function Router() {
         {
           path: 'profile',
           element: <Profile />,
-          errorElement: <NotFound />,
         },
 
         {
           path: 'chat',
           element: <Chat />,
-          errorElement: <NotFound />,
         },
 
         {

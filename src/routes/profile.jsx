@@ -237,5 +237,5 @@ export default function Profile() {
     );
   }
 
-  return <section className="mx-auto max-w-[60ch] px-4 py-16 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900 w-full">{jsx}</section>;
+  return <section className="mx-auto max-w-[60ch] px-4 py-4 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900 w-full">{jsx}</section>;
 }

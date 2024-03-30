@@ -14,6 +14,4 @@ export default function Logout() {
 
     navigate('/');
   });
-
-	return <></>;
 }

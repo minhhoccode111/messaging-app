@@ -14,13 +14,7 @@ NumberCounter.propTypes = {
 };
 
 export function CircleAvatar({ src, alt }) {
-  // need a wrapper for this
-  return (
-    <>
-      {/* if the link not valid we take first character in name to place in the avatar */}
-      <img src={src} alt={alt} className={'rounded-full border bg-gray-200 grid place-items-center overflow-hidden w-full h-full'} />
-    </>
-  );
+  return <img src={src} alt={alt} className={'rounded-full border bg-gray-200 grid place-items-center overflow-hidden w-full h-full'} />;
 }
 
 CircleAvatar.propTypes = {
@@ -127,7 +121,7 @@ StateWrapper.propTypes = {
 
 export function Footer() {
   return (
-    <footer className="p-8 grid place-items-center">
+    <footer className="p-8 grid place-items-center bg-white">
       <p className="">
         <OutsideLink to={'https://github.com/minhhoccode111/messaging-app-front'}> Project</OutsideLink> is made by <OutsideLink to={'https://github.com/minhhoccode111'}> minhhoccode111 </OutsideLink>
         .

@@ -8,7 +8,7 @@ export default function ChatMessage({ message }) {
   // display differently base on content type
   let jsx;
   if (message?.content) {
-    jsx = <p className="">{message?.content}</p>;
+    jsx = <p className="">{domParser(message?.content)}</p>;
   } else if (message?.imageLink) {
     jsx = (
       // prevent too large image
@@ -29,7 +29,7 @@ export default function ChatMessage({ message }) {
     <li className={'w-full max-w-[70%] flex gap-2 ' + alignFlex()}>
       {/* message's sender avatar */}
       <div className={'w-8 h-8 flex-shrink-0 ' + order()}>
-        <CircleAvatar src={message?.sender?.avatarLink} alt={message?.sender?.fullname?.slice(0, 1)?.toUpperCase()}></CircleAvatar>
+        <CircleAvatar src={domParser(message?.sender?.avatarLink)} alt={domParser(message?.sender?.fullname?.slice(0, 1)?.toUpperCase())}></CircleAvatar>
       </div>
 
       {/* only take full width if that's an image */}

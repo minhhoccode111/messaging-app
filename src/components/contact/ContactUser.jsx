@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { domParser } from './../../methods/index';
-import { FakeLink, UserStatus, CircleAvatar } from '../more';
+import { UserStatus, CircleAvatar } from '../more';
 import { useOutletContext } from 'react-router-dom';
 import { memo } from 'react';
 

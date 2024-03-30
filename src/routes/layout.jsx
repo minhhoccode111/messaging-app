@@ -23,14 +23,16 @@ export default function Layout() {
     <>
       {/* TODO MAYBE /chat don't have header */}
       {pathname !== '/chat' && <Header loginState={loginState} />}
+      {/* <Header loginState={loginState} /> */}
 
       {/* dynamic part */}
-      <main className={'flex-1 h-screen max-h-screen'}>
+      <main className={'flex-1'}>
         <Outlet context={{ setLoginState, loginState }} />
       </main>
 
-      {/* footer part */}
+      {/* TODO MAYBE /chat don't have footer */}
       {pathname !== '/' && pathname !== '/chat' && <Footer />}
+      {/* {pathname !== '/' && <Footer />} */}
     </>
   );
 }

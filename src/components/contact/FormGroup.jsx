@@ -1,39 +1,41 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { redirect, useOutletContext } from 'react-router-dom';
 import { IoIosPaperPlane } from 'react-icons/io';
 import { SubmitWithStates } from '../more';
 
-export default function FormGroup({ setWillFetchContact }) {
+export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
   const { loginState } = useOutletContext();
 
-  const [isLoadingCreateGroup, setIsLoadingCreateGroup] = useState(false);
-  const [isErrorCreateGroup, setIsErrorCreateGroup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
-  const formRef = useRef(null);
+  // handle update input states
+  const [nameInput, setNameInput] = useState('');
+  const [bioInput, setBioInput] = useState('');
+  const [avatarLinkInput, setAvatarLinkInput] = useState('');
+  const [publicInput, setPublicInput] = useState('public');
+  const publicity = publicInput === 'public';
+
+  const [warning, setWarning] = useState('');
+
+  // manually handle validation
+  useEffect(() => {
+    if (nameInput.trim().length === 0) setWarning(`Name is empty`);
+    else if (nameInput.trim().length > 50) setWarning(`Name is too long`);
+    else if (bioInput?.trim().length > 250) setWarning(`Bio is too long`);
+    else if (everyGroupNames?.includes(nameInput)) setWarning(`Name is already existed`);
+    else setWarning('');
+  }, [nameInput, avatarLinkInput, bioInput, everyGroupNames, publicity]);
 
   async function handleCreateGroup(e) {
     e.preventDefault();
 
+    if (warning !== '') return;
+
     try {
-      setIsLoadingCreateGroup(true);
-
-      const form = formRef.current;
-      const nameInput = form.querySelector('#name');
-      const avatarLinkInput = form.querySelector('#avatarLink');
-      const bioInput = form.querySelector('#bio');
-      const publicInput = form.querySelector('input[type="radio"]:checked');
-
-      // console.log(nameInput.value);
-      // console.log(avatarLinkInput.value);
-      // console.log(bioInput.value);
-      // console.log(publicInput.value === 'true');
-
-      // still allow user to create group but we add default values for them
-      if (nameInput.value.trim().length < 8) nameInput.value = `Invalid name, used dummy - ${Math.random()}`;
-      if (bioInput.value.trim().length < 8) bioInput.value = `Invalid bio, used dummy - ${Math.random()}`;
-      if (avatarLinkInput.value.trim().length > 500 || avatarLinkInput.value.trim().length < 8) avatarLinkInput.value = `Invalid avatar link, used dummy - ${Math.random()}`;
+      setIsLoading(true);
 
       await axios({
         mode: 'cors',
@@ -43,40 +45,50 @@ export default function FormGroup({ setWillFetchContact }) {
           Authorization: `Bearer ${loginState?.token}`,
         },
         data: {
-          name: nameInput.value,
-          avatarLink: avatarLinkInput.value,
-          bio: bioInput.value,
-          public: publicInput.value,
+          name: nameInput,
+          avatarLink: avatarLinkInput,
+          bio: bioInput,
+          public: publicity,
         },
       });
 
       // console.log(`the res.data belike: `, res.data);
 
       // clear after success
-      nameInput.value = '';
-      avatarLinkInput.value = '';
-      bioInput.value = '';
-      publicInput.value = '';
+      setNameInput('');
+      setBioInput('');
+      setAvatarLinkInput('');
+      setPublicInput('public');
 
       // switch flag to refetch
       setWillFetchContact((current) => !current);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
       // if a 401 unauthorized occur log current logged in user out
       if (error.response.status !== 401) redirect('/logout');
 
       // stop them from sending another request if it's not a 400
-      if (error.response.status !== 400) setIsErrorCreateGroup(true);
+      if (error.response.status !== 400) setIsError(true);
     } finally {
-      setIsLoadingCreateGroup(false);
+      setIsLoading(false);
     }
   }
 
   return (
-    <form ref={formRef} className="flex flex-col gap-3 p-2" onSubmit={handleCreateGroup}>
+    <form className="flex flex-col gap-3 p-2" onSubmit={handleCreateGroup}>
       <label htmlFor="name" className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1">
-        <input type="text" id="name" className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full" placeholder="Name" required />
+        <input
+          type="text"
+          id="name"
+          className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
+          placeholder="Name"
+          minLength={1}
+          maxLength={50}
+          required
+          value={nameInput}
+          onChange={(e) => setNameInput(e.target.value)}
+        />
 
         <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
           Name
@@ -89,6 +101,8 @@ export default function FormGroup({ setWillFetchContact }) {
           id="avatarLink"
           className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
           placeholder="Avatar Link"
+          value={avatarLinkInput}
+          onChange={(e) => setAvatarLinkInput(e.target.value)}
         />
 
         <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
@@ -106,7 +120,16 @@ export default function FormGroup({ setWillFetchContact }) {
             <div>
               <p className="text-gray-700">Public</p>
             </div>
-            <input type="radio" name="public" value="true" id="public" className="size-5 border-gray-300 text-blue-500" defaultChecked />
+            <input
+              //
+              type="radio"
+              name="public"
+              value="public"
+              id="public"
+              className="size-5 border-gray-300 text-blue-500"
+              onChange={(e) => setPublicInput(e.target.value)}
+              checked={publicity}
+            />
           </label>
         </div>
         <div>
@@ -117,7 +140,16 @@ export default function FormGroup({ setWillFetchContact }) {
             <div>
               <p className="text-gray-700">Private</p>
             </div>
-            <input type="radio" name="public" value="false" id="private" className="size-5 border-gray-300 text-blue-500" />
+            <input
+              //
+              type="radio"
+              name="public"
+              value="private"
+              id="private"
+              className="size-5 border-gray-300 text-blue-500"
+              onChange={(e) => setPublicInput(e.target.value)}
+              checked={!publicity}
+            />
           </label>
         </div>
       </fieldset>
@@ -133,21 +165,29 @@ export default function FormGroup({ setWillFetchContact }) {
           className="border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
           rows="3"
           placeholder="Enter group bio here"
-          required
+          maxLength={250}
+          value={bioInput}
+          onChange={(e) => setBioInput(e.target.value)}
         ></textarea>
       </label>
 
-      <div className="flex justify-end">
-        <SubmitWithStates isLoading={isLoadingCreateGroup} isError={isErrorCreateGroup}>
-          <span className="text-xl">
-            <IoIosPaperPlane />
-          </span>
-        </SubmitWithStates>
-      </div>
+      {/* display warning */}
+      {warning !== '' ? (
+        <p className="text-danger font-bold text-xs">{warning}</p>
+      ) : (
+        <div className="flex justify-end">
+          <SubmitWithStates isLoading={isLoading} isError={isError}>
+            <span className="text-xl">
+              <IoIosPaperPlane />
+            </span>
+          </SubmitWithStates>
+        </div>
+      )}
     </form>
   );
 }
 
 FormGroup.propTypes = {
-  setWillFetchContact: PropTypes.func.isRequired,
+  setWillFetchContact: PropTypes.func,
+  everyGroupNames: PropTypes.array,
 };

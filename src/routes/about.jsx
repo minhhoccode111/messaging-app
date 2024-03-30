@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 
 export default function About() {
   return (
-    <section className="mx-auto my-12 p-4 max-w-[65ch] w-full text-slate-700">
+    <section className="mx-auto p-4 max-w-[65ch] w-full text-slate-700">
       <header className="">
         <h2 className="text-4xl font-bold">About</h2>
       </header>
       <article className="flex flex-col gap-3 py-4">
         <p className="">
-          Simple message app <FakeLink>without</FakeLink> real time update
+          Simple message app <span className="text-danger font-bold"> without </span>real time update
         </p>
         <p className="">
           <OutsideLink to={'https://github.com/minhhoccode111/messaging-app-front'}>Project</OutsideLink> is made by{' '}
@@ -26,7 +26,7 @@ export default function About() {
           API requests or data fetching. (However, I still really appreciate the fact that Glitch offers a free tier for hosting Backend projects.)
         </p>
 
-        <p className="">No responsive design supported, consider using large screen size for better experience.</p>
+        <p className="font-bold">No responsive design supported, consider using large screen size for better experience.</p>
 
         <p className="font-bold text-2xl">
           Since this is a chat app, you will need to{' '}

@@ -90,7 +90,7 @@ export default function Chat() {
   const { loginState } = useOutletContext();
 
   // contact data, fetch states, flag to re-fetch
-  const { isContactLoading, setIsContactLoading, isContactError, setIsContactError, dataContact, setWillFetchContact } = useFetchContact();
+  const { isContactLoading, isContactError, dataContact, setWillFetchContact } = useFetchContact();
 
   // load a specific chat states
   const [isChatLoading, setIsChatLoading] = useState(false);
@@ -191,7 +191,7 @@ export default function Chat() {
       if (chatType === 'users') userChat();
       else groupChat();
     }
-  }, [chatId, chatType, loginState, setIsChatError, setIsContactError]);
+  }, [chatId, chatType, loginState]);
 
   // clear current working conversation when dataContact change
   useEffect(() => {
@@ -369,7 +369,7 @@ export default function Chat() {
         {/* form to create new group */}
         <div className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('new')}>
           {/* to switch flag and fetch contacts again after creating a group */}
-          <FormGroup setWillFetchContact={setWillFetchContact} />
+          <FormGroup everyGroupNames={everyGroupNames} setWillFetchContact={setWillFetchContact} />
         </div>
       </article>
 
