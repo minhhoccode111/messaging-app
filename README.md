@@ -20,7 +20,7 @@ The **Messaging App Back** is created according to the assignment from **The Odi
 - JSON Web Token Authentication
 - CORS to only allow requests from my frontend
 - RESTful API
-- Using TDD, fully tested every cases
+<!-- - Using TDD, fully tested every cases -->
 
 ## **Outcome**
 
@@ -35,6 +35,7 @@ The **Messaging App Back** is created according to the assignment from **The Odi
 - Used **jwt**
 - Used **cors**
 - Used **supertest**, **jest** and **mongodb-memory-server** to implement this API using TDD
+- Used **Faker** to create extensive fake data
 - and more
 
 ## **Idea to implement**
@@ -65,8 +66,23 @@ then
 ```bash
 cd messaging-app-back
 npm install
-npm start
+# start the server
+npm run server
+# start the test
 npm test
+```
+
+script to interact with mongodb databases
+
+```bash
+# clear database
+node db-scripts/cleardb.js
+# get info
+node db-scripts/infodb.js
+# populate db with fake data
+node db-scripts/populatedb.js
+# or provide your mongodb string as 3rd Command line argument
+# node db-scripts/populatedb.js <some string here>
 ```
 
 ## **Navigation**
