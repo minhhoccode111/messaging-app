@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FaPlus } from 'react-icons/fa6';
 import { useOutletContext, Navigate } from 'react-router-dom';
 import axios from 'axios';
@@ -98,6 +98,20 @@ export default function Chat() {
 
   // an array of messages to display in chat section and also used for authorization undefined means not load yet null means can't read messages, empty [] means can read but no messages yet
   const [chatMessages, setChatMessages] = useState();
+
+  // chat ref to scroll to bottom of the chat when messages is loaded
+  const chatRef = useRef(null);
+  useEffect(() => {
+    const element = chatRef.current;
+    // console.log(element);
+
+    if (element) {
+      // wait 1 second for images to fully loaded and scroll to bottom
+      setTimeout(() => {
+        element.scrollTop = element.scrollHeight;
+      }, 1000);
+    }
+  }, [chatMessages]);
 
   // an object to display in options section, {info: {}, members:[]}
   // includes info of current user or group, members for group only
@@ -392,7 +406,7 @@ export default function Chat() {
 
         {/* display messages section */}
         <StateWrapper isError={isChatError} isLoading={isChatLoading} containerClassName={'overflow-y-auto flex-1 grid place-items-center p-4 text-warn'} childClassName={'text-8xl'}>
-          <ul className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 ">
+          <ul ref={chatRef} className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 ">
             {/* not select conversation */}
             {chatMessages === undefined ? (
               <></>
