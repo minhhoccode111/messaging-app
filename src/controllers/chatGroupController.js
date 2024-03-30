@@ -51,8 +51,9 @@ module.exports.chat_all_group_get = asyncHandler(async (req, res) => {
 
 // current logged in user create a new group (and be group's creator)
 module.exports.chat_all_group_post = [
-  body(`name`, `Group name should be between 8 and 60 characters.`).isLength({ min: 8, max: 60 }).trim().escape(),
-  body(`bio`, `Group bio should be between 1 and 260 characters.`).isLength({ min: 1, max: 260 }).trim().escape(),
+  body(`name`, `Group name should be between 1 and 50 characters.`).isLength({ min: 1, max: 50 }).trim().escape(),
+  body(`bio`, `Group bio should be less than 250 characters.`).isLength({ max: 250 }).trim().escape(),
+  body(`avatarLink`).trim().escape(),
   asyncHandler(async (req, res) => {
     let errors = validationResult(req).array();
 
@@ -66,7 +67,14 @@ module.exports.chat_all_group_post = [
     }
 
     if (!errors.length) {
-      const group = new Group({ name, bio, avatarLink, public: req.body.public === 'true', creator: req.user });
+      const group = new Group({
+        name,
+        // bio and avatarLink can use default if provide empty string
+        bio: bio || undefined,
+        avatarLink: avatarLink || undefined,
+        public: req.body.public === 'true',
+        creator: req.user,
+      });
 
       group.save();
 
@@ -144,7 +152,7 @@ module.exports.chat_group_get = asyncHandler(async (req, res) => {
 
 // post a message to a specific group
 module.exports.chat_group_post = [
-  body('content').trim().escape(),
+  body('content', `Content cannot be over 10000 characters`).trim().isLength({ max: 10000 }).escape(),
   body('imageLink')
     .trim()
     .escape()
@@ -240,8 +248,9 @@ module.exports.chat_group_delete = asyncHandler(async (req, res) => {
 
 // update a specific group (current logged in user is group's creator)
 module.exports.chat_group_put = [
-  body(`name`, `Group name should be between 8 and 60 characters.`).isLength({ min: 8, max: 60 }).trim().escape(),
-  body(`bio`, `Group bio should be between 1 and 260 characters.`).isLength({ min: 1, max: 260 }).trim().escape(),
+  body(`name`, `Group name should be between 1 and 50 characters.`).isLength({ min: 1, max: 50 }).trim().escape(),
+  body(`bio`, `Group bio should be less than 250 characters.`).isLength({ max: 250 }).trim().escape(),
+  body(`avatarLink`).trim().escape(),
   asyncHandler(async (req, res) => {
     // check valid mongoose objectid before retrieve db
     const isValidId = mongoose.isValidObjectId(req.params.groupid);
@@ -265,8 +274,8 @@ module.exports.chat_group_put = [
     if (!errors.length) {
       const newGroup = new Group({
         name,
-        bio,
-        avatarLink,
+        bio: bio || undefined,
+        avatarLink: avatarLink || undefined,
         public: req.body.public === 'true',
         creator: req.user,
         updatedAt: new Date(),

@@ -26,6 +26,9 @@ const MessageSchema = new Schema(
     // 1 must be null between content and imageLink
     content: {
       type: String,
+      length: {
+        max: 10000,
+      },
     },
 
     imageLink: {

@@ -18,29 +18,26 @@ const GroupSchema = new Schema(
       unique: true,
       trim: true,
       length: {
-        min: 8,
-        max: 60,
+        max: 50,
       },
     },
 
     public: {
       type: Boolean,
-      required: true,
+      default: () => true,
     },
 
     bio: {
       type: String,
       length: {
         min: 1,
-        max: 260,
+        max: 250,
       },
-      required: true,
       default: () => `Some contents are created automatically, please consider update profile.`,
     },
 
     avatarLink: {
       type: String,
-      maxLength: 500,
       default: () => `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSX12hdq7FMZRu7mtAqwmzmgHjR8rQ8qa0FEfWRbqsxfB2FG7jB688i&usqp=CAE&s`,
     },
 
@@ -51,6 +48,7 @@ const GroupSchema = new Schema(
 
     updatedAt: {
       type: Date,
+      default: () => new Date(Date.now()),
     },
 
   },

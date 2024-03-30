@@ -17,9 +17,9 @@ module.exports.user_get = asyncHandler(async (req, res) => {
 
 // update info of current logged user
 module.exports.user_put = [
-  body('fullname', 'Invalid fullname').trim().notEmpty().escape(),
-  body('bio').trim().escape(),
-  // body('avatar').trim().escape(),
+  body('fullname').trim().notEmpty().withMessage(`Fullname cannot be empty.`).isLength({ max: 50 }).withMessage(`Fullname must be between 1 and 50 characters.`).escape(),
+  body('bio', `Bio must be between 1 and 250 characters.`).trim().isLength({ max: 250 }).escape(),
+  body('avatar').trim().escape(),
   body('status', 'Invalid status').custom((value) => {
     const array = ['online', 'offline', 'busy', 'afk'];
     if (array.includes(value)) return true;

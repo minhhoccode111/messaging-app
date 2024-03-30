@@ -66,7 +66,7 @@ module.exports.chat_user_get = asyncHandler(async (req, res) => {
 
 // post a message with a specific user
 module.exports.chat_user_post = [
-  body('content').trim().escape(),
+  body('content', `Content cannot be over 10000 characters`).trim().isLength({max: 10000}).escape(),
   body('imageLink')
     .trim()
     .escape()
