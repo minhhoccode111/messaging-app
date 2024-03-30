@@ -23,35 +23,39 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  // form ref to get inputs inside
-  const formRef = useRef(null);
+  // handle update input states
+  const [nameInput, setNameInput] = useState(domParser(info?.name));
+  const [bioInput, setBioInput] = useState(domParser(info?.bio));
+  const [avatarLinkInput, setAvatarLinkInput] = useState(domParser(info?.avatarLink));
+  const [publicInput, setPublicInput] = useState(info?.public ? 'public' : 'private');
+  const publicity = publicInput === 'public';
 
+  const [warning, setWarning] = useState('');
   // name state to make sure don't update group name to exists name
-  const [updateName, setUpdateName] = useState('');
-  const [isWarning, setIsWarning] = useState(false);
   useEffect(() => {
-    const trim = updateName.trim();
-    if (trim.length < 8) setIsWarning(true);
-    else if (everyGroupNames.includes(trim)) setIsWarning(true);
-    else setIsWarning(false);
-  }, [updateName, everyGroupNames]);
+    const notChange =
+      nameInput.trim() === domParser(info?.name) &&
+      // nothing changes if nothing changes
+      bioInput.trim() === domParser(info?.bio) &&
+      avatarLinkInput.trim() === domParser(info?.avatarLink) &&
+      publicity === info?.public;
+
+    if (nameInput.trim().length === 0) setWarning(`Name is empty`);
+    else if (nameInput.trim().length > 50) setWarning(`Name is too long`);
+    else if (bioInput?.trim().length > 250) setWarning(`Bio is too long`);
+    else if (everyGroupNames?.includes(nameInput)) setWarning(`Name is already existed`);
+    else if (notChange) setWarning(`No changes to be updated`);
+    else setWarning('');
+  }, [nameInput, avatarLinkInput, bioInput, everyGroupNames, info, publicity]);
 
   // creator update group's info
   const handleUpdateGroup = async (e) => {
     e.preventDefault();
 
-    if (isWarning) return;
+    // just in case
+    if (warning !== '') return;
 
     try {
-      const form = formRef.current;
-      const nameInput = form.querySelector('#name');
-      const avatarLinkInput = form.querySelector('#avatarLink');
-      const bioInput = form.querySelector('#bio');
-      const publicInput = form.querySelector('input[type="radio"]:checked');
-
-      // still allow user to create group but we add default values for them
-      if (avatarLinkInput.value.trim().length > 500) avatarLinkInput.value = ``;
-
       setIsLoading(true);
 
       await axios({
@@ -62,20 +66,14 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
           Authorization: `Bearer ${loginState?.token}`,
         },
         data: {
-          name: nameInput.value,
-          avatarLink: avatarLinkInput.value,
-          bio: bioInput.value,
-          public: publicInput.value,
+          name: nameInput,
+          avatarLink: avatarLinkInput,
+          bio: bioInput,
+          public: publicity,
         },
       });
 
       // console.log(res.data);
-
-      // clear after success
-      nameInput.value = '';
-      avatarLinkInput.value = '';
-      bioInput.value = '';
-      publicInput.value = '';
 
       setWillFetchContact((current) => !current);
     } catch (err) {
@@ -117,7 +115,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
         // if it's a leave then just refetch everything (cause we also need to update group's states)
         else setWillFetchContact((current) => !current);
       } catch (err) {
-        console.log(`error occurs when trying to delete user with id: `, err, id);
+        // console.log(`error occurs when trying to delete user with id: `, err, id);
 
         setIsError(true);
       } finally {
@@ -240,16 +238,18 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
             {/* <NumberCounter>{members?.length}</NumberCounter> */}
           </button>
 
-          <form ref={formRef} className={'overflow-y-auto transition-all origin-top flex flex-col gap-3 px-2 ' + expand('update')} onSubmit={handleUpdateGroup}>
+          <form className={'overflow-y-auto transition-all origin-top flex flex-col gap-3 px-2 ' + expand('update')} onSubmit={handleUpdateGroup}>
             <label htmlFor="name" className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1 mt-3">
               <input
                 type="text"
                 id="name"
                 className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
                 placeholder="Name"
+                minLength={1}
+                maxLength={50}
                 required
-                value={updateName}
-                onChange={(e) => setUpdateName(e.target.value)}
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
               />
 
               <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
@@ -257,19 +257,14 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
               </span>
             </label>
 
-            {isWarning && (
-              <>
-                <p className="text-danger font-bold text-xs">*Group name must be unique</p>
-                <p className="text-danger font-bold text-xs">And between 8 - 60 characters</p>
-              </>
-            )}
-
             <label htmlFor="avatarLink" className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1">
               <input
                 type="text"
                 id="avatarLink"
                 className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
                 placeholder="Avatar Link"
+                value={avatarLinkInput}
+                onChange={(e) => setAvatarLinkInput(e.target.value)}
               />
 
               <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
@@ -287,7 +282,16 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
                   <div>
                     <p className="text-gray-700">Public</p>
                   </div>
-                  <input type="radio" name="public" value="true" id="public" className="size-5 border-gray-300 text-blue-500" defaultChecked />
+                  <input
+                    //
+                    type="radio"
+                    name="public"
+                    value="public"
+                    id="public"
+                    className="size-5 border-gray-300 text-blue-500"
+                    onChange={(e) => setPublicInput(e.target.value)}
+                    checked={publicity}
+                  />
                 </label>
               </div>
               <div>
@@ -298,7 +302,16 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
                   <div>
                     <p className="text-gray-700">Private</p>
                   </div>
-                  <input type="radio" name="public" value="false" id="private" className="size-5 border-gray-300 text-blue-500" />
+                  <input
+                    //
+                    type="radio"
+                    name="public"
+                    value="private"
+                    id="private"
+                    className="size-5 border-gray-300 text-blue-500"
+                    onChange={(e) => setPublicInput(e.target.value)}
+                    checked={!publicity}
+                  />
                 </label>
               </div>
             </fieldset>
@@ -314,12 +327,17 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
                 className="border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
                 rows="3"
                 placeholder="Enter group bio here"
-                required
+                maxLength={250}
+                value={bioInput}
+                onChange={(e) => setBioInput(e.target.value)}
               ></textarea>
             </label>
 
+            {/* display warning */}
+            {warning !== '' && <p className="text-danger font-bold text-xs">{warning}</p>}
+
             <div className="flex justify-end mb-3">
-              {!isWarning && (
+              {warning === '' && (
                 <SubmitWithStates isLoading={isLoading} isError={isError}>
                   <span className="text-xl">
                     <IoIosPaperPlane />
