@@ -67,7 +67,7 @@ then
 cd messaging-app-back
 npm install
 # start the server
-npm run server
+npm start
 # start the test
 npm test
 ```

@@ -4,7 +4,7 @@
   "description": "A messaging app's backend",
   "private": true,
   "engines": {
-    "node": "21.x"
+    "node": "16.x"
   },
   "scripts": {
     "test": "jest test",
