@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { useOutletContext, Navigate, redirect } from 'react-router-dom';
+import { Navigate, redirect } from 'react-router-dom';
 import axios from 'axios';
 import { Loading, Error, SubmitButton, CustomButton } from './../components/more';
 import { domParser } from './../methods/index';
-import { set } from './../methods/index';
+import useAuthStore from '../stores/auth';
 
 export default function Profile() {
-  const { loginState, setLoginState } = useOutletContext();
+  const { authData, setAuthData } = useAuthStore();
 
   // display error messages in form
   const [errorMessage, setErrorMessage] = useState('');
@@ -22,8 +22,8 @@ export default function Profile() {
   const formRef = useRef(null);
 
   // input states that need to keep track
-  const [avatarLink, setAvatarLink] = useState(loginState?.user?.avatarLink);
-  const [fullname, setFullname] = useState(loginState?.user?.fullname);
+  const [avatarLink, setAvatarLink] = useState(authData?.user?.avatarLink);
+  const [fullname, setFullname] = useState(authData?.user?.fullname);
 
   useEffect(() => {
     if (fullname?.trim()?.length === 0) setErrorMessage(`Fullname cannot be empty`);
@@ -47,7 +47,7 @@ export default function Profile() {
     // console.log(`dateOfBirth belike: `, dateOfBirth);
     // console.log(`avatarLink belike: `, avatarLink);
 
-    const user = loginState?.user;
+    const user = authData?.user;
 
     const oldBirth = new Date(user.dateOfBirth).setHours(0, 0, 0, 0);
     const newBirth = new Date(dateOfBirth).setHours(0, 0, 0, 0);
@@ -80,7 +80,7 @@ export default function Profile() {
           avatarLink,
         },
         headers: {
-          Authorization: `Bearer ${loginState?.token}`,
+          Authorization: `Bearer ${authData?.token}`,
         },
       });
 
@@ -89,8 +89,7 @@ export default function Profile() {
 
       console.log(res.data);
 
-      setLoginState({ ...loginState, user });
-      set({ ...loginState, user });
+      setAuthData({ ...authData, user });
       setIsUpdate(false);
     } catch (error) {
       // console.log(error);
@@ -106,7 +105,7 @@ export default function Profile() {
   }
 
   // only logged in user be able to go to this route
-  if (!loginState?.token || !loginState?.user) return <Navigate to={'/'} />;
+  if (!authData?.token || !authData?.user) return <Navigate to={'/'} />;
 
   let jsx;
 
@@ -120,7 +119,7 @@ export default function Profile() {
 
         <div className="flex items-center justify-center self-center rounded-full my-8">
           {/* make the alt text center just in case the link is not an image */}
-          <img className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center" src={avatarLink} alt={domParser(loginState?.user?.fullname) + ' avatar'} />
+          <img className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center" src={avatarLink} alt={domParser(authData?.user?.fullname) + ' avatar'} />
         </div>
 
         {/* update fullname */}
@@ -136,7 +135,7 @@ export default function Profile() {
             Status
           </label>
           {/* custom tailwind base on user?.status */}
-          <select id="status" name="status" className="" defaultValue={loginState?.user?.status}>
+          <select id="status" name="status" className="" defaultValue={authData?.user?.status}>
             Status:
             <option className="text-online" value="online">
               Online
@@ -157,7 +156,7 @@ export default function Profile() {
             Bio{' '}
           </label>
           {/* unescaped default value input */}
-          <textarea id="bio" name="bio" rows={8} className="block box-border w-full" defaultValue={domParser(loginState?.user?.bio)}></textarea>
+          <textarea id="bio" name="bio" rows={8} className="block box-border w-full" defaultValue={domParser(authData?.user?.bio)}></textarea>
 
           {/* update date of birth */}
           <label htmlFor="dateOfBirth" className="font-bold">
@@ -168,7 +167,7 @@ export default function Profile() {
             id="dateOfBirth"
             name="dateOfBirth"
             // defaultValue={user?.dateOfBirth}
-            defaultValue={loginState?.user?.dateOfBirthIso}
+            defaultValue={authData?.user?.dateOfBirthIso}
           />
 
           {/* update avatar link */}
@@ -200,13 +199,13 @@ export default function Profile() {
 
         <div className="flex items-center justify-center self-center rounded-full my-8">
           {/* make the alt text center just in case the link is not an image, also make it unescaped */}
-          <img className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center" src={loginState?.user?.avatarLink} alt={domParser(loginState?.user?.fullname) + ' avatar'} />
+          <img className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center" src={authData?.user?.avatarLink} alt={domParser(authData?.user?.fullname) + ' avatar'} />
         </div>
 
         <div className="grid gap-4 grid-cols-profile">
           <h3 className="font-bold">Fullname </h3>
           {/* unescaped user fullname */}
-          <h3 className="">{domParser(loginState?.user?.fullname)}</h3>
+          <h3 className="">{domParser(authData?.user?.fullname)}</h3>
 
           <h3 className="font-bold">Status</h3>
           {/* custom tailwind base on user?.status */}
@@ -214,17 +213,17 @@ export default function Profile() {
             className={
               'capitalize' +
               ' ' +
-              (loginState?.user?.status === 'online' ? 'text-success' : loginState?.user?.status === 'busy' ? 'text-busy' : loginState?.user?.status === 'afk' ? 'text-afk' : 'text-gray-500')
+              (authData?.user?.status === 'online' ? 'text-success' : authData?.user?.status === 'busy' ? 'text-busy' : authData?.user?.status === 'afk' ? 'text-afk' : 'text-gray-500')
             }
           >
-            {loginState?.user?.status}
+            {authData?.user?.status}
           </p>
 
           <h3 className="font-bold">Bio </h3>
-          <p className="">{domParser(loginState?.user?.bio)}</p>
+          <p className="">{domParser(authData?.user?.bio)}</p>
 
           <h3 className="font-bold">Date of birth</h3>
-          <p className="">{loginState?.user?.dateOfBirthFormatted?.split(' - ')[0]}</p>
+          <p className="">{authData?.user?.dateOfBirthFormatted?.split(' - ')[0]}</p>
         </div>
 
         {/* update button */}

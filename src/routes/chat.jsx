@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaPlus } from 'react-icons/fa6';
-import { useOutletContext, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { NumberCounter, StateWrapper } from './../components/more';
 
@@ -16,9 +16,10 @@ import OptionGroup from './../components/option/OptionGroup';
 import ChatMessage from './../components/chat/ChatMessage';
 import ChatHeaderGroup from './../components/chat/ChatHeaderGroup';
 import ChatHeaderUser from './../components/chat/ChatHeaderUser';
+import useAuthStore from '../stores/auth';
 
 function useFetchContact() {
-  const { loginState } = useOutletContext();
+  const { authData } = useAuthStore();
   const [isContactLoading, setIsContactLoading] = useState(false);
   const [isContactError, setIsContactError] = useState(false);
   const [dataContact, setDataContact] = useState({});
@@ -36,7 +37,7 @@ function useFetchContact() {
             method: 'get',
             url: import.meta.env.VITE_API_ORIGIN + '/chat/users',
             headers: {
-              Authorization: `Bearer ${loginState?.token}`,
+              Authorization: `Bearer ${authData?.token}`,
             },
           }),
           axios({
@@ -44,7 +45,7 @@ function useFetchContact() {
             method: 'get',
             url: import.meta.env.VITE_API_ORIGIN + '/chat/groups',
             headers: {
-              Authorization: `Bearer ${loginState?.token}`,
+              Authorization: `Bearer ${authData?.token}`,
             },
           }),
         ]);
@@ -81,13 +82,13 @@ function useFetchContact() {
 
     tmp();
     // flag to re-fetch
-  }, [willFetchContact]);
+  }, [willFetchContact, authData.token]);
 
   return { isContactLoading, setIsContactLoading, isContactError, setIsContactError, dataContact, setWillFetchContact };
 }
 
 export default function Chat() {
-  const { loginState } = useOutletContext();
+  const { authData } = useAuthStore();
 
   // contact data, fetch states, flag to re-fetch
   const { isContactLoading, isContactError, dataContact, setWillFetchContact } = useFetchContact();
@@ -138,7 +139,7 @@ export default function Chat() {
           method: 'get',
           url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
           headers: {
-            Authorization: `Bearer ${loginState?.token}`,
+            Authorization: `Bearer ${authData?.token}`,
           },
         });
 
@@ -169,7 +170,7 @@ export default function Chat() {
             method: 'get',
             url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
             headers: {
-              Authorization: `Bearer ${loginState?.token}`,
+              Authorization: `Bearer ${authData?.token}`,
             },
           }),
 
@@ -178,7 +179,7 @@ export default function Chat() {
             method: 'get',
             url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}/members`,
             headers: {
-              Authorization: `Bearer ${loginState?.token}`,
+              Authorization: `Bearer ${authData?.token}`,
             },
           }),
         ]);
@@ -200,12 +201,12 @@ export default function Chat() {
     }
 
     // states are valid then start fetching
-    if (chatId && chatType && loginState) {
+    if (chatId && chatType && authData) {
       // different fetch base on chatType
       if (chatType === 'users') userChat();
       else groupChat();
     }
-  }, [chatId, chatType, loginState]);
+  }, [chatId, chatType, authData]);
 
   // clear current working conversation when dataContact change
   useEffect(() => {
@@ -221,7 +222,7 @@ export default function Chat() {
   const [currentOpenSection, setCurrentOpenSection] = useState('');
 
   // only logged in user be able to go to this route
-  if (!loginState.token || !loginState.user) return <Navigate to={'/'} />;
+  if (!authData.token || !authData.user) return <Navigate to={'/'} />;
 
   // set current open section when button clicked
   const handleToggleClick = (section) => () => (currentOpenSection === section ? setCurrentOpenSection('') : setCurrentOpenSection(section));
@@ -411,18 +412,18 @@ export default function Chat() {
             {chatMessages === undefined ? (
               <></>
             ) : // not joined groups
-            chatMessages === null ? (
-              <li className="p-4 font-bold text-xl text-center text-danger">You are not allowed to read messages in this group.</li>
-            ) : // [] means no messages exist
-            !chatMessages?.length ? (
-              <li className="p-4 font-bold text-xl text-center">
-                <p className="">No messages here yet.</p>
-                <p className="">Be the first one to say hi.</p>
-              </li>
-            ) : (
-              // display messages, 2 avatars to display with messages
-              chatMessages?.map((message) => <ChatMessage key={message.id} message={message} />)
-            )}
+              chatMessages === null ? (
+                <li className="p-4 font-bold text-xl text-center text-danger">You are not allowed to read messages in this group.</li>
+              ) : // [] means no messages exist
+                !chatMessages?.length ? (
+                  <li className="p-4 font-bold text-xl text-center">
+                    <p className="">No messages here yet.</p>
+                    <p className="">Be the first one to say hi.</p>
+                  </li>
+                ) : (
+                  // display messages, 2 avatars to display with messages
+                  chatMessages?.map((message) => <ChatMessage key={message.id} message={message} />)
+                )}
           </ul>
         </StateWrapper>
 

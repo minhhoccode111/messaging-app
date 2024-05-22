@@ -4,6 +4,7 @@ import { RiSignalWifiErrorFill } from 'react-icons/ri';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import useAuthStore from '../stores/auth';
 
 export function NumberCounter({ children }) {
   return <span className="inline-grid w-6 h-6 bg-danger text-white font-bold rounded-full text-xs place-items-center">{children}</span>;
@@ -151,15 +152,17 @@ FakeLink.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 };
 
-export function Header({ loginState }) {
+export function Header() {
   // hamburger menu state
   const [isShowMenu, setIsShowMenu] = useState(false);
+
+  const { authData } = useAuthStore()
 
   return (
     <header
       id="header"
       className={'flex gap-3 sm:gap-5 md:gap-7 lg:gap-9 items-center p-4 sm:p-5 md:p-6 lg:p-7 shadow-lg shadow-gray-300 text-slate-700 bg-white'}
-      // color base on url path
+    // color base on url path
     >
       {/* hamburger button */}
       <nav className={'sm:hidden'}>
@@ -191,7 +194,7 @@ export function Header({ loginState }) {
           Home
         </NavLink>
 
-        {loginState.token && (
+        {authData?.token && (
           <>
             {/* link to chat section */}
             <NavLink
@@ -220,7 +223,7 @@ export function Header({ loginState }) {
       </nav>
 
       {/* token not expired */}
-      {new Date(loginState?.expiresInDate) > new Date() ? (
+      {new Date(authData?.expiresInDate) > new Date() ? (
         <div className="flex gap-2 md:gap-4 max-sm:justify-end">
           <div className="border border-slate-900 w-0"></div>
 
@@ -265,12 +268,6 @@ export function Header({ loginState }) {
     </header>
   );
 }
-
-Header.propTypes = {
-  loginState: PropTypes.object,
-  isLightTheme: PropTypes.bool,
-  setIsLightTheme: PropTypes.func,
-};
 
 Error.propTypes = {
   className: PropTypes.string,

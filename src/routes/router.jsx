@@ -6,7 +6,7 @@ import Profile from './profile';
 import Chat from './chat';
 import About from './about';
 import Login from './login';
-import Logout from './logout';
+import { loader as logoutLoader } from './logout';
 import Signup from './signup';
 
 export default function Router() {
@@ -40,7 +40,7 @@ export default function Router() {
 
         {
           path: 'logout',
-          element: <Logout />,
+          loader: logoutLoader
         },
 
         {

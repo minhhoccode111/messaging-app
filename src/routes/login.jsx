@@ -1,15 +1,15 @@
-import { useNavigate, useOutletContext, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 import { Loading, Error, SubmitButton } from './../components/more';
-import { set } from './../methods/index';
+import useAuthStore from '../stores/auth';
 
 export default function Login() {
   // back to home after logging
   const navigate = useNavigate();
 
   // store token to local storage after logging
-  const { setLoginState } = useOutletContext();
+  const { setAuthData } = useAuthStore();
 
   // handle fetch states
   const [isLoading, setIsLoading] = useState(false);
@@ -38,13 +38,10 @@ export default function Login() {
         },
       });
 
-      // console.log(res.data);
-
-      // set to local storage
-      set(res.data);
+      console.log(res.data);
 
       // set to display different Layout
-      setLoginState(res.data);
+      setAuthData(res.data);
 
       // go to profile after user logged in
       navigate('/profile');
@@ -129,14 +126,14 @@ export default function Login() {
               <Error />
             </SubmitButton>
           ) : // if waiting for response
-          isLoading ? (
-            <SubmitButton isDisable={true}>
-              <Loading />
-            </SubmitButton>
-          ) : (
-            // display login button
-            <SubmitButton isDisable={false}>Login</SubmitButton>
-          )}
+            isLoading ? (
+              <SubmitButton isDisable={true}>
+                <Loading />
+              </SubmitButton>
+            ) : (
+              // display login button
+              <SubmitButton isDisable={false}>Login</SubmitButton>
+            )}
         </div>
       </form>
 

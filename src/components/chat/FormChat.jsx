@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { useOutletContext } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { IoIosPaperPlane } from 'react-icons/io';
 import { SubmitWithStates } from '../more';
 import axios from 'axios';
+import useAuthStore from '../../stores/auth';
 
 export default function FormChat({ setChatMessages, chatId, chatType }) {
   const [content, setContent] = useState('');
@@ -20,13 +20,13 @@ export default function FormChat({ setChatMessages, chatId, chatType }) {
     else setAllowImageLink(true);
   }, [imageLink]);
 
-  const { loginState } = useOutletContext();
+  const { authData } = useAuthStore();
 
   const [isSending, setIsSending] = useState(false);
   const [isError, setIsError] = useState(false);
 
   function handleMessageSend(field) {
-    return async function (e) {
+    return async function(e) {
       e.preventDefault();
 
       // just clear input field if user try invalid one
@@ -41,7 +41,7 @@ export default function FormChat({ setChatMessages, chatId, chatType }) {
           method: 'post',
           url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
           headers: {
-            Authorization: `Bearer ${loginState?.token}`,
+            Authorization: `Bearer ${authData?.token}`,
           },
           data: {
             imageLink: field === 'imageLink' ? imageLink : undefined,

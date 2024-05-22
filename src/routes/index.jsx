@@ -1,7 +1,8 @@
-import { Link, useOutletContext } from 'react-router-dom';
+import { Link, } from 'react-router-dom';
+import useAuthStore from '../stores/auth';
 
 export default function Index() {
-  const { loginState } = useOutletContext();
+  const { authData } = useAuthStore();
 
   return (
     <section className="flex flex-col h-full">
@@ -11,7 +12,7 @@ export default function Index() {
         </div>
 
         <div className="border-2 h-0 border-sky-500 relative self-stretch">
-          {loginState.token ? (
+          {authData.token ? (
             <>
               <Link
                 className="ripper p-4 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-3/4 translate-x-1/2 bottom-0 translate-y-1/2 z-10"

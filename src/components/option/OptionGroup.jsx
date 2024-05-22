@@ -5,7 +5,7 @@ import { domParser } from '../../methods';
 import ContactUser from '../contact/ContactUser';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useOutletContext } from 'react-router-dom';
+import useAuthStore from '../../stores/auth';
 
 export default function OptionGroup({ chatId, setChatId, setChatType, setWillFetchContact, setChatOptions, chatOptions, everyGroupNames }) {
   const info = chatOptions?.info;
@@ -14,7 +14,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
   // console.log(`the info belike: `, info);
   // console.log(`the members belike: `, members);
 
-  const { loginState } = useOutletContext();
+  const { authData } = useAuthStore();
 
   // toggle open sections
   const [currentSection, setCurrentSection] = useState('');
@@ -63,7 +63,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
         method: 'put',
         url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}`,
         headers: {
-          Authorization: `Bearer ${loginState?.token}`,
+          Authorization: `Bearer ${authData?.token}`,
         },
         data: {
           name: nameInput,
@@ -87,41 +87,41 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
 
   // leave group or kick another user in group
   const handleDeleteUser =
-    (isCreator, id = loginState?.user?.id) =>
-    async (e) => {
-      e.preventDefault();
+    (isCreator, id = authData?.user?.id) =>
+      async (e) => {
+        e.preventDefault();
 
-      // if (isCreator) console.log(`try to kick user with id: `, id);
-      // else console.log(`try to leave the group`);
+        // if (isCreator) console.log(`try to kick user with id: `, id);
+        // else console.log(`try to leave the group`);
 
-      try {
-        setIsLoading(true);
+        try {
+          setIsLoading(true);
 
-        const res = await axios({
-          mode: 'cors',
-          method: 'delete',
-          url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}/members/${id}`,
-          headers: {
-            Authorization: `Bearer ${loginState?.token}`,
-          },
-        });
+          const res = await axios({
+            mode: 'cors',
+            method: 'delete',
+            url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}/members/${id}`,
+            headers: {
+              Authorization: `Bearer ${authData?.token}`,
+            },
+          });
 
-        // console.log(`members before deletion`, members);
+          // console.log(`members before deletion`, members);
 
-        // console.log(`members after deletion`, res.data);
+          // console.log(`members after deletion`, res.data);
 
-        // update group's members list if it's a kick
-        if (isCreator) setChatOptions((current) => ({ ...current, members: res?.data }));
-        // if it's a leave then just refetch everything (cause we also need to update group's states)
-        else setWillFetchContact((current) => !current);
-      } catch (err) {
-        // console.log(`error occurs when trying to delete user with id: `, err, id);
+          // update group's members list if it's a kick
+          if (isCreator) setChatOptions((current) => ({ ...current, members: res?.data }));
+          // if it's a leave then just refetch everything (cause we also need to update group's states)
+          else setWillFetchContact((current) => !current);
+        } catch (err) {
+          // console.log(`error occurs when trying to delete user with id: `, err, id);
 
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+          setIsError(true);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
   // join public group
   const handleJoinGroup = async (e) => {
@@ -137,7 +137,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
         method: 'post',
         url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}/members/`,
         headers: {
-          Authorization: `Bearer ${loginState?.token}`,
+          Authorization: `Bearer ${authData?.token}`,
         },
       });
 
@@ -162,7 +162,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
         method: 'delete',
         url: import.meta.env.VITE_API_ORIGIN + `/chat/groups/${chatId}`,
         headers: {
-          Authorization: `Bearer ${loginState?.token}`,
+          Authorization: `Bearer ${authData?.token}`,
         },
       });
 

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { domParser } from './../../methods/index';
 import { UserStatus, CircleAvatar } from '../more';
-import { useOutletContext } from 'react-router-dom';
 import { memo } from 'react';
+import useAuthStore from '../../stores/auth';
 
 const ContactUser = memo(function ContactUser({
   user,
@@ -18,7 +18,7 @@ const ContactUser = memo(function ContactUser({
 }) {
   // if (user.status === 'online') console.log(user);
 
-  const { loginState } = useOutletContext();
+  const { authData } = useAuthStore();
 
   function setFocus() {
     return chatType === 'users' && chatId === user?.id ? 'bg-gray-300' : 'bg-gray-100';
@@ -31,7 +31,7 @@ const ContactUser = memo(function ContactUser({
     <li
       onClick={() => {
         // not allowed to chat with ourselves
-        if (loginState?.user?.id === user?.id) return;
+        if (authData?.user?.id === user?.id) return;
 
         // set chat to fetch
         setChatId(user?.id);
@@ -45,9 +45,9 @@ const ContactUser = memo(function ContactUser({
 
       <div className="flex-1">
         <p className="text-sm">
-          {user?.id === loginState?.user?.id
+          {user?.id === authData?.user?.id
             ? // differentiate if you are group's creator
-              'You'
+            'You'
             : domParser(user?.fullname)}
 
           {user?.isCreator && <span className="font-bold text-green-500"> (Creator) </span>}
@@ -62,15 +62,15 @@ const ContactUser = memo(function ContactUser({
       {/* if group's creator */}
       {isCreator ? (
         // display kick to every one but ourselves
-        user?.id !== loginState?.user?.id && children
+        user?.id !== authData?.user?.id && children
       ) : // else if group's member
-      isMember ? (
-        // display leave to no one but ourselves
-        user?.id === loginState?.user?.id && children
-      ) : (
-        // else display nothing
-        <></>
-      )}
+        isMember ? (
+          // display leave to no one but ourselves
+          user?.id === authData?.user?.id && children
+        ) : (
+          // else display nothing
+          <></>
+        )}
     </li>
   );
 });

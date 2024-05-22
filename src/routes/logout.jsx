@@ -1,17 +1,18 @@
-import { useEffect } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
-import { set } from './../methods/index';
+import { redirect } from "react-router-dom";
 
-// logout using component
-export default function Logout() {
-  const navigate = useNavigate();
-  const { setLoginState } = useOutletContext();
+import useAuthStore from "../stores/auth";
 
-  useEffect(() => {
-    set({});
+import { AuthStoreName } from "../shared/constants";
 
-    setLoginState({});
+export const loader = async () => {
+  const data = {};
 
-    navigate('/');
-  });
-}
+  useAuthStore.setState({ authData: data });
+
+  localStorage.setItem(AuthStoreName, JSON.stringify(data));
+
+  console.log("user logged out.");
+
+  // return redirect("/login");
+  return redirect("/");
+};

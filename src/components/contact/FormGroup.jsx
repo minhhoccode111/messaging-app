@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { redirect, useOutletContext } from 'react-router-dom';
+import { redirect, } from 'react-router-dom';
 import { IoIosPaperPlane } from 'react-icons/io';
 import { SubmitWithStates } from '../more';
+import useAuthStore from '../../stores/auth';
 
 export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
-  const { loginState } = useOutletContext();
+  const { authData } = useAuthStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -42,7 +43,7 @@ export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
         method: 'post',
         url: import.meta.env.VITE_API_ORIGIN + '/chat/groups',
         headers: {
-          Authorization: `Bearer ${loginState?.token}`,
+          Authorization: `Bearer ${authData?.token}`,
         },
         data: {
           name: nameInput,
