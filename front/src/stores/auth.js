@@ -11,7 +11,7 @@ const useAuthStore = create((set) => {
   return {
     authData,
     setAuthData: (data) => {
-      console.log(`the authData is: `, data); // TODO: turn this off
+      // console.log(`the authData is: `, data); // TODO: turn this off
       localStorage.setItem(AuthStoreName, JSON.stringify(data));
       set(() => ({ authData: data }));
     },

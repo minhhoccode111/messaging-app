@@ -222,7 +222,7 @@ export default function Chat() {
   const [currentOpenSection, setCurrentOpenSection] = useState('');
 
   // only logged in user be able to go to this route
-  if (!authData.token || !authData.user) return <Navigate to={'/'} />;
+  if (!authData.token || !authData.self) return <Navigate to={'/'} />;
 
   // set current open section when button clicked
   const handleToggleClick = (section) => () => (currentOpenSection === section ? setCurrentOpenSection('') : setCurrentOpenSection(section));

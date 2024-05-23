@@ -1,8 +1,10 @@
-import { Link, } from 'react-router-dom';
-import useAuthStore from '../stores/auth';
+import { Link } from "react-router-dom";
+import useAuthStore from "../stores/auth";
 
 export default function Index() {
   const { authData } = useAuthStore();
+
+  console.log(`authData in Index`, authData);
 
   return (
     <section className="flex flex-col h-full">
@@ -12,43 +14,53 @@ export default function Index() {
         </div>
 
         <div className="border-2 h-0 border-sky-500 relative self-stretch">
-          {authData.token ? (
+          {authData?.token && authData?.isLogin ? (
             <>
               <Link
                 className="ripper p-4 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-3/4 translate-x-1/2 bottom-0 translate-y-1/2 z-10"
-                to={'chat'}
+                to={"chat"}
               >
-                <span className="text-xl font-bold whitespace-nowrap">Chat now</span>
+                <span className="text-xl font-bold whitespace-nowrap">
+                  Chat now
+                </span>
               </Link>
 
               <Link
                 className="ripper p-4 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-1/4 translate-x-1/2 bottom-0 translate-y-1/2 z-10"
-                to={'profile'}
+                to={"profile"}
               >
-                <span className="text-xl font-bold whitespace-nowrap">Profile</span>
+                <span className="text-xl font-bold whitespace-nowrap">
+                  Profile
+                </span>
               </Link>
             </>
           ) : (
             <>
               <Link
                 className="ripper p-4 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-3/4 translate-x-1/2 bottom-0 translate-y-1/2 z-10"
-                to={'login'}
+                to={"login"}
               >
-                <span className="text-xl font-bold whitespace-nowrap">Login</span>
+                <span className="text-xl font-bold whitespace-nowrap">
+                  Login
+                </span>
               </Link>
 
               <Link
                 className="ripper p-4 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-1/2 translate-x-1/2 bottom-0 translate-y-1/2 z-10"
-                to={'signup'}
+                to={"signup"}
               >
-                <span className="text-xl font-bold whitespace-nowrap">Signup</span>
+                <span className="text-xl font-bold whitespace-nowrap">
+                  Signup
+                </span>
               </Link>
 
               <Link
                 className="ripper p-4 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-1/4 translate-x-1/2 bottom-0 translate-y-1/2 z-10"
-                to={'about'}
+                to={"about"}
               >
-                <span className="text-xl font-bold whitespace-nowrap">About</span>
+                <span className="text-xl font-bold whitespace-nowrap">
+                  About
+                </span>
               </Link>
             </>
           )}

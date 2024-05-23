@@ -1,15 +1,20 @@
-import { useState, useEffect, useRef } from 'react';
-import { Navigate, redirect } from 'react-router-dom';
-import axios from 'axios';
-import { Loading, Error, SubmitButton, CustomButton } from './../components/more';
-import { domParser } from './../methods/index';
-import useAuthStore from '../stores/auth';
+import { useState, useEffect, useRef } from "react";
+import { Navigate, redirect } from "react-router-dom";
+import axios from "axios";
+import {
+  Loading,
+  Error,
+  SubmitButton,
+  CustomButton,
+} from "./../components/more";
+import { domParser } from "./../methods/index";
+import useAuthStore from "../stores/auth";
 
 export default function Profile() {
   const { authData, setAuthData } = useAuthStore();
 
   // display error messages in form
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   // update fetching states
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
@@ -22,11 +27,12 @@ export default function Profile() {
   const formRef = useRef(null);
 
   // input states that need to keep track
-  const [avatarLink, setAvatarLink] = useState(authData?.user?.avatarLink);
-  const [fullname, setFullname] = useState(authData?.user?.fullname);
+  const [avatarLink, setAvatarLink] = useState(authData?.self?.avatarLink);
+  const [fullname, setFullname] = useState(authData?.self?.fullname);
 
   useEffect(() => {
-    if (fullname?.trim()?.length === 0) setErrorMessage(`Fullname cannot be empty`);
+    if (fullname?.trim()?.length === 0)
+      setErrorMessage(`Fullname cannot be empty`);
     else setErrorMessage(``);
   }, [fullname, formRef]);
 
@@ -47,12 +53,17 @@ export default function Profile() {
     // console.log(`dateOfBirth belike: `, dateOfBirth);
     // console.log(`avatarLink belike: `, avatarLink);
 
-    const user = authData?.user;
+    const user = authData?.self;
 
     const oldBirth = new Date(user.dateOfBirth).setHours(0, 0, 0, 0);
     const newBirth = new Date(dateOfBirth).setHours(0, 0, 0, 0);
 
-    const isNotChanged = fullname === user.fullname && status === user.status && bio === user.bio && avatarLink === user.avatarLink && oldBirth === newBirth;
+    const isNotChanged =
+      fullname === user.fullname &&
+      status === user.status &&
+      bio === user.bio &&
+      avatarLink === user.avatarLink &&
+      oldBirth === newBirth;
 
     // console.log(isNotChanged);
 
@@ -63,15 +74,15 @@ export default function Profile() {
     }
 
     // if fullname is empty then ignore
-    if (errorMessage !== '') return;
+    if (errorMessage !== "") return;
 
     setIsLoadingUpdate(true);
 
     try {
       const res = await axios({
-        mode: 'cors',
-        method: 'put',
-        url: import.meta.env.VITE_API_ORIGIN + '/user',
+        mode: "cors",
+        method: "put",
+        url: import.meta.env.VITE_API_ORIGIN + "/user",
         data: {
           fullname,
           status,
@@ -95,7 +106,7 @@ export default function Profile() {
       // console.log(error);
 
       // in case authorization is out of sync, then log out user
-      if (error.response.status === 401) redirect('/logout');
+      if (error.response.status === 401) redirect("/logout");
 
       if (error.response.status !== 400) setIsErrorUpdate(true);
       else setIsErrorUpdate(true);
@@ -105,7 +116,7 @@ export default function Profile() {
   }
 
   // only logged in user be able to go to this route
-  if (!authData?.token || !authData?.user) return <Navigate to={'/'} />;
+  if (!authData?.token || !authData?.self) return <Navigate to={"/"} />;
 
   let jsx;
 
@@ -119,23 +130,41 @@ export default function Profile() {
 
         <div className="flex items-center justify-center self-center rounded-full my-8">
           {/* make the alt text center just in case the link is not an image */}
-          <img className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center" src={avatarLink} alt={domParser(authData?.user?.fullname) + ' avatar'} />
+          <img
+            className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center"
+            src={avatarLink}
+            alt={domParser(authData?.self?.fullname) + " avatar"}
+          />
         </div>
 
         {/* update fullname */}
         <div className="grid gap-4 grid-cols-profile">
           <label htmlFor="fullname" className="font-bold">
-            Fullname{' '}
+            Fullname{" "}
           </label>
           {/* unescaped default value inputs */}
-          <input id="fullname" name="fullname" type="text" value={fullname} onChange={(e) => setFullname(e.target.value)} required minLength={1} maxLength={50} />
+          <input
+            id="fullname"
+            name="fullname"
+            type="text"
+            value={fullname}
+            onChange={(e) => setFullname(e.target.value)}
+            required
+            minLength={1}
+            maxLength={50}
+          />
 
           {/* update current status */}
           <label htmlFor="status" className="font-bold">
             Status
           </label>
           {/* custom tailwind base on user?.status */}
-          <select id="status" name="status" className="" defaultValue={authData?.user?.status}>
+          <select
+            id="status"
+            name="status"
+            className=""
+            defaultValue={authData?.self?.status}
+          >
             Status:
             <option className="text-online" value="online">
               Online
@@ -153,10 +182,16 @@ export default function Profile() {
 
           {/* update bio */}
           <label htmlFor="bio" className="font-bold">
-            Bio{' '}
+            Bio{" "}
           </label>
           {/* unescaped default value input */}
-          <textarea id="bio" name="bio" rows={8} className="block box-border w-full" defaultValue={domParser(authData?.user?.bio)}></textarea>
+          <textarea
+            id="bio"
+            name="bio"
+            rows={8}
+            className="block box-border w-full"
+            defaultValue={domParser(authData?.self?.bio)}
+          ></textarea>
 
           {/* update date of birth */}
           <label htmlFor="dateOfBirth" className="font-bold">
@@ -167,25 +202,44 @@ export default function Profile() {
             id="dateOfBirth"
             name="dateOfBirth"
             // defaultValue={user?.dateOfBirth}
-            defaultValue={authData?.user?.dateOfBirthIso}
+            defaultValue={authData?.self?.dateOfBirthIso}
           />
 
           {/* update avatar link */}
           <label htmlFor="avatarLink" className="font-bold">
             Avatar link
           </label>
-          <input id="avatarLink" name="avatarLink" className="block w-full" onChange={(e) => setAvatarLink(e.target.value)} type="text" value={avatarLink} />
+          <input
+            id="avatarLink"
+            name="avatarLink"
+            className="block w-full"
+            onChange={(e) => setAvatarLink(e.target.value)}
+            type="text"
+            value={avatarLink}
+          />
         </div>
 
         <p className="text-2xl font-bold text-danger">{errorMessage}</p>
 
         {/* update button */}
         <div className="flex gap-4 items-center justify-between my-4">
-          <CustomButton className="text-white bg-danger" onClick={() => setIsUpdate(false)} isDisable={false}>
+          <CustomButton
+            className="text-white bg-danger"
+            onClick={() => setIsUpdate(false)}
+            isDisable={false}
+          >
             Cancel
           </CustomButton>
 
-          <SubmitButton isDisable={isLoadingUpdate || isErrorUpdate}>{isErrorUpdate ? <Error /> : isLoadingUpdate ? <Loading /> : 'Confirm'}</SubmitButton>
+          <SubmitButton isDisable={isLoadingUpdate || isErrorUpdate}>
+            {isErrorUpdate ? (
+              <Error />
+            ) : isLoadingUpdate ? (
+              <Loading />
+            ) : (
+              "Confirm"
+            )}
+          </SubmitButton>
         </div>
       </form>
     );
@@ -199,36 +253,52 @@ export default function Profile() {
 
         <div className="flex items-center justify-center self-center rounded-full my-8">
           {/* make the alt text center just in case the link is not an image, also make it unescaped */}
-          <img className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center" src={authData?.user?.avatarLink} alt={domParser(authData?.user?.fullname) + ' avatar'} />
+          <img
+            className="rounded-full text-xs w-48 h-48 bg-warn grid place-items-center"
+            src={authData?.self?.avatarLink}
+            alt={domParser(authData?.self?.fullname) + " avatar"}
+          />
         </div>
 
         <div className="grid gap-4 grid-cols-profile">
           <h3 className="font-bold">Fullname </h3>
           {/* unescaped user fullname */}
-          <h3 className="">{domParser(authData?.user?.fullname)}</h3>
+          <h3 className="">{domParser(authData?.self?.fullname)}</h3>
 
           <h3 className="font-bold">Status</h3>
           {/* custom tailwind base on user?.status */}
           <p
             className={
-              'capitalize' +
-              ' ' +
-              (authData?.user?.status === 'online' ? 'text-success' : authData?.user?.status === 'busy' ? 'text-busy' : authData?.user?.status === 'afk' ? 'text-afk' : 'text-gray-500')
+              "capitalize" +
+              " " +
+              (authData?.self?.status === "online"
+                ? "text-success"
+                : authData?.self?.status === "busy"
+                  ? "text-busy"
+                  : authData?.self?.status === "afk"
+                    ? "text-afk"
+                    : "text-gray-500")
             }
           >
-            {authData?.user?.status}
+            {authData?.self?.status}
           </p>
 
           <h3 className="font-bold">Bio </h3>
-          <p className="">{domParser(authData?.user?.bio)}</p>
+          <p className="">{domParser(authData?.self?.bio)}</p>
 
           <h3 className="font-bold">Date of birth</h3>
-          <p className="">{authData?.user?.dateOfBirthFormatted?.split(' - ')[0]}</p>
+          <p className="">
+            {authData?.self?.dateOfBirthFormatted?.split(" - ")[0]}
+          </p>
         </div>
 
         {/* update button */}
         <div className="flex gap-4 items-center justify-end my-4">
-          <button onClick={() => setIsUpdate(true)} type="button" className="ripper px-4 py-2">
+          <button
+            onClick={() => setIsUpdate(true)}
+            type="button"
+            className="ripper px-4 py-2"
+          >
             Update
           </button>
         </div>
@@ -236,5 +306,9 @@ export default function Profile() {
     );
   }
 
-  return <section className="mx-auto max-w-[60ch] px-4 py-4 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900 w-full">{jsx}</section>;
+  return (
+    <section className="mx-auto max-w-[60ch] px-4 py-4 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900 w-full">
+      {jsx}
+    </section>
+  );
 }

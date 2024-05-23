@@ -31,7 +31,7 @@ const ContactUser = memo(function ContactUser({
     <li
       onClick={() => {
         // not allowed to chat with ourselves
-        if (authData?.user?.id === user?.id) return;
+        if (authData?.self?.id === user?.id) return;
 
         // set chat to fetch
         setChatId(user?.id);
@@ -45,7 +45,7 @@ const ContactUser = memo(function ContactUser({
 
       <div className="flex-1">
         <p className="text-sm">
-          {user?.id === authData?.user?.id
+          {user?.id === authData?.self?.id
             ? // differentiate if you are group's creator
             'You'
             : domParser(user?.fullname)}
@@ -62,11 +62,11 @@ const ContactUser = memo(function ContactUser({
       {/* if group's creator */}
       {isCreator ? (
         // display kick to every one but ourselves
-        user?.id !== authData?.user?.id && children
+        user?.id !== authData?.self?.id && children
       ) : // else if group's member
         isMember ? (
           // display leave to no one but ourselves
-          user?.id === authData?.user?.id && children
+          user?.id === authData?.self?.id && children
         ) : (
           // else display nothing
           <></>

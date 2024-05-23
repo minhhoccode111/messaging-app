@@ -87,7 +87,7 @@ export default function OptionGroup({ chatId, setChatId, setChatType, setWillFet
 
   // leave group or kick another user in group
   const handleDeleteUser =
-    (isCreator, id = authData?.user?.id) =>
+    (isCreator, id = authData?.self?.id) =>
       async (e) => {
         e.preventDefault();
 
