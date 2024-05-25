@@ -1,19 +1,19 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import NotFound from './404';
-import Layout from './layout';
-import Index from './index';
-import Profile from './profile';
-import Chat from './chat';
-import About from './about';
-import Login from './login';
-import { loader as logoutLoader } from './logout';
-import Signup from './signup';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import NotFound from "./404";
+import Layout from "./layout";
+import Index from "./index";
+import Profile from "./profile";
+import Chat from "./chat";
+import About from "./about";
+import Login from "./login";
+import { loader as logoutLoader } from "./logout";
+import Signup from "./signup";
 
 export default function Router() {
   // setting router
   const router = createBrowserRouter([
     {
-      path: '/',
+      path: "/",
       element: <Layout />,
       errorElement: <NotFound />,
       children: [
@@ -24,32 +24,32 @@ export default function Router() {
         },
 
         {
-          path: 'profile',
+          path: "profile",
           element: <Profile />,
         },
 
         {
-          path: 'chat',
+          path: "chat",
           element: <Chat />,
         },
 
         {
-          path: 'login',
+          path: "login",
           element: <Login />,
         },
 
         {
-          path: 'logout',
-          loader: logoutLoader
+          path: "logout",
+          loader: logoutLoader,
         },
 
         {
-          path: 'signup',
+          path: "signup",
           element: <Signup />,
         },
 
         {
-          path: 'about',
+          path: "about",
           element: <About />,
         },
       ],

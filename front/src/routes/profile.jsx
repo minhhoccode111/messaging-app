@@ -27,8 +27,8 @@ export default function Profile() {
   const formRef = useRef(null);
 
   // input states that need to keep track
-  const [avatarLink, setAvatarLink] = useState(authData?.self?.avatarLink);
-  const [fullname, setFullname] = useState(authData?.self?.fullname);
+  const [avatarLink, setAvatarLink] = useState(authData.self?.avatarLink);
+  const [fullname, setFullname] = useState(authData.self?.fullname);
 
   useEffect(() => {
     if (fullname?.trim()?.length === 0)

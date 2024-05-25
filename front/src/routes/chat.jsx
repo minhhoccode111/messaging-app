@@ -1,22 +1,22 @@
-import { useState, useEffect, useRef } from 'react';
-import { FaPlus } from 'react-icons/fa6';
-import { Navigate } from 'react-router-dom';
-import axios from 'axios';
-import { NumberCounter, StateWrapper } from './../components/more';
+import { useState, useEffect, useRef } from "react";
+import { FaPlus } from "react-icons/fa6";
+import { Navigate } from "react-router-dom";
+import axios from "axios";
+import { NumberCounter, StateWrapper } from "./../components/more";
 
-import ContactUser from './../components/contact/ContactUser';
-import ContactGroup from './../components/contact/ContactGroup';
+import ContactUser from "./../components/contact/ContactUser";
+import ContactGroup from "./../components/contact/ContactGroup";
 
-import FormGroup from './../components/contact/FormGroup';
-import FormChat from './../components/chat/FormChat';
+import FormGroup from "./../components/contact/FormGroup";
+import FormChat from "./../components/chat/FormChat";
 
-import OptionUser from './../components/option/OptionUser';
-import OptionGroup from './../components/option/OptionGroup';
+import OptionUser from "./../components/option/OptionUser";
+import OptionGroup from "./../components/option/OptionGroup";
 
-import ChatMessage from './../components/chat/ChatMessage';
-import ChatHeaderGroup from './../components/chat/ChatHeaderGroup';
-import ChatHeaderUser from './../components/chat/ChatHeaderUser';
-import useAuthStore from '../stores/auth';
+import ChatMessage from "./../components/chat/ChatMessage";
+import ChatHeaderGroup from "./../components/chat/ChatHeaderGroup";
+import ChatHeaderUser from "./../components/chat/ChatHeaderUser";
+import useAuthStore from "../stores/auth";
 
 function useFetchContact() {
   const { authData } = useAuthStore();
@@ -33,17 +33,17 @@ function useFetchContact() {
 
         const [userContactRes, groupContactRes] = await Promise.all([
           axios({
-            mode: 'cors',
-            method: 'get',
-            url: import.meta.env.VITE_API_ORIGIN + '/chat/users',
+            mode: "cors",
+            method: "get",
+            url: import.meta.env.VITE_API_ORIGIN + "/chat/users",
             headers: {
               Authorization: `Bearer ${authData?.token}`,
             },
           }),
           axios({
-            mode: 'cors',
-            method: 'get',
-            url: import.meta.env.VITE_API_ORIGIN + '/chat/groups',
+            mode: "cors",
+            method: "get",
+            url: import.meta.env.VITE_API_ORIGIN + "/chat/groups",
             headers: {
               Authorization: `Bearer ${authData?.token}`,
             },
@@ -59,7 +59,9 @@ function useFetchContact() {
           online: 3,
         };
         // 1 extra step to sort users contact data base on status
-        data.users = userContactRes.data.users.sort((a, b) => statusTable[b.status] - statusTable[a.status]);
+        data.users = userContactRes.data.users.sort(
+          (a, b) => statusTable[b.status] - statusTable[a.status],
+        );
         data.joinedGroups = groupContactRes.data.joinedGroups;
         data.publicGroups = groupContactRes.data.publicGroups;
         data.privateGroups = groupContactRes.data.privateGroups;
@@ -84,14 +86,22 @@ function useFetchContact() {
     // flag to re-fetch
   }, [willFetchContact, authData.token]);
 
-  return { isContactLoading, setIsContactLoading, isContactError, setIsContactError, dataContact, setWillFetchContact };
+  return {
+    isContactLoading,
+    setIsContactLoading,
+    isContactError,
+    setIsContactError,
+    dataContact,
+    setWillFetchContact,
+  };
 }
 
 export default function Chat() {
   const { authData } = useAuthStore();
 
   // contact data, fetch states, flag to re-fetch
-  const { isContactLoading, isContactError, dataContact, setWillFetchContact } = useFetchContact();
+  const { isContactLoading, isContactError, dataContact, setWillFetchContact } =
+    useFetchContact();
 
   // load a specific chat states
   const [isChatLoading, setIsChatLoading] = useState(false);
@@ -120,8 +130,8 @@ export default function Chat() {
 
   // identify which chat current logged in user is engaging
   // like :userid or :groupid
-  const [chatId, setChatId] = useState('');
-  const [chatType, setChatType] = useState('');
+  const [chatId, setChatId] = useState("");
+  const [chatType, setChatType] = useState("");
 
   // change chatMessages and chatOptions base on current chat
   useEffect(() => {
@@ -135,8 +145,8 @@ export default function Chat() {
         setIsChatLoading(true);
 
         const res = await axios({
-          mode: 'cors',
-          method: 'get',
+          mode: "cors",
+          method: "get",
           url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
           headers: {
             Authorization: `Bearer ${authData?.token}`,
@@ -166,18 +176,21 @@ export default function Chat() {
 
         const [messRes, memRes] = await Promise.all([
           axios({
-            mode: 'cors',
-            method: 'get',
-            url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
+            mode: "cors",
+            method: "get",
+            url:
+              import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}`,
             headers: {
               Authorization: `Bearer ${authData?.token}`,
             },
           }),
 
           axios({
-            mode: 'cors',
-            method: 'get',
-            url: import.meta.env.VITE_API_ORIGIN + `/chat/${chatType}/${chatId}/members`,
+            mode: "cors",
+            method: "get",
+            url:
+              import.meta.env.VITE_API_ORIGIN +
+              `/chat/${chatType}/${chatId}/members`,
             headers: {
               Authorization: `Bearer ${authData?.token}`,
             },
@@ -189,7 +202,10 @@ export default function Chat() {
         // console.log(`the memRes.data.groupMembers belike: `, memRes.data.groupMembers);
 
         setChatMessages(messRes.data.messages);
-        setChatOptions({ info: messRes.data.receivedGroup, members: memRes.data.groupMembers });
+        setChatOptions({
+          info: messRes.data.receivedGroup,
+          members: memRes.data.groupMembers,
+        });
       } catch (error) {
         // console.log(error);
         // console.log(error.response.status);
@@ -203,7 +219,7 @@ export default function Chat() {
     // states are valid then start fetching
     if (chatId && chatType && authData) {
       // different fetch base on chatType
-      if (chatType === 'users') userChat();
+      if (chatType === "users") userChat();
       else groupChat();
     }
   }, [chatId, chatType, authData]);
@@ -212,26 +228,31 @@ export default function Chat() {
   useEffect(() => {
     setChatMessages();
     setChatOptions({});
-    setChatId('');
-    setChatType('');
+    setChatId("");
+    setChatType("");
 
     // console.log('cleared current engaging conversation');
   }, [dataContact]);
 
   // which section to expand
-  const [currentOpenSection, setCurrentOpenSection] = useState('');
+  const [currentOpenSection, setCurrentOpenSection] = useState("");
 
   // only logged in user be able to go to this route
-  if (!authData.token || !authData.self) return <Navigate to={'/'} />;
+  if (!authData.token || !authData.self) return <Navigate to={"/"} />;
 
   // set current open section when button clicked
-  const handleToggleClick = (section) => () => (currentOpenSection === section ? setCurrentOpenSection('') : setCurrentOpenSection(section));
+  const handleToggleClick = (section) => () =>
+    currentOpenSection === section
+      ? setCurrentOpenSection("")
+      : setCurrentOpenSection(section);
 
   // based on current open section to return a class, used for <ul>s
-  const sectionExpand = (current) => (currentOpenSection === current ? 'max-h-full' : 'max-h-0');
+  const sectionExpand = (current) =>
+    currentOpenSection === current ? "max-h-full" : "max-h-0";
 
   // based on current open section to return a class, used for toggle buttons
-  const sectionHighlight = (current) => (currentOpenSection === current ? 'bg-red-100' : 'bg-red-50');
+  const sectionHighlight = (current) =>
+    currentOpenSection === current ? "bg-red-100" : "bg-red-50";
 
   // console.log(dataContact);
 
@@ -261,8 +282,12 @@ export default function Chat() {
         {/* other users */}
         {/* button to toggle expand ul */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('users')}
-          onClick={handleToggleClick('users')}
+          className={
+            "flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md" +
+            " " +
+            sectionHighlight("users")
+          }
+          onClick={handleToggleClick("users")}
         >
           <h2 className="">Users</h2>
           <NumberCounter>{users?.length || 0}</NumberCounter>
@@ -271,17 +296,38 @@ export default function Chat() {
         <StateWrapper
           isError={isContactError}
           isLoading={isContactLoading}
-          containerClassName={'overflow-y-auto transition-all origin-top grid place-items-center text-warn ' + ' ' + sectionExpand('users')}
-          childClassName={'text-8xl p-4'}
+          containerClassName={
+            "overflow-y-auto transition-all origin-top grid place-items-center text-warn " +
+            " " +
+            sectionExpand("users")
+          }
+          childClassName={"text-8xl p-4"}
         >
-          <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('users')}>
+          <ul
+            className={
+              "overflow-y-auto transition-all origin-top" +
+              " " +
+              sectionExpand("users")
+            }
+          >
             {users?.length !== 0 ? (
               users?.map((u) => {
                 // to display current chat we are focused
-                return <ContactUser chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} user={u} key={u.id} />;
+                return (
+                  <ContactUser
+                    chatId={chatId}
+                    setChatId={setChatId}
+                    chatType={chatType}
+                    setChatType={setChatType}
+                    user={u}
+                    key={u.id}
+                  />
+                );
               })
             ) : (
-              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No user to display</li>
+              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">
+                No user to display
+              </li>
             )}
           </ul>
         </StateWrapper>
@@ -289,8 +335,12 @@ export default function Chat() {
         {/* joined groups */}
         {/* button to toggle expand ul */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('joined')}
-          onClick={handleToggleClick('joined')}
+          className={
+            "flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md" +
+            " " +
+            sectionHighlight("joined")
+          }
+          onClick={handleToggleClick("joined")}
         >
           <h2 className="">Joined groups</h2>
           <NumberCounter>{joinedGroups?.length || 0}</NumberCounter>
@@ -299,17 +349,38 @@ export default function Chat() {
         <StateWrapper
           isError={isContactError}
           isLoading={isContactLoading}
-          containerClassName={'overflow-y-auto transition-all origin-top grid place-items-center text-warn ' + ' ' + sectionExpand('joined')}
-          childClassName={'text-8xl p-4'}
+          containerClassName={
+            "overflow-y-auto transition-all origin-top grid place-items-center text-warn " +
+            " " +
+            sectionExpand("joined")
+          }
+          childClassName={"text-8xl p-4"}
         >
-          <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('joined')}>
+          <ul
+            className={
+              "overflow-y-auto transition-all origin-top" +
+              " " +
+              sectionExpand("joined")
+            }
+          >
             {joinedGroups?.length !== 0 ? (
               joinedGroups?.map((gr) => {
                 // to display current chat we are focused
-                return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+                return (
+                  <ContactGroup
+                    chatId={chatId}
+                    setChatId={setChatId}
+                    chatType={chatType}
+                    setChatType={setChatType}
+                    group={gr}
+                    key={gr.id}
+                  />
+                );
               })
             ) : (
-              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
+              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">
+                No group to display
+              </li>
             )}
           </ul>
         </StateWrapper>
@@ -317,8 +388,12 @@ export default function Chat() {
         {/* public groups */}
         {/* button to toggle expand ul */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('public')}
-          onClick={handleToggleClick('public')}
+          className={
+            "flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md" +
+            " " +
+            sectionHighlight("public")
+          }
+          onClick={handleToggleClick("public")}
         >
           <h2 className="">Public groups</h2>
           <NumberCounter>{publicGroups?.length || 0}</NumberCounter>
@@ -327,17 +402,38 @@ export default function Chat() {
         <StateWrapper
           isError={isContactError}
           isLoading={isContactLoading}
-          containerClassName={'overflow-y-auto transition-all origin-top grid place-items-center text-warn ' + ' ' + sectionExpand('public')}
-          childClassName={'text-8xl p-4'}
+          containerClassName={
+            "overflow-y-auto transition-all origin-top grid place-items-center text-warn " +
+            " " +
+            sectionExpand("public")
+          }
+          childClassName={"text-8xl p-4"}
         >
-          <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('public')}>
+          <ul
+            className={
+              "overflow-y-auto transition-all origin-top" +
+              " " +
+              sectionExpand("public")
+            }
+          >
             {publicGroups?.length !== 0 ? (
               publicGroups?.map((gr) => {
                 // to display current chat we are focused
-                return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+                return (
+                  <ContactGroup
+                    chatId={chatId}
+                    setChatId={setChatId}
+                    chatType={chatType}
+                    setChatType={setChatType}
+                    group={gr}
+                    key={gr.id}
+                  />
+                );
               })
             ) : (
-              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
+              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">
+                No group to display
+              </li>
             )}
           </ul>
         </StateWrapper>
@@ -345,8 +441,12 @@ export default function Chat() {
         {/* private groups */}
         {/* button to toggle expand ul */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4  text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('private')}
-          onClick={handleToggleClick('private')}
+          className={
+            "flex items-center justify-between gap-2 font-bold text-lg py-2 px-4  text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md" +
+            " " +
+            sectionHighlight("private")
+          }
+          onClick={handleToggleClick("private")}
         >
           <h2 className="">Private groups</h2>
           <NumberCounter>{privateGroups?.length || 0}</NumberCounter>
@@ -355,17 +455,38 @@ export default function Chat() {
         <StateWrapper
           isError={isContactError}
           isLoading={isContactLoading}
-          containerClassName={'overflow-y-auto transition-all origin-top grid place-items-center text-warn ' + ' ' + sectionExpand('private')}
-          childClassName={'text-8xl p-4'}
+          containerClassName={
+            "overflow-y-auto transition-all origin-top grid place-items-center text-warn " +
+            " " +
+            sectionExpand("private")
+          }
+          childClassName={"text-8xl p-4"}
         >
-          <ul className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('private')}>
+          <ul
+            className={
+              "overflow-y-auto transition-all origin-top" +
+              " " +
+              sectionExpand("private")
+            }
+          >
             {privateGroups?.length !== 0 ? (
               privateGroups?.map((gr) => {
                 // to display current chat we are focused
-                return <ContactGroup chatId={chatId} setChatId={setChatId} chatType={chatType} setChatType={setChatType} group={gr} key={gr.id} />;
+                return (
+                  <ContactGroup
+                    chatId={chatId}
+                    setChatId={setChatId}
+                    chatType={chatType}
+                    setChatType={setChatType}
+                    group={gr}
+                    key={gr.id}
+                  />
+                );
               })
             ) : (
-              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">No group to display</li>
+              <li className="px-4 py-2 rounded-lg bg-slate-100 font-bold shadow-sm my-1 text-gray-700">
+                No group to display
+              </li>
             )}
           </ul>
         </StateWrapper>
@@ -373,8 +494,12 @@ export default function Chat() {
         {/* new group */}
         {/* button to toggle expand form */}
         <button
-          className={'flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md' + ' ' + sectionHighlight('new')}
-          onClick={handleToggleClick('new')}
+          className={
+            "flex items-center justify-between gap-2 font-bold text-lg py-2 px-4 text-center w-full rounded-md hover:bg-red-100 transition-all shadow-md" +
+            " " +
+            sectionHighlight("new")
+          }
+          onClick={handleToggleClick("new")}
         >
           <h2 className="">New group</h2>
           <NumberCounter>
@@ -382,9 +507,18 @@ export default function Chat() {
           </NumberCounter>
         </button>
         {/* form to create new group */}
-        <div className={'overflow-y-auto transition-all origin-top' + ' ' + sectionExpand('new')}>
+        <div
+          className={
+            "overflow-y-auto transition-all origin-top" +
+            " " +
+            sectionExpand("new")
+          }
+        >
           {/* to switch flag and fetch contacts again after creating a group */}
-          <FormGroup everyGroupNames={everyGroupNames} setWillFetchContact={setWillFetchContact} />
+          <FormGroup
+            everyGroupNames={everyGroupNames}
+            setWillFetchContact={setWillFetchContact}
+          />
         </div>
       </article>
 
@@ -392,11 +526,21 @@ export default function Chat() {
       <article className="h-full shadow-gray-400 rounded-xl shadow-2xl bg-white flex flex-col justify-between">
         {/* header to know which conversation we are engaging */}
 
-        <StateWrapper isError={isChatError} isLoading={isChatLoading} containerClassName={'p-4 border-b-2 border-gray-700 grid place-items-center text-warn'} childClassName={'text-4xl'}>
+        <StateWrapper
+          isError={isChatError}
+          isLoading={isChatLoading}
+          containerClassName={
+            "p-4 border-b-2 border-gray-700 grid place-items-center text-warn"
+          }
+          childClassName={"text-4xl"}
+        >
           <header className="p-4 border-b-2 border-black">
-            {chatType === '' ? (
-              <h2 className="font-bold text-xl text-center"> Select a conversation to get started.</h2>
-            ) : chatType === 'groups' ? (
+            {chatType === "" ? (
+              <h2 className="font-bold text-xl text-center">
+                {" "}
+                Select a conversation to get started.
+              </h2>
+            ) : chatType === "groups" ? (
               // {info: {}, members: []}
               <ChatHeaderGroup chatOptions={chatOptions} />
             ) : (
@@ -406,31 +550,49 @@ export default function Chat() {
         </StateWrapper>
 
         {/* display messages section */}
-        <StateWrapper isError={isChatError} isLoading={isChatLoading} containerClassName={'overflow-y-auto flex-1 grid place-items-center p-4 text-warn'} childClassName={'text-8xl'}>
-          <ul ref={chatRef} className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 ">
+        <StateWrapper
+          isError={isChatError}
+          isLoading={isChatLoading}
+          containerClassName={
+            "overflow-y-auto flex-1 grid place-items-center p-4 text-warn"
+          }
+          childClassName={"text-8xl"}
+        >
+          <ul
+            ref={chatRef}
+            className="overflow-y-auto flex-1 flex flex-col gap-4 p-2 "
+          >
             {/* not select conversation */}
             {chatMessages === undefined ? (
               <></>
             ) : // not joined groups
-              chatMessages === null ? (
-                <li className="p-4 font-bold text-xl text-center text-danger">You are not allowed to read messages in this group.</li>
-              ) : // [] means no messages exist
-                !chatMessages?.length ? (
-                  <li className="p-4 font-bold text-xl text-center">
-                    <p className="">No messages here yet.</p>
-                    <p className="">Be the first one to say hi.</p>
-                  </li>
-                ) : (
-                  // display messages, 2 avatars to display with messages
-                  chatMessages?.map((message) => <ChatMessage key={message.id} message={message} />)
-                )}
+            chatMessages === null ? (
+              <li className="p-4 font-bold text-xl text-center text-danger">
+                You are not allowed to read messages in this group.
+              </li>
+            ) : // [] means no messages exist
+            !chatMessages?.length ? (
+              <li className="p-4 font-bold text-xl text-center">
+                <p className="">No messages here yet.</p>
+                <p className="">Be the first one to say hi.</p>
+              </li>
+            ) : (
+              // display messages, 2 avatars to display with messages
+              chatMessages?.map((message) => (
+                <ChatMessage key={message.id} message={message} />
+              ))
+            )}
           </ul>
         </StateWrapper>
 
         {/* form to send message section, only for allowed conversation */}
         {chatMessages && (
           <div className="p-4 border-t-2 border-black">
-            <FormChat chatId={chatId} chatType={chatType} setChatMessages={setChatMessages} />
+            <FormChat
+              chatId={chatId}
+              chatType={chatType}
+              setChatMessages={setChatMessages}
+            />
           </div>
         )}
       </article>
@@ -438,12 +600,14 @@ export default function Chat() {
       <StateWrapper
         isError={isChatError}
         isLoading={isChatLoading}
-        containerClassName={'overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white grid place-items-center text-warn'}
-        childClassName={'text-8xl'}
+        containerClassName={
+          "overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white grid place-items-center text-warn"
+        }
+        childClassName={"text-8xl"}
       >
         <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white">
           {/* base on chat type to display option */}
-          {chatType === 'groups' && (
+          {chatType === "groups" && (
             // {info: {}, members: []}
             <OptionGroup
               // to know if current logged in user is a member of group
@@ -461,7 +625,7 @@ export default function Chat() {
             />
           )}
 
-          {chatType === 'users' && <OptionUser chatOptions={chatOptions} />}
+          {chatType === "users" && <OptionUser chatOptions={chatOptions} />}
         </article>
       </StateWrapper>
     </section>

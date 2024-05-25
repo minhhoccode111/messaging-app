@@ -1,26 +1,6 @@
 # Messaging App Back
 
-The **Messaging App Back** is created according to the assignment from **The Odin Project** [course](https://www.theodinproject.com/lessons/nodejs-messaging-app).
-<br>
-<br>
-
-<!-- ## Screenshot
-
-![Members Only Screenshot](/public/images/members-only-screenshot.png)
-
-![Members Only Bcrypt Screenshot](/public/images/members-only-screenshot-password.png) -->
-
-## **Demo** [here](https://messagingapptop.vercel.app/)
-
-## **Document** [here](/notes.md)
-
-## **Features**
-
-- CRUD actions
-- JSON Web Token Authentication
-- CORS to only allow requests from my frontend
-- RESTful API
-<!-- - Using TDD, fully tested every cases -->
+## **Notes** [here](/notes.md)
 
 ## **Outcome**
 
@@ -38,59 +18,33 @@ The **Messaging App Back** is created according to the assignment from **The Odi
 - Used **Faker** to create extensive fake data
 - and more
 
-## **Idea to implement**
-
-- Request queries to get limited messages every time (not all)
-- Delete current logged in user
-- Delete, edit message (vs group, vs person)
-- Edit other users (like nickname)
-- Block other users
-- Friends
-
 ## **Getting Started**
 
-HTTPS
+Development
 
 ```bash
-git clone https://github.com/minhhoccode111/messaging-app-back.git
-```
-
-or SSH
-
-```bash
-git clone git@github.com:minhhoccode111/messaging-app-back.git
-```
-
-then
-
-```bash
-cd messaging-app-back
+# cd back
 npm install
-# start the server
-npm start
-# start the test
-npm test
+npm run server
 ```
 
-script to interact with mongodb databases
+Test
 
 ```bash
-# clear database
-node db-scripts/cleardb.js
-# get info
-node db-scripts/infodb.js
-# populate db with fake data
-node db-scripts/populatedb.js
-# or provide your mongodb string as 3rd Command line argument
-# node db-scripts/populatedb.js <some string here>
+npm run test
 ```
 
-## **Navigation**
+Prepare production
 
-- See [all my projects'](https://github.com/minhhoccode111/all-projects-live-demos) live demos
+```bash
+npm run start
+```
 
-- See my previous project [Where's Waldo Back](https://github.com/minhhoccode111/wheres-waldo-back)
+Script to interact with mongodb databases
 
-- See this project's frontend [Messaging App Front](https://github.com/minhhoccode111/messaging-app-front)
-
-<!-- * See my next project []() -->
+```bash
+node src/db-scripts/cleardb.js # clear
+node src/db-scripts/infodb.js # info
+node src/db-scripts/populatedb.js # populate
+# node db-scripts/populatedb.js <some string here> # provide db string
+```
