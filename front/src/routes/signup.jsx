@@ -74,6 +74,8 @@ export default function Signup() {
         { success: true, msg: `*Successfully created user!` },
       ]);
     } catch (err) {
+      // console.log(`signup error belike: `, err.response.data.errors);
+
       if (err.response.status === 400) {
         setDisplayMessages(() => [...err.response.data.errors]);
       } else {
@@ -312,7 +314,7 @@ export default function Signup() {
               </p>
             ) : (
               <p key={index} className="text-danger">
-                {error}
+                {error.msg}
               </p>
             );
           })}

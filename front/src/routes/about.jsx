@@ -9,9 +9,9 @@ export default function About() {
       <article className="flex flex-col gap-3 py-4">
         <p className="">
           This project is made to showcase the{" "}
-          <OutsideLink to="https://github.com/minhhoccode111/messaging-app-back">
+          <OutsideLink to="https://github.com/minhhoccode111/messaging-app">
             {" "}
-            Messaging App Back{" "}
+            Messaging App{" "}
           </OutsideLink>{" "}
           developed for{" "}
           <OutsideLink to="https://www.theodinproject.com/lessons/nodejs-messaging-app">
