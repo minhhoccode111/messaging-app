@@ -11,6 +11,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
 import useAuthStore from "../stores/auth";
+import { domParser } from "../methods";
 
 export function NumberCounter({ children }) {
   return (
@@ -31,8 +32,8 @@ NumberCounter.propTypes = {
 export function CircleAvatar({ src, alt }) {
   return (
     <img
-      src={src}
-      alt={alt}
+      src={domParser(src)}
+      alt={domParser(alt)}
       className={
         "rounded-full border bg-gray-200 grid place-items-center overflow-hidden w-full h-full"
       }
@@ -185,7 +186,7 @@ export function OutsideLink({ children, to }) {
 }
 
 OutsideLink.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+  //   children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   to: PropTypes.string,
 };
 

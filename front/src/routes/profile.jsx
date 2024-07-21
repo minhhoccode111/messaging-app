@@ -13,6 +13,8 @@ import useAuthStore from "../stores/auth";
 export default function Profile() {
   const { authData, setAuthData } = useAuthStore();
 
+  // console.log(`authDate belike: `, authData);
+
   // display error messages in form
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -96,11 +98,11 @@ export default function Profile() {
       });
 
       // console.log(res.data.newUser);
-      const user = res.data.newUser;
+      const self = res.data.newUser;
 
-      console.log(res.data);
+      // console.log(`user response update: `, self);
 
-      setAuthData({ ...authData, user });
+      setAuthData({ ...authData, self });
       setIsUpdate(false);
     } catch (error) {
       // console.log(error);

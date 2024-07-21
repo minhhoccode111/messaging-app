@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import { domParser } from './../../methods/index';
-import { IoIosCall, IoIosVideocam, IoIosMore } from 'react-icons/io';
-import { GroupStatus, CircleAvatar } from '../more';
+import PropTypes from "prop-types";
+import { domParser } from "./../../methods/index";
+import { IoIosCall, IoIosVideocam, IoIosMore } from "react-icons/io";
+import { GroupStatus, CircleAvatar } from "../more";
 
 export default function ChatHeaderGroup({ chatOptions }) {
   // console.log(chatOptions);
@@ -10,10 +10,17 @@ export default function ChatHeaderGroup({ chatOptions }) {
   const membersLength = chatOptions?.members?.length;
 
   return (
-    <h2 className={'flex gap-2 items-center justify-start text-lg font-bold text-slate-700'}>
+    <h2
+      className={
+        "flex gap-2 items-center justify-start text-lg font-bold text-slate-700"
+      }
+    >
       {/* display avatar */}
-      <div className={'w-14 h-14 flex-shrink-0'}>
-        <CircleAvatar src={domParser(group?.avatarLink)} alt={domParser(group?.name?.slice(0, 1)?.toUpperCase())} />
+      <div className={"w-14 h-14 flex-shrink-0"}>
+        <CircleAvatar
+          src={group?.avatarLink}
+          alt={group?.name?.slice(0, 1)?.toUpperCase()}
+        />
       </div>
 
       {/* display name and status */}
@@ -22,12 +29,15 @@ export default function ChatHeaderGroup({ chatOptions }) {
 
         <p className="text-sm">
           {/* display group publicity status and number of member */}
-          <GroupStatus publicity={group?.public} membersLength={membersLength} />
+          <GroupStatus
+            publicity={group?.public}
+            membersLength={membersLength}
+          />
         </p>
       </div>
 
       {/* display open options and call and video call */}
-     <div className="flex items-center gap-3 text-2xl">
+      <div className="flex items-center gap-3 text-2xl">
         <IoIosCall className="inline-block p-1 rounded-full w-8 h-8 cursor-pointer bg-white hover:bg-gray-300" />
         <IoIosVideocam className="inline-block p-1 rounded-full w-8 h-8 cursor-pointer bg-white hover:bg-gray-300" />
         <IoIosMore className="text-white bg-slate-700 inline-block p-1 rounded-full w-6 h-6 cursor-pointer hover:bg-slate-900" />

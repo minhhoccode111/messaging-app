@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { redirect, } from 'react-router-dom';
-import { IoIosPaperPlane } from 'react-icons/io';
-import { SubmitWithStates } from '../more';
-import useAuthStore from '../../stores/auth';
+import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { redirect } from "react-router-dom";
+import { IoIosPaperPlane } from "react-icons/io";
+import { SubmitWithStates } from "../more";
+import useAuthStore from "../../stores/auth";
 
 export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
   const { authData } = useAuthStore();
@@ -13,35 +13,36 @@ export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
   const [isError, setIsError] = useState(false);
 
   // handle update input states
-  const [nameInput, setNameInput] = useState('');
-  const [bioInput, setBioInput] = useState('');
-  const [avatarLinkInput, setAvatarLinkInput] = useState('');
-  const [publicInput, setPublicInput] = useState('public');
-  const publicity = publicInput === 'public';
+  const [nameInput, setNameInput] = useState("");
+  const [bioInput, setBioInput] = useState("");
+  const [avatarLinkInput, setAvatarLinkInput] = useState("");
+  const [publicInput, setPublicInput] = useState("public");
+  const publicity = publicInput === "public";
 
-  const [warning, setWarning] = useState('');
+  const [warning, setWarning] = useState("");
 
   // manually handle validation
   useEffect(() => {
     if (nameInput.trim().length === 0) setWarning(`Name is empty`);
     else if (nameInput.trim().length > 50) setWarning(`Name is too long`);
     else if (bioInput?.trim().length > 250) setWarning(`Bio is too long`);
-    else if (everyGroupNames?.includes(nameInput)) setWarning(`Name is already existed`);
-    else setWarning('');
+    else if (everyGroupNames?.includes(nameInput))
+      setWarning(`Name is already existed`);
+    else setWarning("");
   }, [nameInput, avatarLinkInput, bioInput, everyGroupNames, publicity]);
 
   async function handleCreateGroup(e) {
     e.preventDefault();
 
-    if (warning !== '') return;
+    if (warning !== "") return;
 
     try {
       setIsLoading(true);
 
       await axios({
-        mode: 'cors',
-        method: 'post',
-        url: import.meta.env.VITE_API_ORIGIN + '/chat/groups',
+        mode: "cors",
+        method: "post",
+        url: import.meta.env.VITE_API_ORIGIN + "/chat/groups",
         headers: {
           Authorization: `Bearer ${authData?.token}`,
         },
@@ -56,10 +57,10 @@ export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
       // console.log(`the res.data belike: `, res.data);
 
       // clear after success
-      setNameInput('');
-      setBioInput('');
-      setAvatarLinkInput('');
-      setPublicInput('public');
+      setNameInput("");
+      setBioInput("");
+      setAvatarLinkInput("");
+      setPublicInput("public");
 
       // switch flag to refetch
       setWillFetchContact((current) => !current);
@@ -67,7 +68,7 @@ export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
       // console.log(error);
 
       // if a 401 unauthorized occur log current logged in user out
-      if (error.response.status !== 401) redirect('/logout');
+      if (error.response.status !== 401) redirect("/logout");
 
       // stop them from sending another request if it's not a 400
       if (error.response.status !== 400) setIsError(true);
@@ -78,7 +79,10 @@ export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
 
   return (
     <form className="flex flex-col gap-3 p-2" onSubmit={handleCreateGroup}>
-      <label htmlFor="name" className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1">
+      <label
+        htmlFor="name"
+        className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1"
+      >
         <input
           type="text"
           id="name"
@@ -96,7 +100,10 @@ export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
         </span>
       </label>
 
-      <label htmlFor="avatarLink" className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1">
+      <label
+        htmlFor="avatarLink"
+        className="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1"
+      >
         <input
           type="text"
           id="avatarLink"
@@ -159,8 +166,8 @@ export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
         htmlFor="bio"
         className="text-sm font-medium text-gray-700 block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 p-1"
       >
-        {' '}
-        Bio{' '}
+        {" "}
+        Bio{" "}
         <textarea
           id="bio"
           className="border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 w-full"
@@ -173,7 +180,7 @@ export default function FormGroup({ setWillFetchContact, everyGroupNames }) {
       </label>
 
       {/* display warning */}
-      {warning !== '' ? (
+      {warning !== "" ? (
         <p className="text-danger font-bold text-xs">{warning}</p>
       ) : (
         <div className="flex justify-end">

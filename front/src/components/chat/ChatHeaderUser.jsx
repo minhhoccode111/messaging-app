@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import { UserStatus, CircleAvatar } from '../more';
-import { domParser } from './../../methods/index';
-import { IoIosCall, IoIosVideocam, IoIosMore } from 'react-icons/io';
+import PropTypes from "prop-types";
+import { UserStatus, CircleAvatar } from "../more";
+import { domParser } from "./../../methods/index";
+import { IoIosCall, IoIosVideocam, IoIosMore } from "react-icons/io";
 
 export default function ChatHeaderUser({ chatOptions }) {
   // chatOptions: {info: receivedUser, members: undefined}
@@ -9,10 +9,17 @@ export default function ChatHeaderUser({ chatOptions }) {
   const user = chatOptions?.info;
 
   return (
-    <h2 className={'flex gap-2 items-center justify-start text-lg font-bold text-slate-700'}>
+    <h2
+      className={
+        "flex gap-2 items-center justify-start text-lg font-bold text-slate-700"
+      }
+    >
       {/* display avatar */}
-      <div className={'w-14 h-14 flex-shrink-0'}>
-        <CircleAvatar src={domParser(user?.avatarLink)} alt={domParser(user?.fullname?.slice(0, 1)?.toUpperCase())} />
+      <div className={"w-14 h-14 flex-shrink-0"}>
+        <CircleAvatar
+          src={user?.avatarLink}
+          alt={user?.fullname?.slice(0, 1)?.toUpperCase()}
+        />
       </div>
 
       {/* display name and status */}

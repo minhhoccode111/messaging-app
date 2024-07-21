@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
-import { domParser } from './../../methods/index';
-import { UserStatus, CircleAvatar } from '../more';
-import { memo } from 'react';
-import useAuthStore from '../../stores/auth';
+import PropTypes from "prop-types";
+import { domParser } from "./../../methods/index";
+import { UserStatus, CircleAvatar } from "../more";
+import { memo } from "react";
+import useAuthStore from "../../stores/auth";
 
 const ContactUser = memo(function ContactUser({
   user,
@@ -21,7 +21,9 @@ const ContactUser = memo(function ContactUser({
   const { authData } = useAuthStore();
 
   function setFocus() {
-    return chatType === 'users' && chatId === user?.id ? 'bg-gray-300' : 'bg-gray-100';
+    return chatType === "users" && chatId === user?.id
+      ? "bg-gray-300"
+      : "bg-gray-100";
   }
 
   // console.log(`the children belike: `);
@@ -35,22 +37,31 @@ const ContactUser = memo(function ContactUser({
 
         // set chat to fetch
         setChatId(user?.id);
-        setChatType('users');
+        setChatType("users");
       }}
-      className={'my-2 rounded-md flex gap-2 items-center justify-start text-xs font-bold shadow-md p-2 hover:bg-gray-300 transition-colors cursor-pointer' + ' ' + setFocus()}
+      className={
+        "my-2 rounded-md flex gap-2 items-center justify-start text-xs font-bold shadow-md p-2 hover:bg-gray-300 transition-colors cursor-pointer" +
+        " " +
+        setFocus()
+      }
     >
-      <div className={'w-11 h-11 flex-shrink-0'}>
-        <CircleAvatar src={user?.avatarLink} alt={domParser(user?.fullname?.slice(0, 1)?.toUpperCase())} />
+      <div className={"w-11 h-11 flex-shrink-0"}>
+        <CircleAvatar
+          src={user?.avatarLink}
+          alt={user?.fullname?.slice(0, 1)?.toUpperCase()}
+        />
       </div>
 
       <div className="flex-1">
         <p className="text-sm">
           {user?.id === authData?.self?.id
             ? // differentiate if you are group's creator
-            'You'
+              "You"
             : domParser(user?.fullname)}
 
-          {user?.isCreator && <span className="font-bold text-green-500"> (Creator) </span>}
+          {user?.isCreator && (
+            <span className="font-bold text-green-500"> (Creator) </span>
+          )}
         </p>
 
         <p className="">
@@ -64,13 +75,13 @@ const ContactUser = memo(function ContactUser({
         // display kick to every one but ourselves
         user?.id !== authData?.self?.id && children
       ) : // else if group's member
-        isMember ? (
-          // display leave to no one but ourselves
-          user?.id === authData?.self?.id && children
-        ) : (
-          // else display nothing
-          <></>
-        )}
+      isMember ? (
+        // display leave to no one but ourselves
+        user?.id === authData?.self?.id && children
+      ) : (
+        // else display nothing
+        <></>
+      )}
     </li>
   );
 });

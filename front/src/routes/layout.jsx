@@ -7,13 +7,15 @@ export default function Layout() {
 
   return (
     <>
-      {pathname !== "/chat" && <Header />}
+      {/* pathname !== "/chat" && <Header /> */}
+      <Header />
 
       <main className={"flex-1"}>
         <Outlet />
       </main>
 
-      {pathname !== "/" && pathname !== "/chat" && <Footer />}
+      {/* pathname !== "/" && pathname !== "/chat" && <Footer /> */}
+      <Footer />
     </>
   );
 }

@@ -35,8 +35,8 @@ export default function ChatMessage({ message }) {
       {/* message's sender avatar */}
       <div className={"w-8 h-8 flex-shrink-0 " + order()}>
         <CircleAvatar
-          src={domParser(message?.sender?.avatarLink)}
-          alt={domParser(message?.sender?.fullname?.slice(0, 1)?.toUpperCase())}
+          src={message?.sender?.avatarLink}
+          alt={message?.sender?.fullname?.slice(0, 1)?.toUpperCase()}
         ></CircleAvatar>
       </div>
 
