@@ -50,7 +50,7 @@ export default function Login() {
       // go to profile after user logged in
       navigate("/profile");
     } catch (err) {
-      console.log(err.response);
+      console.log(`login error belike: `, err);
       if (err.response.status === 400) {
         setDisplayMessages(() => [
           { msg: `*Username or password do not match` },
@@ -59,7 +59,7 @@ export default function Login() {
         setIsError(() => true);
 
         setDisplayMessages(() => [
-          { msg: `*There is a server error or  internet connection!` },
+          { msg: `*There is a server error or internet connection!` },
         ]);
       }
     } finally {

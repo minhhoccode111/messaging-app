@@ -1,0 +1,11 @@
+@url = https://messagingapptop.glitch.me/api/v1
+
+### test server response time
+
+### take ~1.3s (glitch free tier)
+GET {{url}}/user
+Authentication: Bearer asd
+
+### takes ~6ms (localhost)
+GET http://localhost:3000/api/v1/user
+Authentication: Bearer asd

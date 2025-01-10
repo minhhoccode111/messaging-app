@@ -157,16 +157,11 @@ export function Footer() {
   return (
     <footer className="p-8 grid place-items-center bg-white">
       <p className="">
-        <OutsideLink to={"https://github.com/minhhoccode111/messaging-app"}>
-          {" "}
-          Project
-        </OutsideLink>{" "}
-        is made by{" "}
+        Made by{" "}
         <OutsideLink to={"https://github.com/minhhoccode111"}>
           {" "}
           minhhoccode111{" "}
         </OutsideLink>
-        .
       </p>
     </footer>
   );
