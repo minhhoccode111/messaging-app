@@ -1,5 +1,6 @@
+###
 POST {{url}}/api/v1/auth/signup
-Content-Type: application/json
+
 {
   "fullname": ".",
   "username": "valid@gmail.com",
@@ -7,9 +8,9 @@ Content-Type: application/json
   "confirm-password": "Bruh0!0!"
 }
 
-
+###
 POST {{url}}/api/v1/auth/login
-Content-Type: application/json
+
 {
   "username": "asd10",
   "password": "asd"

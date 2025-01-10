@@ -1,9 +1,29 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { Footer, Header } from "./../components/more";
+import { Fragment, useEffect } from "react";
+import axios from "axios";
 
 export default function Layout() {
-  // location.pathname - the path of the current URL
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    const tmp = async () => {
+      try {
+        await axios({
+          mode: "cors",
+          method: "get",
+          url: import.meta.env.VITE_API_ORIGIN + "/user",
+          headers: {
+            Authorization: `Bearer asd`,
+          },
+        });
+      } catch (err) {
+        console.log(`try to wake the server up early`, err);
+      }
+    };
+
+    tmp();
+  }, []);
 
   return (
     <>
