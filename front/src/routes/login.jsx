@@ -1,5 +1,5 @@
 import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { Loading, Error, SubmitButton } from "./../components/more";
 import useAuthStore from "../stores/auth";
@@ -19,12 +19,15 @@ export default function Login() {
   // error messages to display
   const [displayMessages, setDisplayMessages] = useState([]);
 
+  // keep track of username and password elements
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
+
   // handle login submit manually
   async function handleLoginFormSubmit(e) {
     e.preventDefault();
-    const form = e.target;
-    const username = form.querySelector(`input[name="username"]`);
-    const password = form.querySelector(`input[name="password"]`);
+    const username = usernameRef.current;
+    const password = passwordRef.current;
 
     setIsLoading(() => true);
 
@@ -125,6 +128,7 @@ export default function Login() {
             <input
               name="username"
               id="username"
+              ref={usernameRef}
               type="text"
               className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm"
               placeholder="Enter username"
@@ -159,6 +163,7 @@ export default function Login() {
             <input
               name="password"
               id="password"
+              ref={passwordRef}
               type="password"
               className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm"
               placeholder="Enter password"

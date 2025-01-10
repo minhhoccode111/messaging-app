@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Loading, Error, SubmitButton } from "../components/more";
 // import BackgroundImage2 from '../assets/bg-2.jpg';
 import axios from "axios";
@@ -36,17 +36,20 @@ export default function Signup() {
     else setFullnameValidationState(true);
   }, [fullnameState]);
 
+  // keep track of input elements
+  const fullnameRef = useRef(null);
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
+
   // handle signup submit manually
   async function handleSignupFormSubmit(e) {
     e.preventDefault();
-    const form = e.target;
-    const fullname = form.querySelector(`input[name="fullname"]`);
-    const username = form.querySelector(`input[name="username"]`);
-    const password = form.querySelector(`input[name="password"]`);
-    const confirmPassword = form.querySelector(
-      `input[name="confirm-password"]`,
-    );
-
+    // const fullname = form.querySelector(`input[name="fullname"]`);
+    const fullname = fullnameRef.current;
+    const username = usernameRef.current;
+    const password = passwordRef.current;
+    const confirmPassword = confirmPasswordRef.current;
     setIsLoading(() => true);
 
     try {
@@ -116,6 +119,7 @@ export default function Signup() {
             <input
               name="fullname"
               id="fullname"
+              ref={fullnameRef}
               type="text"
               className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm peer"
               placeholder="Enter fullname"
@@ -146,6 +150,7 @@ export default function Signup() {
             <input
               name="username"
               id="username"
+              ref={usernameRef}
               type="email"
               className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm peer"
               placeholder="Enter username"
@@ -185,6 +190,7 @@ export default function Signup() {
             <input
               name="password"
               id="password"
+              ref={passwordRef}
               type="password"
               className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm peer"
               placeholder="Enter password"
@@ -236,6 +242,7 @@ export default function Signup() {
             <input
               name="confirm-password"
               id="confirm-password"
+              ref={confirmPasswordRef}
               type="password"
               className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm peer"
               placeholder="Confirm password"
