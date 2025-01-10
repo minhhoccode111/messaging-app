@@ -11,7 +11,7 @@ export default {
         chat: "20rem 1fr 20rem",
       },
       gridTemplateRows: {
-        chat: "98vh",
+        chat: "1fr",
       },
       colors: {
         "semi-transparent": "#ffffffef",

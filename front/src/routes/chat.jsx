@@ -276,7 +276,7 @@ export default function Chat() {
   // console.log(`the chatOptions belike: `, chatOptions);
 
   return (
-    <section className="text-gray-700 p-[1vh] grid grid-cols-chat grid-rows-chat gap-2 max-w-screen-xl mx-auto h-full max-h-full">
+    <section className="text-gray-700 p-[1vh] grid grid-cols-chat grid-rows-chat gap-2 h-full max-h-full">
       {/* display contact section */}
       <article className="overflow-y-auto shadow-gray-400 rounded-xl p-1 shadow-2xl bg-white max-w-[20rem] max-h-full flex flex-col gap-1">
         {/* other users */}

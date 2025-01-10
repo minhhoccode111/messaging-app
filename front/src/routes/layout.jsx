@@ -6,16 +6,15 @@ export default function Layout() {
   const { pathname } = useLocation();
 
   return (
-    <>
-      {/* pathname !== "/chat" && <Header /> */}
+    <Fragment>
       <Header />
 
-      <main className={"flex-1"}>
+      {/* overflow-hidden so that it never goes past the parent */}
+      <main className="flex-1 overflow-hidden">
         <Outlet />
       </main>
 
-      {/* pathname !== "/" && pathname !== "/chat" && <Footer /> */}
-      <Footer />
-    </>
+      {pathname !== "/" && pathname !== "/chat" && <Footer />}
+    </Fragment>
   );
 }
